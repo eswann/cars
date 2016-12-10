@@ -67,7 +67,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            var events = await _inMemoryDomainEventStore.GetAllEventsAsync(testAggregate.Id);
+            var events = await _inMemoryDomainEventStore.GetAllEventsAsync<StubAggregate>(testAggregate.Id);
             
             events.Count().Should().Be(2);
         }

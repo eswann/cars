@@ -28,18 +28,18 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
             CalledMethods |= EventStoreMethods.SaveSnapshotAsync;
         }
 
-        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync<TAggregate>(Guid aggregateId) where TAggregate : IAggregate
         {
-            var result = await _eventStore.GetLatestSnapshotByIdAsync(aggregateId).ConfigureAwait(false);
+            var result = await _eventStore.GetLatestSnapshotByIdAsync<TAggregate>(aggregateId).ConfigureAwait(false);
 
             CalledMethods |= EventStoreMethods.GetLatestSnapshotByIdAsync;
 
             return result;
         }
 
-        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
+        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync<TAggregate>(Guid aggregateId, int version) where TAggregate : IAggregate
         {
-            var result = await _eventStore.GetEventsForwardAsync(aggregateId, version).ConfigureAwait(false);
+            var result = await _eventStore.GetEventsForwardAsync<TAggregate>(aggregateId, version).ConfigureAwait(false);
 
             CalledMethods |= EventStoreMethods.GetEventsForwardAsync;
 
@@ -74,9 +74,9 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
             CalledMethods |= EventStoreMethods.Rollback;
         }
 
-        public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id)
+        public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync<TAggregate>(Guid id) where TAggregate : IAggregate
         {
-            var result = await _eventStore.GetAllEventsAsync(id).ConfigureAwait(false);
+            var result = await _eventStore.GetAllEventsAsync<TAggregate>(id).ConfigureAwait(false);
 
             CalledMethods |= EventStoreMethods.GetAllEventsAsync;
 

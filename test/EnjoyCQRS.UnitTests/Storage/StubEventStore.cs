@@ -19,11 +19,11 @@ namespace EnjoyCQRS.UnitTests.Storage
             return base.SaveAsync(collection);
         }
 
-        public override Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public override Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync<TAggregate>(Guid aggregateId)
         {
             GetSnapshotMethodCalled = true;
 
-            return base.GetLatestSnapshotByIdAsync(aggregateId);
+            return base.GetLatestSnapshotByIdAsync<TAggregate>(aggregateId);
         }
     }
 }

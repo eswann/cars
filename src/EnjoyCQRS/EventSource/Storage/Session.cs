@@ -117,7 +117,7 @@ namespace EnjoyCQRS.EventSource.Storage
                 if (snapshotAggregate != null)
                 {
                     int version = 0;
-                    var snapshot = await _eventStore.GetLatestSnapshotByIdAsync(id).ConfigureAwait(false);
+                    var snapshot = await _eventStore.GetLatestSnapshotByIdAsync<TAggregate>(id).ConfigureAwait(false);
 
                     if (snapshot != null)
                     {
@@ -132,14 +132,14 @@ namespace EnjoyCQRS.EventSource.Storage
                         _logger.Log(LogLevel.Debug, "Snapshot restored.");
                     }
 
-                    events = await _eventStore.GetEventsForwardAsync(id, version).ConfigureAwait(false);
+                    events = await _eventStore.GetEventsForwardAsync<TAggregate>(id, version).ConfigureAwait(false);
 
                     LoadAggregate(aggregate, events);
                 }
             }
             else
             {
-                events = await _eventStore.GetAllEventsAsync(id).ConfigureAwait(false);
+                events = await _eventStore.GetAllEventsAsync<TAggregate>(id).ConfigureAwait(false);
 
                 LoadAggregate(aggregate, events);
             }

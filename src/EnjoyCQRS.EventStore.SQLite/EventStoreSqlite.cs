@@ -68,7 +68,7 @@ namespace EnjoyCQRS.EventStore.SQLite
                 Transaction.Rollback();
         }
 
-        public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id)
+        public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync<TAggregate>(Guid id) where TAggregate : IAggregate
         {
             var command = Connection.CreateCommand();
             command.CommandText = "SELECT AggregateId, Version, Body, Metadatas FROM Events WHERE AggregateId = @AggregateId ORDER BY Version ASC";
@@ -127,7 +127,7 @@ namespace EnjoyCQRS.EventStore.SQLite
             await command.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
         
-        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync<TAggregate>(Guid aggregateId) where TAggregate : IAggregate
         {
             var command = Connection.CreateCommand();
             command.CommandText = "SELECT AggregateId, Version, Body, Metadatas FROM Snapshots WHERE AggregateId = @AggregateId ORDER BY Version DESC LIMIT 1";
@@ -150,7 +150,7 @@ namespace EnjoyCQRS.EventStore.SQLite
             return snapshot;
         }
         
-        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
+        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync<TAggregate>(Guid aggregateId, int version) where TAggregate : IAggregate
         {
             var command = Connection.CreateCommand();
             command.CommandText = "SELECT AggregateId, Version, Body, Metadatas FROM Events WHERE AggregateId = @AggregateId AND Version > @Version ORDER BY Version ASC";

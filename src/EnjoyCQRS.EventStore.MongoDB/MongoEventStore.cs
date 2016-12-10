@@ -67,7 +67,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
             return Task.CompletedTask;
         }
 
-        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync<TAggregate>(Guid aggregateId) where TAggregate : IAggregate
         {
             var db = Client.GetDatabase(Database);
             var snapshotCollection = db.GetCollection<SnapshotData>(Setttings.SnapshotsCollectionName);
@@ -84,7 +84,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
             return snapshots.Select(Deserialize).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
+        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync<TAggregate>(Guid aggregateId, int version) where TAggregate : IAggregate
         {
             var db = Client.GetDatabase(Database);
             var collection = db.GetCollection<Event>(Setttings.EventsCollectionName);
@@ -132,7 +132,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
             _uncommitedSnapshots.Clear();
         }
 
-        public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id)
+        public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync<TAggregate>(Guid id) where TAggregate : IAggregate
         {
             var db = Client.GetDatabase(Database);
             var collection = db.GetCollection<Event>(Setttings.EventsCollectionName);

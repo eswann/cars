@@ -50,14 +50,14 @@ namespace EnjoyCQRS.EventSource.Storage
             return Task.CompletedTask;
         }
 
-        public virtual Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public virtual Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync<TAggregate>(Guid aggregateId) where TAggregate : IAggregate
         {
             var snapshot = Snapshots.Where(e => e.AggregateId == aggregateId).OrderByDescending(e => e.AggregateVersion).Take(1).FirstOrDefault();
 
             return Task.FromResult(snapshot);
         }
 
-        public virtual Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
+        public virtual Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync<TAggregate>(Guid aggregateId, int version) where TAggregate : IAggregate
         {
             var events = Events
             .Where(e => e.AggregateId == aggregateId && e.AggregateVersion > version)
@@ -103,7 +103,7 @@ namespace EnjoyCQRS.EventSource.Storage
             InTransaction = false;
         }
 
-        public virtual Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id)
+        public virtual Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync<TAggregate>(Guid id) where TAggregate : IAggregate
         {
             var events = Events
             .Where(e => e.AggregateId == id)

@@ -53,7 +53,7 @@ namespace EnjoyCQRS.EventSource.Storage
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id);
+        Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync<TAggregate>(Guid id) where TAggregate : IAggregate;
 
         /// <summary>
         /// Save the events in Event Store.

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Storage;
-using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
 using EnjoyCQRS.UnitTests.Shared;
@@ -32,12 +30,9 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             _inMemoryDomainEventStore = new InMemoryEventStore();
             
-            var mockLogger = new Mock<ILogger>();
-            mockLogger.Setup(e => e.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
-            mockLogger.Setup(e => e.Log(It.IsAny<LogLevel>(), It.IsAny<string>(), It.IsAny<Exception>()));
+            var mockLogger = MockHelper.GetMockLogger();
 
-            var mockLoggerFactory = new Mock<ILoggerFactory>();
-            mockLoggerFactory.Setup(e => e.Create(It.IsAny<string>())).Returns(mockLogger.Object);
+            var mockLoggerFactory = MockHelper.GetMockLoggerFactory(mockLogger.Object);
 
             _mockEventPublisher = new Mock<IEventPublisher>();
             _mockEventPublisher.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Returns(Task.CompletedTask);

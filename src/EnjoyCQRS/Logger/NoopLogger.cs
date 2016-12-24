@@ -21,37 +21,56 @@
 // SOFTWARE.
 
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace EnjoyCQRS.Logger
 {
     public class NoopLoggerFactory : ILoggerFactory
     {
-        public class NoopLogger : ILogger
-        {
-            private string _name;
-
-            public NoopLogger(string name)
-            {
-                _name = name;
-            }
-
-            public void Log(LogLevel logLevel, string message, Exception exception = null)
-            {
-            }
-
-            public bool IsEnabled(LogLevel logLevel)
-            {
-                return true;
-            }
-        }
-
-        public void Dispose()
+        void ILoggerFactory.AddProvider(ILoggerProvider provider)
         {
         }
 
-        public ILogger Create(string name)
+        ILogger ILoggerFactory.CreateLogger(string categoryName)
         {
-            return new NoopLogger(name);
+            return new NoopLogger();
+        }
+
+        void IDisposable.Dispose()
+        {
+        }
+    }
+
+    public class NoopLoggerProvider : ILoggerProvider
+    {
+        ILogger ILoggerProvider.CreateLogger(string categoryName)
+        {
+            return new NoopLogger();
+        }
+
+        void IDisposable.Dispose()
+        {
+        }
+    }
+
+    public class NoopLogger : ILogger, IDisposable
+    {
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            return new NoopLogger();
+        }
+
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            return true;
+        }
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        {
+        }
+
+        void IDisposable.Dispose()
+        {
         }
     }
 }

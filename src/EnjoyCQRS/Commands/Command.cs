@@ -27,6 +27,7 @@ namespace EnjoyCQRS.Commands
     /// <summary>
     /// Represent the User Intention (UI) abstraction.
     /// </summary>
+    [Obsolete]
     public abstract class Command : ICommand
     {
         /// <summary>

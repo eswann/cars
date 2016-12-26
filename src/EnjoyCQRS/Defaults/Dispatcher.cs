@@ -36,6 +36,7 @@ namespace EnjoyCQRS.Defaults
         private readonly ConcurrentDictionary<Type, Type> _genericHandlerCache = new ConcurrentDictionary<Type, Type>();
         private readonly ConcurrentDictionary<Type, Type> _wrapperHandlerCache = new ConcurrentDictionary<Type, Type>();
         private readonly IServiceProvider _serviceProvider;
+
         public Dispatcher(IServiceProvider serviceProvider)
         {
             if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));

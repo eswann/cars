@@ -25,6 +25,7 @@ namespace EnjoyCQRS.Commands
     /// <summary>
     /// Represent the User Intention (UI) abstraction.
     /// </summary>
+    [System.Obsolete("Use: " + nameof(Handlers.IAsyncMessage))]
     public interface ICommand
     {
     }

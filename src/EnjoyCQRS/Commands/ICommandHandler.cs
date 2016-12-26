@@ -20,10 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Threading.Tasks;
+using EnjoyCQRS.Handlers;
 
 namespace EnjoyCQRS.Commands
 {
+    [Obsolete("Use: " + nameof(IAsyncMessageHandler<IAsyncMessage>))]
     public interface ICommandHandler<in TCommand>
         where TCommand : ICommand
     {

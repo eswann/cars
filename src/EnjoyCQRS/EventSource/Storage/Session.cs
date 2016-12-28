@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -170,10 +171,10 @@ namespace EnjoyCQRS.EventSource.Storage
             CheckConcurrency(aggregate);
 
             RegisterForTracking(aggregate);
-
+            
             return Task.CompletedTask;
         }
-
+        
         /// <summary>
         /// Start transaction.
         /// </summary>
@@ -219,17 +220,43 @@ namespace EnjoyCQRS.EventSource.Storage
             }
 
             // If transaction called externally, the client should care with transaction.
+
             try
             {
-                _logger.LogInformation("Begin iterate in collection of aggregate.");
+                _logger.LogInformation("Serializing events.");
 
-                var orderedEvents = _aggregates.SelectMany(e => e.UncommitedEvents).OrderBy(o => o.CreatedAt).Select(e => e.OriginalEvent).ToList();
+                var uncommitedEvents =
+                    _aggregates.SelectMany(e => e.UncommitedEvents)
+                    .OrderBy(o => o.CreatedAt)
+                    .Cast<UncommitedEvent>()
+                    .ToList();
+                
+                var serializedEvents = uncommitedEvents.Select(uncommitedEvent =>
+                {
+                    var metadatas = _metadataProviders.SelectMany(md => md.Provide(uncommitedEvent.Aggregate,
+                        uncommitedEvent.OriginalEvent,
+                        Metadata.Empty)).Concat(new[]
+                    {
+                        new KeyValuePair<string, object>(MetadataKeys.EventId, Guid.NewGuid()),
+                        new KeyValuePair<string, object>(MetadataKeys.EventVersion, uncommitedEvent.Version)
+                    });
+
+                    var serializeEvent = _eventSerializer.Serialize(uncommitedEvent.Aggregate,
+                        uncommitedEvent.OriginalEvent,
+                        metadatas);
+
+                    return serializeEvent;
+                });
+
+                _logger.LogInformation("Saving events on Event Store.");
+
+                await _eventStore.SaveAsync(serializedEvents).ConfigureAwait(false);
+
+                _logger.LogInformation("Begin iterate in collection of aggregate.");
 
                 foreach (var aggregate in _aggregates)
                 {
-                    _logger.LogInformation("Serializing events.");
-
-                    var serializedEvents = aggregate.ToSerialized(_metadataProviders, _eventSerializer);
+                    _logger.LogInformation($"Checking if should take snapshot for aggregate: '{aggregate.Id}'.");
 
                     if (_snapshotStrategy.ShouldMakeSnapshot(aggregate))
                     {
@@ -237,8 +264,6 @@ namespace EnjoyCQRS.EventSource.Storage
 
                         await aggregate.TakeSnapshot(_eventStore, _snapshotSerializer).ConfigureAwait(false);
                     }
-
-                    await _eventStore.SaveAsync(serializedEvents).ConfigureAwait(false);
 
                     _logger.LogInformation($"Update aggregate's version from {aggregate.Version} to {aggregate.Sequence}.");
 
@@ -249,12 +274,12 @@ namespace EnjoyCQRS.EventSource.Storage
 
                 _logger.LogInformation("End iterate.");
 
-                _logger.LogInformation($"Publishing events. [Qty: {orderedEvents.Count}]");
+                _logger.LogInformation($"Publishing events. [Qty: {uncommitedEvents.Count}]");
 
-                await _eventPublisher.PublishAsync(orderedEvents.AsEnumerable()).ConfigureAwait(false);
+                await _eventPublisher.PublishAsync(uncommitedEvents.Select(e => e.OriginalEvent)).ConfigureAwait(false);
 
                 _logger.LogInformation("Published events.");
-
+                
                 _aggregates.Clear();
 
                 await _eventPublisher.CommitAsync().ConfigureAwait(false);

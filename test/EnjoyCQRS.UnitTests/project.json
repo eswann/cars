@@ -10,6 +10,7 @@
     "EnjoyCQRS.UnitTests.Shared": {
       "target": "project"
     },
+    "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "FluentAssertions": "4.15.0",
     "Moq": "4.6.38-alpha",
     "Newtonsoft.Json": "9.0.2-beta1",

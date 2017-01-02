@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.EventSource.Storage;
+using EnjoyCQRS.Internal;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus.InProcess;
 using EnjoyCQRS.MetadataProviders;
 using EnjoyCQRS.UnitTests.Shared;
 using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.FooAggregate;
 using FluentAssertions;
-using Moq;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace EnjoyCQRS.UnitTests.EventUpgrader
@@ -122,39 +122,14 @@ namespace EnjoyCQRS.UnitTests.EventUpgrader
                 new NameChanged(id, "Peter Parker"),
                 new NameChanged(id, "Jean Grey")
             };
-
-            var eventUpdaters = new Dictionary<Type, object>
-            {
-                { typeof(NameChanged), new NameChangedEventUpdate() }
-            };
-
-            var eventsUpdated = new List<IDomainEvent>();
             
-            var mockEventUpdateManager = new Mock<IEventUpdateManager>();
-            mockEventUpdateManager.Setup(e => e.Update(It.IsAny<IEnumerable<IDomainEvent>>()))
-                .Callback<IEnumerable<IDomainEvent>>(enumerable =>
-                {
-                    foreach (var @event in enumerable)
-                    {
-                        var eventType = @event.GetType();
-
-                        if (!eventUpdaters.ContainsKey(eventType))
-                        {
-                            eventsUpdated.Add(@event);
-
-                            continue;
-                        }
-
-                        var eventUpdate = eventUpdaters[eventType];
-
-                        var methodInfo = eventUpdate.GetType().GetMethod(nameof(IEventUpdate<object>.Update), BindingFlags.Instance | BindingFlags.Public);
-                        var resultMethod = (IEnumerable<IDomainEvent>)methodInfo.Invoke(eventUpdate, new object[] { @event });
-
-                        eventsUpdated.AddRange(resultMethod);
-                    }
-                }).Returns(eventsUpdated);
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddTransient<IEventUpdate<NameChanged>, NameChangedEventUpdate>();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
             
-            var session = await ArrangeSessionAsync<Foo>(id, eventUpdateManager: mockEventUpdateManager.Object, arrangeEvents: events.ToArray());
+            var eventUpdateManager = new EventUpdateManager(serviceProvider);
+            
+            var session = await ArrangeSessionAsync<Foo>(id, eventUpdateManager: eventUpdateManager, arrangeEvents: events.ToArray());
 
             // Act
             

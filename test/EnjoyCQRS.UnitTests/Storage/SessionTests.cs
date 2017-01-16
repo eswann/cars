@@ -6,6 +6,7 @@ using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Exceptions;
+using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.UnitTests.Shared;
@@ -27,14 +28,15 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var eventSerializer = CreateEventSerializer();
             var snapshotSerializer = CreateSnapshotSerializer();
+            var projectionSerializer = CreateProjectionSerializer();
 
-            var session = new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), eventStore, eventPublisher, eventSerializer, snapshotSerializer, null, null, snapshotStrategy);
+            var session = new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), eventStore, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, null, null, snapshotStrategy);
 
             return session;
         };
 
         private readonly Mock<IEventPublisher> _eventPublisherMock;
-        private JsonTextSerializer _textSerializer;
+        private readonly JsonTextSerializer _textSerializer;
 
         public SessionTests()
         {
@@ -51,10 +53,11 @@ namespace EnjoyCQRS.UnitTests.Storage
             var eventStore = Mock.Of<IEventStore>();
             var eventSerializer = Mock.Of<IEventSerializer>();
             var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
+            var projectionSerializer = Mock.Of<IProjectionSerializer>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(null, eventStore, eventPublisher, eventSerializer, snapshotSerializer, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(null, eventStore, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -63,13 +66,14 @@ namespace EnjoyCQRS.UnitTests.Storage
         [Fact]
         public void Cannot_pass_null_instance_of_EventStore()
         {
-            var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
             var eventSerializer = Mock.Of<IEventSerializer>();
+            var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
+            var projectionSerializer = Mock.Of<IProjectionSerializer>();
             var eventPublisher = Mock.Of<IEventPublisher>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), null, eventPublisher, eventSerializer, snapshotSerializer, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), null, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -81,10 +85,11 @@ namespace EnjoyCQRS.UnitTests.Storage
             var eventStore = Mock.Of<IEventStore>();
             var eventSerializer = Mock.Of<IEventSerializer>();
             var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
+            var projectionSerializer = Mock.Of<IProjectionSerializer>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), eventStore, null, eventSerializer, snapshotSerializer, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), eventStore, null, eventSerializer, snapshotSerializer, projectionSerializer, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -205,7 +210,6 @@ namespace EnjoyCQRS.UnitTests.Storage
             stubAggregate.AddEntity("Child 2");
 
             await session.AddAsync(stubAggregate).ConfigureAwait(false);
-
 
             // Act
 
@@ -484,6 +488,67 @@ namespace EnjoyCQRS.UnitTests.Storage
             }
         }
 
+        [Trait(CategoryName, CategoryValue)]
+        [Fact]
+        public async Task When_Save_events_Then_aggregate_projection_should_be_created()
+        {
+            var snapshotStrategy = CreateSnapshotStrategy(false);
+
+            var eventStore = new StubEventStore();
+
+            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
+
+            var stubAggregate1 = StubAggregate.Create("Walter White");
+
+            stubAggregate1.ChangeName("Saul Goodman");
+            stubAggregate1.ChangeName("Jesse Pinkman");
+
+            await session.AddAsync(stubAggregate1).ConfigureAwait(false);
+
+            await session.SaveChangesAsync().ConfigureAwait(false);
+
+            var projectionKey = new InMemoryEventStore.ProjectionKey(stubAggregate1.Id, "aggregate");
+
+            eventStore.Projections.ContainsKey(projectionKey).Should().BeTrue();
+
+            var projection = eventStore.Projections[projectionKey].As<StubAggregate>();
+
+            projection.Id.Should().Be(stubAggregate1.Id);
+            projection.Name.Should().Be(stubAggregate1.Name);
+        }
+
+        [Trait(CategoryName, CategoryValue)]
+        [Fact]
+        public async Task When_Save_events_Then_aggregate_projection_should_be_updated()
+        {
+            var snapshotStrategy = CreateSnapshotStrategy(false);
+
+            var eventStore = new StubEventStore();
+
+            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
+
+            var stubAggregate1 = StubAggregate.Create("Walter White");
+
+            await session.AddAsync(stubAggregate1).ConfigureAwait(false);
+            await session.SaveChangesAsync().ConfigureAwait(false);
+
+            stubAggregate1 = await session.GetByIdAsync<StubAggregate>(stubAggregate1.Id);
+
+            stubAggregate1.ChangeName("Jesse Pinkman");
+
+            await session.SaveChangesAsync();
+
+            eventStore.Projections.Count.Should().Be(1);
+
+            var projectionKey = new InMemoryEventStore.ProjectionKey(stubAggregate1.Id, "aggregate");
+            eventStore.Projections.ContainsKey(projectionKey).Should().BeTrue();
+
+            var projection = eventStore.Projections[projectionKey].As<StubAggregate>();
+
+            projection.Id.Should().Be(stubAggregate1.Id);
+            projection.Name.Should().Be(stubAggregate1.Name);
+        }
+
         private static ISnapshotStrategy CreateSnapshotStrategy(bool makeSnapshot = true)
         {
             var snapshotStrategyMock = new Mock<ISnapshotStrategy>();
@@ -501,6 +566,11 @@ namespace EnjoyCQRS.UnitTests.Storage
         private static ISnapshotSerializer CreateSnapshotSerializer()
         {
             return new SnapshotSerializer(new JsonTextSerializer());
+        }
+
+        private static IProjectionSerializer CreateProjectionSerializer()
+        {
+            return new ProjectionSerializer();
         }
 
         private static void DoThrowExcetion()

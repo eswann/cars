@@ -2,6 +2,7 @@
 using EnjoyCQRS.Configuration;
 using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
+using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.UnitTests.Shared;
 using Microsoft.AspNetCore.Builder;
@@ -18,6 +19,7 @@ namespace EnjoyCQRS.IntegrationTests
             services.AddScoped<ICommandDispatcher, CustomCommandDispatcher>();
             services.AddTransient<IEventRouter, CustomEventRouter>();
             services.AddTransient<ITextSerializer, JsonTextSerializer>();
+            services.AddTransient<IProjectionSerializer, ProjectionSerializer>();
 
             services.Scan(e =>
                 e.FromAssemblyOf<FooAssembler>()

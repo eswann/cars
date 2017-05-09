@@ -24,7 +24,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
-using System.Reflection;
 
 namespace EnjoyCQRS.MessageBus.InProcess
 {
@@ -34,9 +33,7 @@ namespace EnjoyCQRS.MessageBus.InProcess
 
         public EventPublisher(IEventRouter router)
         {
-            if (router == null) throw new ArgumentNullException(nameof(router));
-
-            _router = router;
+            _router = router ?? throw new ArgumentNullException(nameof(router));
         }
 
         private readonly Queue<object> _queue = new Queue<object>();

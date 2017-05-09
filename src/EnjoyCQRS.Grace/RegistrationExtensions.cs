@@ -8,8 +8,6 @@ using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus.InProcess;
 using Grace.DependencyInjection;
-using Grace.DependencyInjection.Extensions;
-using Grace.DependencyInjection.Conditions;
 
 namespace EnjoyCQRS.Grace
 {
@@ -28,7 +26,10 @@ namespace EnjoyCQRS.Grace
                 config.Export<Session>().ByInterfaces().Lifestyle.SingletonPerScope();
                 config.Export<Repository>().ByInterfaces().Lifestyle.SingletonPerScope();
                 config.Export<EventPublisher>().ByInterfaces().Lifestyle.SingletonPerScope();
-                
+
+                config.Export<GraceCommandDispatcher>().ByInterfaces().Lifestyle.SingletonPerScope();
+                config.Export<GraceEventRouter>().ByInterfaces().Lifestyle.SingletonPerScope();
+
             });
         }
 

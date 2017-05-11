@@ -1,8 +1,8 @@
 ﻿using System;
-using EnjoyCQRS.TestFramework;
-using EnjoyCQRS.UnitTests.Shared.StubApplication.Commands.BarAggregate;
-using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain;
-using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate;
+using EnjoyCQRS.Testing.Shared.MessageBus;
+using EnjoyCQRS.Testing.Shared.StubApplication.Commands.BarAggregate;
+using EnjoyCQRS.Testing.Shared.StubApplication.Domain;
+using EnjoyCQRS.Testing.Shared.StubApplication.Domain.BarAggregate;
 using FluentAssertions;
 using Moq;
 using Xunit;

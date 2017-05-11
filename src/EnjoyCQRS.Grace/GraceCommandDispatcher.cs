@@ -7,9 +7,9 @@ namespace EnjoyCQRS.Grace
 {
     public class GraceCommandDispatcher : CommandDispatcher
     {
-        private readonly IInjectionScope _scope;
+        private readonly IExportLocatorScope _scope;
 
-        public GraceCommandDispatcher(IInjectionScope scope)
+        public GraceCommandDispatcher(IExportLocatorScope scope)
         {
             _scope = scope;
         }

@@ -12,18 +12,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\EnjoyCQRS\EnjoyCQRS.csproj" />
-    <ProjectReference Include="..\..\src\EnjoyCQRS.TestFramework\EnjoyCQRS.TestFramework.csproj" />
-    <ProjectReference Include="..\EnjoyCQRS.UnitTests.Shared\EnjoyCQRS.UnitTests.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0-beta1-build1309" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EnjoyCQRS\EnjoyCQRS.csproj" />
+    <ProjectReference Include="..\EnjoyCQRS.Testing.Shared\EnjoyCQRS.Testing.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

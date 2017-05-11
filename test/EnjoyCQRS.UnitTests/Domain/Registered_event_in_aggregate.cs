@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using EnjoyCQRS.TestFramework;
+using EnjoyCQRS.Testing.Shared.MessageBus;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
 using EnjoyCQRS.UnitTests.Domain.Stubs.Events;
 using FluentAssertions;

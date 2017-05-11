@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 using System;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions.Internal;
 
 namespace EnjoyCQRS.Logger
 {
@@ -33,13 +35,19 @@ namespace EnjoyCQRS.Logger
             _name = name;
         }
 
-        public void Log(LogLevel logLevel, string message, Exception exception = null)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, 
+            Exception exception, Func<TState, Exception, string> formatter)
         {
         }
 
         public bool IsEnabled(LogLevel logLevel)
         {
             return true;
+        }
+
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            return NullScope.Instance;
         }
     }
 }

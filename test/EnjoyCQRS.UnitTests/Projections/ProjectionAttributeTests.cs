@@ -4,9 +4,9 @@ using System.Linq;
 using Xunit;
 using System;
 using System.Reflection;
-using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate;
-using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate.Projections;
 using System.Threading.Tasks;
+using EnjoyCQRS.Testing.Shared.StubApplication.Domain.BarAggregate;
+using EnjoyCQRS.Testing.Shared.StubApplication.Domain.BarAggregate.Projections;
 
 namespace EnjoyCQRS.UnitTests.Projections
 {

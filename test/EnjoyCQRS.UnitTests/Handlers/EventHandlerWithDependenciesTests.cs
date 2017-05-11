@@ -1,7 +1,7 @@
 ﻿using System;
-using EnjoyCQRS.TestFramework;
-using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain;
-using EnjoyCQRS.UnitTests.Shared.StubApplication.EventHandlers;
+using EnjoyCQRS.Testing.Shared.MessageBus;
+using EnjoyCQRS.Testing.Shared.StubApplication.Domain;
+using EnjoyCQRS.Testing.Shared.StubApplication.EventHandlers;
 using FluentAssertions;
 using Moq;
 using Xunit;

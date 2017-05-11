@@ -7,9 +7,9 @@ namespace EnjoyCQRS.Grace
 {
     public class GraceEventRouter : IEventRouter
     {
-        private readonly IInjectionScope _scope;
+        private readonly IExportLocatorScope _scope;
 
-        public GraceEventRouter(IInjectionScope scope)
+        public GraceEventRouter(IExportLocatorScope scope)
         {
             _scope = scope;
         }

@@ -8,9 +8,10 @@ using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
+using EnjoyCQRS.Testing.Shared;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
-using EnjoyCQRS.UnitTests.Shared;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -34,18 +35,13 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             _inMemoryDomainEventStore = new InMemoryEventStore();
             
-            var mockLogger = new Mock<ILogger>();
-            mockLogger.Setup(e => e.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
-            mockLogger.Setup(e => e.Log(It.IsAny<LogLevel>(), It.IsAny<string>(), It.IsAny<Exception>()));
-
-            var mockLoggerFactory = new Mock<ILoggerFactory>();
-            mockLoggerFactory.Setup(e => e.Create(It.IsAny<string>())).Returns(mockLogger.Object);
 
             _mockEventPublisher = new Mock<IEventPublisher>();
             _mockEventPublisher.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Returns(Task.CompletedTask);
             
-            var session = new Session(mockLoggerFactory.Object, _inMemoryDomainEventStore, _mockEventPublisher.Object, eventSerializer, snapshotSerializer, projectionSerializer);
-            _repository = new Repository(mockLoggerFactory.Object, session);
+            var loggerFactory = new NoopLoggerFactory();
+            var session = new Session(loggerFactory, _inMemoryDomainEventStore, _mockEventPublisher.Object, eventSerializer, snapshotSerializer, projectionSerializer);
+            _repository = new Repository(loggerFactory, session);
 
             var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(e => e.CommitAsync())

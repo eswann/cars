@@ -5,6 +5,7 @@ using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
+using EnjoyCQRS.EventStore.MongoDB;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus.InProcess;
 using Grace.DependencyInjection;
@@ -21,6 +22,8 @@ namespace EnjoyCQRS.Grace
                 config.Export<SnapshotSerializer>().ByInterfaces().Lifestyle.Singleton();
                 config.Export<NoopLoggerFactory>().ByInterfaces().Lifestyle.Singleton();
                 config.Export<IntervalSnapshotStrategy>().ByInterfaces().Lifestyle.Singleton();
+                config.Export<BsonTextSerializer>().ByInterfaces().Lifestyle.Singleton();
+                config.Export<MongoEventStore>().ByInterfaces().Lifestyle.Singleton();
 
                 config.Export<UnitOfWork>().ByInterfaces().Lifestyle.SingletonPerScope();
                 config.Export<Session>().ByInterfaces().Lifestyle.SingletonPerScope();

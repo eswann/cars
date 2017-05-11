@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EnjoyCQRS.EventStore.MongoDB\EnjoyCQRS.EventStore.MongoDB.csproj" />
     <ProjectReference Include="..\EnjoyCQRS\EnjoyCQRS.csproj" />
   </ItemGroup>
 </Project>

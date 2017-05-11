@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using EnjoyCQRS.Core;
 using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventStore.MongoDB;
-using EnjoyCQRS.UnitTests.Shared.TestSuit;
+using EnjoyCQRS.Testing.Shared.EventStore;
+using EnjoyCQRS.Testing.Shared.StubApplication.Domain.BarAggregate.Projections;
 using FluentAssertions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 using Xunit;
-using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate.Projections;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 
@@ -71,8 +71,8 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
 
             using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                eventStore.Setttings.EventsCollectionName.Should().Be(defaultSettings.EventsCollectionName);
-                eventStore.Setttings.SnapshotsCollectionName.Should().Be(defaultSettings.SnapshotsCollectionName);
+                eventStore.Settings.EventsCollectionName.Should().Be(defaultSettings.EventsCollectionName);
+                eventStore.Settings.SnapshotsCollectionName.Should().Be(defaultSettings.SnapshotsCollectionName);
             }
         }
 
@@ -105,8 +105,8 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
 
             using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName, customSettings))
             {
-                eventStore.Setttings.EventsCollectionName.Should().Be(customSettings.EventsCollectionName);
-                eventStore.Setttings.SnapshotsCollectionName.Should().Be(customSettings.SnapshotsCollectionName);
+                eventStore.Settings.EventsCollectionName.Should().Be(customSettings.EventsCollectionName);
+                eventStore.Settings.SnapshotsCollectionName.Should().Be(customSettings.SnapshotsCollectionName);
             }
         }
 

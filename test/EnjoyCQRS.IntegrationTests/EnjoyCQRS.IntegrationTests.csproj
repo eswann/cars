@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\EnjoyCQRS\EnjoyCQRS.csproj" />
-    <ProjectReference Include="..\EnjoyCQRS.UnitTests.Shared\EnjoyCQRS.UnitTests.Shared.csproj" />
+    <ProjectReference Include="..\EnjoyCQRS.Testing.Shared\EnjoyCQRS.Testing.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

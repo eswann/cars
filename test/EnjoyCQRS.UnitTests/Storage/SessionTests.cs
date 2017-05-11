@@ -9,9 +9,9 @@ using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
-using EnjoyCQRS.UnitTests.Shared;
-using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
+using EnjoyCQRS.Testing.Shared;
+using EnjoyCQRS.Testing.Shared.Logging;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
 using EnjoyCQRS.UnitTests.Domain.Stubs.Events;
 using FluentAssertions;
@@ -31,7 +31,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             var snapshotSerializer = CreateSnapshotSerializer();
             var projectionSerializer = CreateProjectionSerializer();
 
-            var session = new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), eventStore, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, null, null, null, snapshotStrategy);
+            var session = new Session(new TestLoggerFactory(), eventStore, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, null, null, null, snapshotStrategy);
 
             return session;
         };
@@ -76,7 +76,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), null, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, projectionProviderScanner, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(new TestLoggerFactory(), null, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, projectionProviderScanner, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -93,7 +93,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), eventStore, null, eventSerializer, snapshotSerializer, projectionSerializer, projectionProviderScanner, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(new TestLoggerFactory(), eventStore, null, eventSerializer, snapshotSerializer, projectionSerializer, projectionProviderScanner, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }

@@ -8,11 +8,12 @@ using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.MessageBus.InProcess;
-using EnjoyCQRS.UnitTests.Shared;
+using EnjoyCQRS.Testing.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Scrutor;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace EnjoyCQRS.IntegrationTests
 {

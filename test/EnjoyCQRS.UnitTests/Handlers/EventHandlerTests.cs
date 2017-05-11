@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
-using EnjoyCQRS.TestFramework;
+using EnjoyCQRS.Testing.Shared.MessageBus;
 using FluentAssertions;
 using Xunit;
 

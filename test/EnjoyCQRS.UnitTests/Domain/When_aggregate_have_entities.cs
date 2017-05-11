@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EnjoyCQRS.Events;
-using EnjoyCQRS.TestFramework;
+using EnjoyCQRS.Testing.Shared.MessageBus;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
 using EnjoyCQRS.UnitTests.Domain.Stubs.Events;
 using FluentAssertions;

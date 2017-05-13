@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EnjoyCQRS\Cars.csproj" />
+    <ProjectReference Include="..\Cars\Cars.csproj" />
   </ItemGroup>
 
 </Project>

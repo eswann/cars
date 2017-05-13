@@ -123,7 +123,7 @@ Task ("Run-Unit-Tests")
 							OldStyle = true,
 							MergeOutput = true
                         }
-                        .WithFilter("+[EnjoyCQRS*]* -[xunit.*]* -[FluentAssertions*]* -[*Tests]* -[*Tests.Shared]* ")
+                        .WithFilter("+[Cars*]* -[xunit.*]* -[FluentAssertions*]* -[*Tests]* -[*Tests.Shared]* ")
                         .ExcludeByAttribute("*.ExcludeFromCodeCoverage*")
                         .ExcludeByFile("*/*Designer.cs;*/*.g.cs;*/*.g.i.cs"));
                 } 

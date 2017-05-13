@@ -25,7 +25,7 @@ namespace Cars.UnitTests
             {
                 new KeyValuePair<string, object>(MetadataKeys.AggregateId, Guid.NewGuid().ToString()),
                 new KeyValuePair<string, object>(MetadataKeys.AggregateSequenceNumber, 1.ToString()),
-                new KeyValuePair<string, object>(MetadataKeys.EventClrType, "EnjoyCQRS.UnitTests.EventSerializerTests+NotFoundClrType, EnjoyCQRS.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")
+                new KeyValuePair<string, object>(MetadataKeys.EventClrType, "Cars.UnitTests.EventSerializerTests+NotFoundClrType, Cars.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")
             });
             
             var mockCommitedEvent = new Mock<ICommitedEvent>();

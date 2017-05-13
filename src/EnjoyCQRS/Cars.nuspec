@@ -6,8 +6,8 @@
     <title>Cars</title>
     <authors>eswann</authors>
     <owners>eswann</owners>
-    <projectUrl>https://github.com/ircnelson/enjoy.cqrs</projectUrl>
-    <licenseUrl>https://raw.githubusercontent.com/ircnelson/enjoy.cqrs/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/eswann/cars</projectUrl>
+    <licenseUrl>https://raw.githubusercontent.com/eswann/cars/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>CQRS Framework.</summary>
     <description><![CDATA[Cars is a framework to provides infrastructure for CQRS & Event Sourcing.]]></description>

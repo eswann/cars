@@ -30,7 +30,7 @@ Any suggestion is welcome.
 
 ## Event store implementations
 
-* MongoDB: Install-Package EnjoyCQRS.EventStore.MongoDB
+* MongoDB: Install-Package Cars.EventStore.MongoDB
 
 ## Architecture
 

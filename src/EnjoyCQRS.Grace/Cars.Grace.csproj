@@ -4,8 +4,8 @@
     <VersionPrefix>1.0.0</VersionPrefix>
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>EnjoyCQRS.Grace</AssemblyName>
-    <PackageId>EnjoyCQRS.Grace</PackageId>
+    <AssemblyName>Cars.Grace</AssemblyName>
+    <PackageId>Cars.Grace</PackageId>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
     <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
     <DebugType>full</DebugType>
@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EnjoyCQRS.EventStore.MongoDB\Cars.EventStore.MongoDB.csproj" />
-    <ProjectReference Include="..\EnjoyCQRS\Cars.csproj" />
+    <ProjectReference Include="..\Cars.EventStore.MongoDB\Cars.EventStore.MongoDB.csproj" />
+    <ProjectReference Include="..\Cars\Cars.csproj" />
   </ItemGroup>
 </Project>

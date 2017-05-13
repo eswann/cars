@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp1.1;net461</TargetFrameworks>
-    <AssemblyName>EnjoyCQRS.UnitTests</AssemblyName>
+    <AssemblyName>Cars.UnitTests</AssemblyName>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">1.1.1</RuntimeFrameworkVersion>
@@ -21,8 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\EnjoyCQRS\Cars.csproj" />
-    <ProjectReference Include="..\EnjoyCQRS.Testing.Shared\Cars.Testing.Shared.csproj" />
+    <ProjectReference Include="..\..\src\Cars\Cars.csproj" />
+    <ProjectReference Include="..\Cars.Testing.Shared\Cars.Testing.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

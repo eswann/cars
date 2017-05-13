@@ -6,12 +6,15 @@
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>Cars</AssemblyName>
     <PackageId>Cars</PackageId>
-    <Owners>Eric Swann</Owners>
+    <Authors>Eric Swann</Authors>
     <Copyright>Copyright 2017 Eric Swann</Copyright>
     <Description>Cars and Event Store and CQRS implementation for .Net Core</Description>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
     <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
     <DebugType>full</DebugType>
+    <PackageTags>.NET CQRS EventSource EventSourcing</PackageTags>
+    <PackageProjectUrl>https://github.com/eswann/cars</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/eswann/cars/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
   
   <ItemGroup>

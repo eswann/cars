@@ -167,20 +167,24 @@ Task ("Create-NuGet-Packages")
     var branch = Context.EnvironmentVariable("APPVEYOR_REPO_BRANCH");
     var versionSuffix = branch + "-" + Context.EnvironmentVariable("APPVEYOR_BUILD_NUMBER");
 
-    var dotNetCorePackSettings = new DotNetCorePackSettings {
-        Configuration = configuration,
-        OutputDirectory = outputNugets,
-        NoBuild = true,
-        Verbose = false
-    };
+    var projects = GetFiles("./src/**/*.csproj");
 
-    if (isAppVeyorBuild && branch != "master") 
+    foreach (var project in projects)
     {
-        dotNetCorePackSettings.VersionSuffix = versionSuffix.ToString();
-    }
+        var dotNetCorePackSettings = new DotNetCorePackSettings {
+            Configuration = configuration,
+            OutputDirectory = outputNugets,
+            NoBuild = true,
+            Verbose = false
+        };
 
-    DotNetCorePack("./src/*", dotNetCorePackSettings);
-   
+        if (isAppVeyorBuild && branch != "master") 
+        {
+            dotNetCorePackSettings.VersionSuffix = versionSuffix.ToString();
+        }
+
+        DotNetCorePack(project.GetDirectory().FullPath, dotNetCorePackSettings);
+    }
 });
 
 Task ("Code-Coverage")

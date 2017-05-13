@@ -1,4 +1,4 @@
-version: 2.3.0.{build}
+version: 1.0.0.{build}
 branches:
   only:
   - master
@@ -16,7 +16,7 @@ environment:
   MONGODB_HOST: localhost
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   COVERALLS_REPO_TOKEN:
-    secure: kHP+PNmg4mKBU2zHqiMfKsj/j2tAjx/XF4/GC7c9sQkUnn2K6VisA91ad9jH9qod
+    secure: 1/s9jKeXYZlGBAVrpRFbAgSFCP2WhW/EwYoCJRqDNx0Kwn0KknzyMCHeGumafG1N
 skip_commits:
   message: /updated readme.*/
 build_script:
@@ -31,14 +31,14 @@ deploy:
 - provider: NuGet
   skip_symbols: true
   api_key:
-    secure: NAbtRfAbJ7QcwtGR75wAcofcV+ipa6tKWGP798krZRjOYParVolf71xX5JBy+rUR
+    secure: xI3sXl+1c3YUwXa2UXa2PEIaP/VFd9w85s2zno5lG36Un0rxbnQg+wyZjKyu8rNr
   on:
     branch: master
 - provider: NuGet
   skip_symbols: true
   server: https://www.myget.org/F/cars/api/v2/package
   api_key:
-    secure: zPU3TMfMcbGiOTRpcKdNjztuCMOtjdBB0ReA9tkMCs9XKejC9NKMVvEGvz7HFmEP
+    secure:  xI3sXl+1c3YUwXa2UXa2PEIaP/VFd9w85s2zno5lG36Un0rxbnQg+wyZjKyu8rNr
   on:
     branch: 
     - dev

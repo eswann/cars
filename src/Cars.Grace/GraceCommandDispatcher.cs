@@ -11,7 +11,7 @@ namespace Cars.Grace
 
         public GraceCommandDispatcher(IExportLocatorScope scope)
         {
-            _scope = scope;
+            _scope = scope; 
         }
 
         protected override async Task RouteAsync<TCommand>(TCommand command)

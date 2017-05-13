@@ -21,7 +21,7 @@ addons:
 osx_image: xcode7.3
 
 before_install:  
-  # Update Brew
+  # Update Brew - test
   - if test "$TRAVIS_OS_NAME" == "osx"; then brew update; fi
   # Install Mongo
   - if test "$TRAVIS_OS_NAME" == "osx"; then brew install mongodb; sudo mkdir -p /data/db; brew services start mongodb; fi

@@ -10,7 +10,7 @@ pull_requests:
 skip_tags: true
 services:
   - mongodb
-clone_folder: c:\projects\enjoycqrs
+clone_folder: c:\projects\cars
 clone_depth: 1
 environment:
   MONGODB_HOST: localhost
@@ -36,7 +36,7 @@ deploy:
     branch: master
 - provider: NuGet
   skip_symbols: true
-  server: https://www.myget.org/F/enjoy/api/v2/package
+  server: https://www.myget.org/F/cars/api/v2/package
   api_key:
     secure: zPU3TMfMcbGiOTRpcKdNjztuCMOtjdBB0ReA9tkMCs9XKejC9NKMVvEGvz7HFmEP
   on:

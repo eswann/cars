@@ -1,24 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionPrefix>2.4.7</VersionPrefix>
+    <VersionPrefix>1.0.0</VersionPrefix>
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
-    <AssemblyName>EnjoyCQRS.EventStore.MongoDB</AssemblyName>
-    <PackageId>EnjoyCQRS.EventStore.MongoDB</PackageId>
+    <AssemblyName>Cars.EventStore.MongoDB</AssemblyName>
+    <PackageId>Cars.EventStore.MongoDB</PackageId>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dotnet5.6</PackageTargetFallback>
     <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
     <DebugType>full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
-    <PackageReference Include="MongoDB.Bson" Version="2.4.3" />
-    <PackageReference Include="MongoDB.Driver" Version="2.4.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.*" />
+    <PackageReference Include="MongoDB.Bson" Version="2.4.*" />
+    <PackageReference Include="MongoDB.Driver" Version="2.4.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
-    <PackageReference Include="Microsoft.CSharp" Version="4.3.0" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.3.*" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">

@@ -11,7 +11,7 @@ namespace Cars.Grace
 
         public GraceEventRouter(IExportLocatorScope scope)
         {
-            _scope = scope;
+            _scope = scope; 
         }
 
         public async Task RouteAsync<TEvent>(TEvent @event) where TEvent : IDomainEvent

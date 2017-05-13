@@ -13,7 +13,7 @@ namespace Cars.Grace.UnitTests
 {
     public class WhenRegisteringDefaultImplementations
     {
-        [Fact(Skip = "Testing")]
+        [Fact(Skip = "Skipping for now")]
         public void Default_implementations_are_present()
         {
             var container = new DependencyInjectionContainer();

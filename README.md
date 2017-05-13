@@ -1,5 +1,5 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/dhjqe9t4s9vel1uu?svg=true)](https://ci.appveyor.com/project/nelsoncvjr/enjoy-cqrs) 
-[![myget status](https://www.myget.org/BuildSource/Badge/enjoy?identifier=1427e6c3-0c6f-4a1a-b5bf-2d02e2ad908c)](https://www.myget.org/BuildSource/Badge/enjoy?identifier=1427e6c3-0c6f-4a1a-b5bf-2d02e2ad908c)
+[![Build status](https://ci.appveyor.com/api/projects/status/58fdyc6de81r7t3r/branch/master?svg=true)](https://ci.appveyor.com/project/eswann/cars/branch/master)
+[![Coverage Status](https://coveralls.io/repos/github/eswann/cars/badge.svg?branch=master)](https://coveralls.io/github/eswann/cars?branch=master)
 
 # eNJoy CQRS + Event Sourcing
 This framework can help you with two things together and easy. 

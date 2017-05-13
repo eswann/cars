@@ -5,6 +5,9 @@
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
     <AssemblyName>Cars.EventStore.MongoDB</AssemblyName>
     <PackageId>Cars.EventStore.MongoDB</PackageId>
+    <Owners>Eric Swann</Owners>
+    <Description>Cars and Event Store and CQRS implementation for .Net Core</Description>
+    <Copyright>Copyright 2017 Eric Swann</Copyright>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dotnet5.6</PackageTargetFallback>
     <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
     <DebugType>full</DebugType>

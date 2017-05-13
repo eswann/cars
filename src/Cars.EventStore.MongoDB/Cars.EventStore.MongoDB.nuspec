@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>CQRS EventStore implementation using MongoDB.</summary>
     <description><![CDATA[Cars.EventStore.MongoDB is an Event Store implementation using MongoDB]]></description>
-    <copyright>Copyright 2017</copyright>
+    <copyright>Copyright Eric Swann 2017</copyright>
     <tags>.NET CQRS MongoDB EventSource EventSourcing</tags>
     <dependencies>
 		<dependency id="Cars" />

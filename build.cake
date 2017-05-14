@@ -164,9 +164,13 @@ Task ("Create-NuGet-Packages")
     .IsDependentOn("Build")
     .Does(() => 
 {
-    var branch = Context.EnvironmentVariable("APPVEYOR_REPO_BRANCH");
-    var versionSuffix = branch + "-" + Context.EnvironmentVariable("APPVEYOR_BUILD_NUMBER");
+	var versionSuffix = Context.EnvironmentVariable("APPVEYOR_BUILD_NUMBER");
 
+    var branch = Context.EnvironmentVariable("APPVEYOR_REPO_BRANCH");
+	if(branch != "master"){
+		versionSuffix = branch + "-" + versionSuffix;
+	}
+    
     var projects = GetFiles("./src/**/*.csproj");
 
     foreach (var project in projects)
@@ -177,11 +181,7 @@ Task ("Create-NuGet-Packages")
             NoBuild = true,
             Verbose = false
         };
-
-        if (isAppVeyorBuild && branch != "master") 
-        {
-            dotNetCorePackSettings.VersionSuffix = versionSuffix.ToString();
-        }
+		dotNetCorePackSettings.VersionSuffix = versionSuffix.ToString();
 
         DotNetCorePack(project.GetDirectory().FullPath, dotNetCorePackSettings);
     }

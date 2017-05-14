@@ -164,7 +164,7 @@ Task ("Create-NuGet-Packages")
     .IsDependentOn("Build")
     .Does(() => 
 {
-	var buildNumber = Context.EnvironmentVariable("APPVEYOR_BUILD_NUMBER");
+	//var versionSuffix = Context.EnvironmentVariable("APPVEYOR_BUILD_NUMBER");
 
     //var branch = Context.EnvironmentVariable("APPVEYOR_REPO_BRANCH");
 	//if(branch != "master"){
@@ -181,7 +181,7 @@ Task ("Create-NuGet-Packages")
             NoBuild = true,
             Verbose = false
         };
-		dotNetCorePackSettings.VersionPrefix += "." + versionSuffix.ToString();
+		dotNetCorePackSettings.VersionSuffix = versionSuffix.ToString();
 
         DotNetCorePack(project.GetDirectory().FullPath, dotNetCorePackSettings);
     }

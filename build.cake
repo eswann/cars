@@ -181,7 +181,7 @@ Task ("Create-NuGet-Packages")
             NoBuild = true,
             Verbose = false
         };
-		dotNetCorePackSettings.VersionSuffix = versionSuffix.ToString();
+		//dotNetCorePackSettings.VersionSuffix = versionSuffix.ToString();
 
         DotNetCorePack(project.GetDirectory().FullPath, dotNetCorePackSettings);
     }

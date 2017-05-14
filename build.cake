@@ -166,10 +166,10 @@ Task ("Create-NuGet-Packages")
 {
 	var versionSuffix = Context.EnvironmentVariable("APPVEYOR_BUILD_NUMBER");
 
-    var branch = Context.EnvironmentVariable("APPVEYOR_REPO_BRANCH");
-	if(branch != "master"){
-		versionSuffix = branch + "-" + versionSuffix;
-	}
+    //var branch = Context.EnvironmentVariable("APPVEYOR_REPO_BRANCH");
+	//if(branch != "master"){
+		//versionSuffix = branch + "-" + versionSuffix;
+	//}
     
     var projects = GetFiles("./src/**/*.csproj");
 

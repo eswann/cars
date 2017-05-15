@@ -33,15 +33,15 @@ namespace Cars.EventStore.MongoDB
         public string SerializedData { get; private set; }
         public string SerializedMetadata { get; private set; }
 
-        public static MongoCommitedSnapshot Create(SnapshotData e)
+        public static MongoCommitedSnapshot Create(SnapshotData snapshot)
         {
             return new MongoCommitedSnapshot
             {
 
-                AggregateId = e.AggregateId,
-                AggregateVersion = e.Version,
-                SerializedData = e.Data.ToJson(),
-                SerializedMetadata = e.Metadata.ToJson(),
+                AggregateId = snapshot.AggregateId,
+                AggregateVersion = snapshot.Version,
+                SerializedData = snapshot.Data.ToJson(),
+                SerializedMetadata = snapshot.Metadata.ToJson(),
             };
         }
     }

@@ -42,22 +42,18 @@ namespace Cars.EventStore.MongoDB
         protected readonly List<SnapshotData> UncommitedSnapshots = new List<SnapshotData>();
         protected readonly List<ISerializedProjection> UncommitedProjections = new List<ISerializedProjection>();
         
-        public MongoEventStore(MongoClient client, string database) : this(client, database, new MongoEventStoreSetttings())
-        {
-        }
 
-        public MongoEventStore(MongoClient client, string database, MongoEventStoreSetttings settings)
+        public MongoEventStore(IMongoClient client, IMongoEventStoreSettings settings)
         {
-            Database = database ?? throw new ArgumentNullException(nameof(database));
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             Client = client ?? throw new ArgumentNullException(nameof(client));
 
-            settings.Validate();
+            Settings.Validate();
         }
 
-        public MongoClient Client { get; }
-        public string Database { get; }
-        public MongoEventStoreSetttings Settings { get; }
+        public IMongoClient Client { get; }
+
+        public IMongoEventStoreSettings Settings { get; }
 
         public Task SaveSnapshotAsync(ISerializedSnapshot snapshot)
         {
@@ -69,7 +65,7 @@ namespace Cars.EventStore.MongoDB
 
         public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
-            var db = Client.GetDatabase(Database);
+            var db = Client.GetDatabase(Settings.Database);
             var snapshotCollection = db.GetCollection<SnapshotData>(Settings.SnapshotsCollectionName);
 
             var filter = Builders<SnapshotData>.Filter;
@@ -86,7 +82,7 @@ namespace Cars.EventStore.MongoDB
 
         public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
         {
-            var db = Client.GetDatabase(Database);
+            var db = Client.GetDatabase(Settings.Database);
             var collection = db.GetCollection<Event>(Settings.EventsCollectionName);
 
             var sort = Builders<Event>.Sort;
@@ -115,7 +111,7 @@ namespace Cars.EventStore.MongoDB
 
         public async Task CommitAsync()
         {
-            var db = Client.GetDatabase(Database);
+            var db = Client.GetDatabase(Settings.Database);
 
 
             if (UncommitedSnapshots.Count > 0)
@@ -145,7 +141,7 @@ namespace Cars.EventStore.MongoDB
 
         public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id)
         {
-            var db = Client.GetDatabase(Database);
+            var db = Client.GetDatabase(Settings.Database);
             var collection = db.GetCollection<Event>(Settings.EventsCollectionName);
 
             var sort = Builders<Event>.Sort;
@@ -238,7 +234,7 @@ namespace Cars.EventStore.MongoDB
 
         protected virtual async Task AddOrUpdateProjectionsAsync(IEnumerable<ISerializedProjection> serializedProjections)
         {
-            var db = Client.GetDatabase(Database);
+            var db = Client.GetDatabase(Settings.Database);
             var projectionCollection = db.GetCollection<MongoProjection>(Settings.ProjectionsCollectionName);
 
             var filterBuilder = Builders<MongoProjection>.Filter;

@@ -15,7 +15,7 @@ namespace Cars.EventStore.MongoDB
         {
         }
 
-        public MongoProjectionRepository(MongoClient client, string database, MongoEventStoreSetttings setttings) : base(client, database, setttings)
+        public MongoProjectionRepository(MongoClient client, string database, MongoEventStoreSetttings settings) : base(client, database, settings)
         {
         }
 
@@ -41,7 +41,7 @@ namespace Cars.EventStore.MongoDB
         public async Task<IEnumerable<TProjection>> FindAsync(string category, Expression<Func<TProjection, bool>> expr)
         {
             var db = Client.GetDatabase(Database);
-            var collection = db.GetCollection<MongoProjection>(Setttings.ProjectionsCollectionName).AsQueryable();
+            var collection = db.GetCollection<MongoProjection>(Settings.ProjectionsCollectionName).AsQueryable();
 
             var query = collection.Where(e => e.Category == category).Select(e => e.Projection).OfType<TProjection>().Where(expr);
 

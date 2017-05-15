@@ -55,9 +55,9 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
 
         [Trait(CategoryName, CategoryValue)]
         [Theory, MemberData(nameof(InvalidStates))]
-        public void Should_validate_constructor_parameters(MongoClient mongoClient, string database, MongoEventStoreSetttings setttings)
+        public void Should_validate_constructor_parameters(MongoClient mongoClient, string database, MongoEventStoreSettings settings)
         {
-            Action action = () => new MongoEventStore(mongoClient, database, setttings);
+            Action action = () => new MongoEventStore(mongoClient, database, settings);
 
             action.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -67,7 +67,7 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
         [Fact]
         public void Should_use_default_settings()
         {
-            var defaultSettings = new MongoEventStoreSetttings();
+            var defaultSettings = new MongoEventStoreSettings();
 
             using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
@@ -82,7 +82,7 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
         [InlineData(null, "snapshots")]
         public void Should_validate_settings(string eventCollectionName, string snapshotCollectionName)
         {
-            var defaultSettings = new MongoEventStoreSetttings
+            var defaultSettings = new MongoEventStoreSettings
             {
                 EventsCollectionName = eventCollectionName,
                 SnapshotsCollectionName = snapshotCollectionName
@@ -97,7 +97,7 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
         [Fact]
         public void Should_use_custom_settings()
         {
-            var customSettings = new MongoEventStoreSetttings
+            var customSettings = new MongoEventStoreSettings
             {
                 EventsCollectionName = "MyEvents",
                 SnapshotsCollectionName = "MySnapshots"
@@ -179,8 +179,8 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
 
         public static IEnumerable<object[]> InvalidStates => new[]
         {
-            new object[] { null, "dbname", new MongoEventStoreSetttings() },
-            new object[] { new MongoClient(), null, new MongoEventStoreSetttings() },
+            new object[] { null, "dbname", new MongoEventStoreSettings() },
+            new object[] { new MongoClient(), null, new MongoEventStoreSettings() },
             new object[] { new MongoClient(), "dbname", null }
         };
 

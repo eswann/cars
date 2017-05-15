@@ -20,6 +20,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.*" />
     <PackageReference Include="MongoDB.Bson" Version="2.4.*" />
     <PackageReference Include="MongoDB.Driver" Version="2.4.*" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">

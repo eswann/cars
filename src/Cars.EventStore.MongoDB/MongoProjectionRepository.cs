@@ -10,7 +10,7 @@ namespace Cars.EventStore.MongoDB
     {
         public MongoClient Client { get; }
         public string Database { get; }
-        public MongoEventStoreSetttings Setttings { get; }
+        public MongoEventStoreSetttings Settings { get; }
 
         private readonly BsonTextSerializer _bsonTextSerializer = new BsonTextSerializer();
         
@@ -18,17 +18,14 @@ namespace Cars.EventStore.MongoDB
         {
         }
 
-        public MongoProjectionRepository(MongoClient client, string database, MongoEventStoreSetttings setttings)
+        public MongoProjectionRepository(MongoClient client, string database, MongoEventStoreSetttings settings)
         {
-            if (client == null) throw new ArgumentNullException(nameof(client));
-            if (database == null) throw new ArgumentNullException(nameof(database));
-            if (setttings == null) throw new ArgumentNullException(nameof(setttings));
-           
-            setttings.Validate();
+            Database = database ?? throw new ArgumentNullException(nameof(database));
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            Client = client ?? throw new ArgumentNullException(nameof(client));
 
-            Database = database;
-            Setttings = setttings;
-            Client = client;
+            Settings.Validate();
+
         }
 
         public async Task<object> GetAsync(Type projectionType, string category, Guid id)
@@ -65,7 +62,7 @@ namespace Cars.EventStore.MongoDB
         private async Task<object> QuerySingleResult(Type projectionType, FilterDefinition<MongoProjection> filter)
         {
             var db = Client.GetDatabase(Database);
-            var collection = db.GetCollection<MongoProjection>(Setttings.ProjectionsCollectionName);
+            var collection = db.GetCollection<MongoProjection>(Settings.ProjectionsCollectionName);
             
             var record = await collection
                 .Find(filter)

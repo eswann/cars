@@ -24,22 +24,13 @@ using System;
 
 namespace Cars.EventStore.MongoDB
 {
-    public class MongoEventStoreSetttings
+    public class MongoEventStoreSettings : IMongoEventStoreSettings
     {
+        public string Database { get; set; } = "EventStore";
         public string EventsCollectionName { get; set; } = "Events";
         public string SnapshotsCollectionName { get; set; } = "Snapshots";
         public string ProjectionsCollectionName { get; set; } = "Projections";
-        
-        internal void Validate()
-        {
-            if (string.IsNullOrWhiteSpace(EventsCollectionName))
-                throw new ArgumentNullException(nameof(EventsCollectionName));
-
-            if (string.IsNullOrWhiteSpace(SnapshotsCollectionName))
-                throw new ArgumentNullException(nameof(SnapshotsCollectionName));
-
-            if (string.IsNullOrWhiteSpace(ProjectionsCollectionName))
-                throw new ArgumentNullException(nameof(ProjectionsCollectionName));
-        }
+       
     }
+
 }

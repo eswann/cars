@@ -22,8 +22,6 @@ namespace Cars.Grace
                 config.Export<SnapshotSerializer>().ByInterfaces().Lifestyle.Singleton();
                 config.Export<NoopLoggerFactory>().ByInterfaces().Lifestyle.Singleton();
                 config.Export<IntervalSnapshotStrategy>().ByInterfaces().Lifestyle.Singleton();
-                config.Export<BsonTextSerializer>().ByInterfaces().Lifestyle.Singleton();
-                config.Export<MongoEventStore>().ByInterfaces().Lifestyle.Singleton();
 
                 config.Export<UnitOfWork>().ByInterfaces().Lifestyle.SingletonPerScope();
                 config.Export<Session>().ByInterfaces().Lifestyle.SingletonPerScope();

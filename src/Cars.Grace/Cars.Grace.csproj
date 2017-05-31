@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grace" Version="6.0.*" />
+    <PackageReference Include="Grace" Version="6.1.*" />
   </ItemGroup>
 
   <ItemGroup>

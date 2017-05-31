@@ -113,7 +113,6 @@ namespace Cars.EventStore.MongoDB
         {
             var db = Client.GetDatabase(Settings.Database);
 
-
             if (UncommitedSnapshots.Count > 0)
             {
                 var snapshotCollection = db.GetCollection<SnapshotData>(Settings.SnapshotsCollectionName);

@@ -23,7 +23,9 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
 
         public const string CategoryName = "Integration";
         public const string CategoryValue = "MongoDB";
-        public const string DatabaseName = "enjoycqrs";
+        public const string DatabaseName = "cars";
+
+	    private readonly IMongoEventStoreSettings _defaultSettings = new MongoEventStoreSettings {Database = DatabaseName};
 
         private readonly MongoClient _mongoClient;
 
@@ -55,9 +57,9 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
 
         [Trait(CategoryName, CategoryValue)]
         [Theory, MemberData(nameof(InvalidStates))]
-        public void Should_validate_constructor_parameters(MongoClient mongoClient, string database, MongoEventStoreSettings settings)
+        public void Should_validate_constructor_parameters(MongoClient mongoClient, MongoEventStoreSettings settings)
         {
-            Action action = () => new MongoEventStore(mongoClient, database, settings);
+            Action action = () => new MongoEventStore(mongoClient, settings);
 
             action.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -67,12 +69,11 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
         [Fact]
         public void Should_use_default_settings()
         {
-            var defaultSettings = new MongoEventStoreSettings();
 
-            using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
+            using (var eventStore = new MongoEventStore(_mongoClient, _defaultSettings))
             {
-                AssertionExtensions.Should((string) eventStore.Settings.EventsCollectionName).Be(defaultSettings.EventsCollectionName);
-                AssertionExtensions.Should((string) eventStore.Settings.SnapshotsCollectionName).Be(defaultSettings.SnapshotsCollectionName);
+                eventStore.Settings.EventsCollectionName.Should().Be(_defaultSettings.EventsCollectionName);
+                eventStore.Settings.SnapshotsCollectionName.Should().Be(_defaultSettings.SnapshotsCollectionName);
             }
         }
 
@@ -85,10 +86,11 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
             var defaultSettings = new MongoEventStoreSettings
             {
                 EventsCollectionName = eventCollectionName,
-                SnapshotsCollectionName = snapshotCollectionName
+                SnapshotsCollectionName = snapshotCollectionName,
+				Database = DatabaseName
             };
             
-            Action action = () => new MongoEventStore(new MongoClient(), DatabaseName, defaultSettings);
+            Action action = () => new MongoEventStore(new MongoClient(), defaultSettings);
 
             action.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -100,13 +102,14 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
             var customSettings = new MongoEventStoreSettings
             {
                 EventsCollectionName = "MyEvents",
-                SnapshotsCollectionName = "MySnapshots"
+                SnapshotsCollectionName = "MySnapshots",
+				Database = DatabaseName
             };
 
-            using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName, customSettings))
+            using (var eventStore = new MongoEventStore(_mongoClient, customSettings))
             {
-                AssertionExtensions.Should((string) eventStore.Settings.EventsCollectionName).Be(customSettings.EventsCollectionName);
-                AssertionExtensions.Should((string) eventStore.Settings.SnapshotsCollectionName).Be(customSettings.SnapshotsCollectionName);
+                eventStore.Settings.EventsCollectionName.Should().Be(customSettings.EventsCollectionName);
+                eventStore.Settings.SnapshotsCollectionName.Should().Be(customSettings.SnapshotsCollectionName);
             }
         }
 
@@ -114,13 +117,13 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
         [Fact]
         public void Should_create_database()
         {
-            using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
+            using (var eventStore = new MongoEventStore(_mongoClient, _defaultSettings))
             {
                 var database = eventStore.Client.GetDatabase(DatabaseName);
 
-                AssertionExtensions.Should((object) database).NotBeNull();
+                database.Should().NotBeNull();
 
-                AssertionExtensions.Should((string) eventStore.Database).Be(DatabaseName);
+                eventStore.Settings.Database.Should().Be(DatabaseName);
             }
         }
 
@@ -128,27 +131,27 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
         [Fact]
         public async Task Test_events()
         {
-            using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
+            using (var eventStore = new MongoEventStore(_mongoClient, _defaultSettings))
             {
                 var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(_bsonSerializer));
 
                 var aggregate = await eventStoreTestSuit.EventTestsAsync();
 
-                using (var projectionRepository = new MongoProjectionRepository(_mongoClient, DatabaseName))
+                using (var projectionRepository = new MongoProjectionRepository(_mongoClient, _defaultSettings))
                 {
                     var projection = await projectionRepository.GetAsync<BarProjection>(nameof(BarProjection), aggregate.Id);
 
-                    AssertionExtensions.Should((Guid) projection.Id).Be(aggregate.Id);
-                    AssertionExtensions.Should((string) projection.LastText).Be(aggregate.LastText);
-                    AssertionExtensions.Should((string) projection.UpdatedAt.ToString("G")).Be(aggregate.UpdatedAt.ToString("G"));
-                    AssertionExtensions.Should((int) projection.Messages.Count).Be(aggregate.Messages.Count);
+                    projection.Id.Should().Be(aggregate.Id);
+                    projection.LastText.Should().Be(aggregate.LastText);
+                    projection.UpdatedAt.ToString("G").Should().Be(aggregate.UpdatedAt.ToString("G"));
+                    projection.Messages.Count.Should().Be(aggregate.Messages.Count);
                 }
 
-                using (var projectionRepository = new MongoProjectionRepository<BarProjection>(_mongoClient, DatabaseName))
+                using (var projectionRepository = new MongoProjectionRepository<BarProjection>(_mongoClient, _defaultSettings))
                 {
                     var projections = await projectionRepository.FindAsync(e => e.Id == aggregate.Id);
 
-                    Enumerable.Count(projections).Should().BeGreaterOrEqualTo(1);
+                    projections.Count().Should().BeGreaterOrEqualTo(1);
                 }
             }
         }
@@ -157,7 +160,7 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
         [Fact]
         public async Task Test_snapshot()
         {
-            using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
+            using (var eventStore = new MongoEventStore(_mongoClient, _defaultSettings))
             {
                 var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(_bsonSerializer));
 
@@ -169,7 +172,7 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
         [Fact]
         public async Task When_any_exception_be_thrown()
         {
-            using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
+            using (var eventStore = new MongoEventStore(_mongoClient, _defaultSettings))
             {
                 var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(_bsonSerializer));
 
@@ -179,9 +182,8 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
 
         public static IEnumerable<object[]> InvalidStates => new[]
         {
-            new object[] { null, "dbname", new MongoEventStoreSettings() },
-            new object[] { new MongoClient(), null, new MongoEventStoreSettings() },
-            new object[] { new MongoClient(), "dbname", null }
+            new object[] { null, new MongoEventStoreSettings() },
+            new object[] { new MongoClient(), null }
         };
 
         public void Dispose()

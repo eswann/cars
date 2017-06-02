@@ -32,7 +32,7 @@ namespace Cars.IntegrationTests
 
             var aggregateId = ExtractAggregateIdFromResponseContent(result);
 
-            Enumerable.Count(eventStore.Events, e => e.AggregateId == aggregateId).Should().Be(1);
+            eventStore.Events.Count(e => e.AggregateId == aggregateId).Should().Be(1);
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -66,7 +66,7 @@ namespace Cars.IntegrationTests
 
             var response = await server.CreateRequest("/command/foo/flood/4").PostAsync();
 
-            AssertionExtensions.Should((int) eventStore.Events.Count).Be(4);
+            eventStore.Events.Count.Should().Be(4);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }

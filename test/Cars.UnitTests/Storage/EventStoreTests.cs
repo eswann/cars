@@ -5,11 +5,11 @@ using Cars.Events;
 using Cars.EventSource;
 using Cars.EventSource.Projections;
 using Cars.EventSource.Storage;
-using Cars.Logger;
 using Cars.MessageBus;
 using Cars.Testing.Shared;
 using Cars.UnitTests.Domain.Stubs;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -37,7 +37,7 @@ namespace Cars.UnitTests.Storage
             _mockEventPublisher = new Mock<IEventPublisher>();
             _mockEventPublisher.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Returns(Task.CompletedTask);
             
-            var loggerFactory = new NoopLoggerFactory();
+            var loggerFactory = new LoggerFactory();
             var session = new Session(loggerFactory, _inMemoryDomainEventStore, _mockEventPublisher.Object, eventSerializer, snapshotSerializer, projectionSerializer);
             _repository = new Repository(loggerFactory, session);
 
@@ -93,7 +93,7 @@ namespace Cars.UnitTests.Storage
 
             var testAggregate2 = await _repository.GetByIdAsync<StubAggregate>(testAggregate.Id).ConfigureAwait(false);
             
-            AssertionExtensions.Should((int) testAggregate.Version).Be(testAggregate2.Version);
+            testAggregate.Version.Should().Be(testAggregate2.Version);
         }
     }
 }

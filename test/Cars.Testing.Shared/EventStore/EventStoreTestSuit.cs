@@ -4,11 +4,11 @@ using Cars.EventSource;
 using Cars.EventSource.Projections;
 using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
-using Cars.Logger;
 using Cars.MessageBus.InProcess;
 using Cars.Testing.Shared.StubApplication.Domain.BarAggregate;
 using Cars.Testing.Shared.StubApplication.Domain.FooAggregate;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 
 namespace Cars.Testing.Shared.EventStore
 {
@@ -101,14 +101,14 @@ namespace Cars.Testing.Shared.EventStore
 
         private ISession CreateSession()
         {
-            var session = new Session(new NoopLoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Ok()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), _projectionSerializer, null, null, null, new IntervalSnapshotStrategy(10));
+            var session = new Session(new LoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Ok()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), _projectionSerializer, null, null, null, new IntervalSnapshotStrategy(10));
 
             return session;
         }
 
         private ISession CreateFaultSession()
         {
-            var faultSession = new Session(new NoopLoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Fault()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), _projectionSerializer, null, null, null, new IntervalSnapshotStrategy(10));
+            var faultSession = new Session(new LoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Fault()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), _projectionSerializer, null, null, null, new IntervalSnapshotStrategy(10));
 
             return faultSession;
         }

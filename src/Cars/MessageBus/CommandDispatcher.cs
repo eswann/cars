@@ -20,18 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Threading.Tasks;
 using Cars.Commands;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Cars.MessageBus
 {
-    public abstract class CommandDispatcher : ICommandDispatcher
+    public class CommandDispatcher : ICommandDispatcher
     {
-        public Task DispatchAsync<TCommand>(TCommand command) where TCommand : ICommand
-        {
-            return RouteAsync(command);
-        }
+	    private readonly IServiceProvider _serviceProvider;
 
-        protected abstract Task RouteAsync<TCommand>(TCommand command) where TCommand : ICommand;
-    }
+	    public CommandDispatcher(IServiceProvider serviceProvider)
+	    {
+		    _serviceProvider = serviceProvider;
+	    }
+
+		public Task DispatchAsync<TCommand>(TCommand command) where TCommand : ICommand
+        {
+		        var handler = _serviceProvider.GetService<ICommandHandler<TCommand>>();
+		        return handler.ExecuteAsync(command);
+        }
+	}
 }

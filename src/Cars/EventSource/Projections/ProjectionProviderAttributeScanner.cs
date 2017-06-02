@@ -16,9 +16,9 @@ namespace Cars.EventSource.Projections
         {
             if (!typeof(IAggregate).IsAssignableFrom(type)) throw new TargetException($"The target should be {nameof(IAggregate)}.");
 
-            var providers = _cachedProviders.GetOrAdd(type.FullName, (key) =>
+            var providers = _cachedProviders.GetOrAdd(type.FullName, key =>
             {
-                var _providers = type
+                var foundProviders = type
                     .GetTypeInfo()
                     .GetCustomAttributes<ProjectionProviderAttribute>()
                     .Select(e => e.Provider)
@@ -26,7 +26,7 @@ namespace Cars.EventSource.Projections
                     .Select(e => Activator.CreateInstance(e))
                     .Cast<IProjectionProvider>();
 
-                return new HashSet<IProjectionProvider>(_providers);
+                return new HashSet<IProjectionProvider>(foundProviders);
             });
 
             var result = new ScannerResult(providers);
@@ -42,7 +42,7 @@ namespace Cars.EventSource.Projections
 
     public class ScannerResult
     {
-        public IEnumerable<IProjectionProvider> Providers { get; private set; }
+        public IEnumerable<IProjectionProvider> Providers { get; }
 
         public ScannerResult(IEnumerable<IProjectionProvider> providers)
         {

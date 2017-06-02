@@ -17,19 +17,19 @@ using Xunit;
 
 namespace Cars.MongoDB.IntegrationTests.EventStore
 {
-    public class MongoEventStoreTests : IDisposable
+    public class When_using_event_store : IDisposable
     {
         private static readonly ITextSerializer _bsonSerializer = new BsonTextSerializer();
 
         public const string CategoryName = "Integration";
         public const string CategoryValue = "MongoDB";
-        public const string DatabaseName = "cars";
+        public const string DatabaseName = "EventStore";
 
-	    private readonly IMongoEventStoreSettings _defaultSettings = new MongoEventStoreSettings {Database = DatabaseName};
+	    private readonly IMongoEventStoreSettings _defaultSettings = new MongoEventStoreSettings();
 
         private readonly MongoClient _mongoClient;
 
-        static MongoEventStoreTests()
+        static When_using_event_store()
         {
             var pack = new ConventionPack
             {
@@ -44,7 +44,7 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
             BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
         }
 
-        public MongoEventStoreTests()
+        public When_using_event_store()
         {
             var mongoHost = Environment.GetEnvironmentVariable("MONGODB_HOST");
 
@@ -55,63 +55,6 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
             _mongoClient.DropDatabase(DatabaseName);
         }
 
-        [Trait(CategoryName, CategoryValue)]
-        [Theory, MemberData(nameof(InvalidStates))]
-        public void Should_validate_constructor_parameters(MongoClient mongoClient, MongoEventStoreSettings settings)
-        {
-            Action action = () => new MongoEventStore(mongoClient, settings);
-
-            action.ShouldThrowExactly<ArgumentNullException>();
-        }
-        
-
-        [Trait(CategoryName, CategoryValue)]
-        [Fact]
-        public void Should_use_default_settings()
-        {
-
-            using (var eventStore = new MongoEventStore(_mongoClient, _defaultSettings))
-            {
-                eventStore.Settings.EventsCollectionName.Should().Be(_defaultSettings.EventsCollectionName);
-                eventStore.Settings.SnapshotsCollectionName.Should().Be(_defaultSettings.SnapshotsCollectionName);
-            }
-        }
-
-        [Trait(CategoryName, CategoryValue)]
-        [Theory]
-        [InlineData("events", null)]
-        [InlineData(null, "snapshots")]
-        public void Should_validate_settings(string eventCollectionName, string snapshotCollectionName)
-        {
-            var defaultSettings = new MongoEventStoreSettings
-            {
-                EventsCollectionName = eventCollectionName,
-                SnapshotsCollectionName = snapshotCollectionName,
-				Database = DatabaseName
-            };
-            
-            Action action = () => new MongoEventStore(new MongoClient(), defaultSettings);
-
-            action.ShouldThrowExactly<ArgumentNullException>();
-        }
-
-        [Trait(CategoryName, CategoryValue)]
-        [Fact]
-        public void Should_use_custom_settings()
-        {
-            var customSettings = new MongoEventStoreSettings
-            {
-                EventsCollectionName = "MyEvents",
-                SnapshotsCollectionName = "MySnapshots",
-				Database = DatabaseName
-            };
-
-            using (var eventStore = new MongoEventStore(_mongoClient, customSettings))
-            {
-                eventStore.Settings.EventsCollectionName.Should().Be(customSettings.EventsCollectionName);
-                eventStore.Settings.SnapshotsCollectionName.Should().Be(customSettings.SnapshotsCollectionName);
-            }
-        }
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
@@ -129,7 +72,7 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
-        public async Task Test_events()
+        public async Task Events_are_stored()
         {
             using (var eventStore = new MongoEventStore(_mongoClient, _defaultSettings))
             {
@@ -158,7 +101,7 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
         
         [Trait(CategoryName, CategoryValue)]
         [Fact]
-        public async Task Test_snapshot()
+        public async Task Snapshot_is_stored()
         {
             using (var eventStore = new MongoEventStore(_mongoClient, _defaultSettings))
             {
@@ -170,7 +113,7 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
-        public async Task When_any_exception_be_thrown()
+        public async Task When_any_exception_is_thrown()
         {
             using (var eventStore = new MongoEventStore(_mongoClient, _defaultSettings))
             {
@@ -179,12 +122,6 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
                 await eventStoreTestSuit.DoSomeProblemAsync();
             }
         }
-
-        public static IEnumerable<object[]> InvalidStates => new[]
-        {
-            new object[] { null, new MongoEventStoreSettings() },
-            new object[] { new MongoClient(), null }
-        };
 
         public void Dispose()
         {

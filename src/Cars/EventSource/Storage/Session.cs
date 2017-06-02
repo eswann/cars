@@ -86,12 +86,7 @@ namespace Cars.EventSource.Storage
                 new CorrelationIdMetadataProvider()
             });
             _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
-
-
-            if (projectionProviderScanner == null)
-            {
-                _projectionProviderScanner = new ProjectionProviderAttributeScanner();
-            }
+			_projectionProviderScanner = projectionProviderScanner ?? new ProjectionProviderAttributeScanner();
 
         }
 

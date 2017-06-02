@@ -1,7 +1,7 @@
 ﻿using System;
 using Cars.EventSource.Storage;
-using Cars.Logger;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -27,7 +27,7 @@ namespace Cars.UnitTests.Storage
         [Fact]
         public void Cannot_pass_null_instance_of_Session()
         {
-            Action act = () => new Repository(new NoopLoggerFactory(), null);
+            Action act = () => new Repository(new LoggerFactory(), null);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }

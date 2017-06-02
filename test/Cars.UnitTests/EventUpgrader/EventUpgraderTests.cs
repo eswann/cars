@@ -9,12 +9,12 @@ using Cars.EventSource;
 using Cars.EventSource.Exceptions;
 using Cars.EventSource.Projections;
 using Cars.EventSource.Storage;
-using Cars.Logger;
 using Cars.MessageBus.InProcess;
 using Cars.MetadataProviders;
 using Cars.Testing.Shared;
 using Cars.Testing.Shared.StubApplication.Domain.FooAggregate;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -32,7 +32,7 @@ namespace Cars.UnitTests.EventUpgrader
 
             var v2 = (EventWithoutCounter) events.First();
 
-            AssertionExtensions.Should((Guid) v2.AggregateId).Be(v1.AggregateId);
+            v2.AggregateId.Should().Be(v1.AggregateId);
             v2.Something.Should().Be(v1.Something);
         }
 
@@ -46,7 +46,7 @@ namespace Cars.UnitTests.EventUpgrader
 
             var v2 = (EventWithCounter) events.First();
 
-            AssertionExtensions.Should((Guid) v2.AggregateId).Be(v1.AggregateId);
+            v2.AggregateId.Should().Be(v1.AggregateId);
             v2.Something.Should().Be(v1.Something);
             v2.Counter.Should().Be(1);
         }
@@ -103,10 +103,10 @@ namespace Cars.UnitTests.EventUpgrader
 
             // Assert
 
-            AssertionExtensions.Should((Guid) aggregate.Id).Be(id);
-            AssertionExtensions.Should((string) aggregate.FirstName).Be("Jean");
-            AssertionExtensions.Should((string) aggregate.LastName).Be("Grey");
-            AssertionExtensions.Should((int) aggregate.Version).Be(4);
+            aggregate.Id.Should().Be(id);
+            aggregate.FirstName.Should().Be("Jean");
+            aggregate.LastName.Should().Be("Grey");
+            aggregate.Version.Should().Be(4);
         }
 
         [Fact]
@@ -178,7 +178,7 @@ namespace Cars.UnitTests.EventUpgrader
                 new CorrelationIdMetadataProvider()
             };
 
-            var loggerFactory = new NoopLoggerFactory();
+            var loggerFactory = new LoggerFactory();
             var eventPublisher = new EventPublisher(new StubEventRouter());
 
             var eventStore = new InMemoryEventStore();
@@ -197,10 +197,10 @@ namespace Cars.UnitTests.EventUpgrader
                 index++;
 
                 var metadatas =
-                    Enumerable.SelectMany(metadataProviders, md => md.Provide(aggregate, e, EventSource.Metadata.Empty)).Concat<KeyValuePair<string, object>>(new[]
+                    metadataProviders.SelectMany(md => md.Provide(aggregate, e, EventSource.Metadata.Empty)).Concat(new[]
                     {
                         new KeyValuePair<string, object>(MetadataKeys.EventId, Guid.NewGuid()),
-                        new KeyValuePair<string, object>(MetadataKeys.EventVersion, (aggregate.Version + index))
+                        new KeyValuePair<string, object>(MetadataKeys.EventVersion, aggregate.Version + index)
                     });
                 return eventSerializer.Serialize(aggregate, e, new EventSource.Metadata(metadatas));
             });

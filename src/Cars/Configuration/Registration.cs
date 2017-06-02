@@ -21,24 +21,25 @@ namespace Cars.Configuration
 		private static readonly Type _commandType = typeof(ICommandHandler<>);
 		private static readonly Type _eventType = typeof(IEventHandler<>);
 
-		public static IServiceCollection AddCars(this IServiceCollection serviceCollection)
+		public static IServiceCollection AddCars(this IServiceCollection services)
 		{
-			serviceCollection.AddSingleton<IEventSerializer, EventSerializer>();
-			serviceCollection.AddSingleton<ISnapshotSerializer, SnapshotSerializer>();
-			serviceCollection.AddSingleton<IProjectionSerializer, ProjectionSerializer>();
-			serviceCollection.AddSingleton<IProjectionProviderScanner, ProjectionProviderAttributeScanner>();
+			services.AddSingleton<IEventSerializer, EventSerializer>();
+			services.AddSingleton<ISnapshotSerializer, SnapshotSerializer>();
+			services.AddSingleton<IProjectionSerializer, ProjectionSerializer>();
+			services.AddSingleton<IProjectionProviderScanner, ProjectionProviderAttributeScanner>();
 
-			serviceCollection.AddSingleton<ILoggerFactory, LoggerFactory>();
-			serviceCollection.AddSingleton<ISnapshotStrategy, IntervalSnapshotStrategy>();
+			services.AddSingleton<ILoggerFactory, LoggerFactory>();
+			services.AddSingleton<ISnapshotStrategy, IntervalSnapshotStrategy>();
 
-			serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
-			serviceCollection.AddScoped<ISession, Session>();
-			serviceCollection.AddScoped<IRepository, Repository>();
-			serviceCollection.AddScoped<ICommandDispatcher, CommandDispatcher>();
-			serviceCollection.AddScoped<IEventRouter, EventRouter>();
-			serviceCollection.AddScoped<IEventPublisher, EventPublisher>();
-
-			return serviceCollection;
+			services.AddScoped<IUnitOfWork, UnitOfWork>();
+			services.AddScoped<ISession, Session>();
+			services.AddScoped<IRepository, Repository>();
+			services.AddScoped<ICommandDispatcher, CommandDispatcher>();
+			services.AddScoped<IEventRouter, EventRouter>();
+			services.AddScoped<IEventPublisher, EventPublisher>();
+			//services.AddScoped<IEventStore, InMemoryEventStore>();
+			
+			return services;
 		}
 
 		public static void RegisterCommandHandlersInAssemblyOf<T>(this IServiceCollection services)

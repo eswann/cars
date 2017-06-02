@@ -75,7 +75,7 @@ namespace Cars.IntegrationTests
         {   
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .ConfigureServices(collection => collection.AddScoped(provider => eventStore));
+                .ConfigureServices(collection => collection.AddScoped(p => eventStore));
 
             var testServer = new TestServer(builder);
 

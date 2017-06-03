@@ -10,7 +10,8 @@ Currently Cars supports Mongo, although it has a provider model to allow additio
 
 Cars is forked from [EnjoyCQRS](https://github.com/ircnelson/enjoy.cqrs). 
 
-The project has been updated to VS 2017, and setup has been simplified a bit.  
+The project has been updated to VS 2017, and setup has been simplified a bit. It opts to use default DotNet 
+functionality whenever possible to reduce external dependencies or custom implementations. Think Logging/DI etc...  
 
 ## What's with the name?
 Google: "Did you mean Cars?"
@@ -33,4 +34,7 @@ In the days of yore (like 10 years ago) if you searched for CQRS on Google, it t
 ## Event store implementations
 
 * MongoDB: Install-Package Cars.EventStore.MongoDB
+
+
+## More documentation coming soon...
 

@@ -8,7 +8,7 @@ namespace Cars.UnitTests.Domain.Stubs.Events
         public Guid EntityId { get; }
         public string Name { get; }
 
-        public ChildCreatedEvent(Guid aggregateId, Guid entityId, string name) : base(aggregateId)
+        public ChildCreatedEvent(Guid streamId, Guid entityId, string name) : base(streamId)
         {
             EntityId = entityId;
             Name = name;

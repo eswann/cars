@@ -28,15 +28,15 @@ namespace Cars.EventSource.Snapshots
     public interface ISnapshotStrategy
     {
         /// <summary>
-        /// Verify if aggregate type have support to snapshot.
+        /// Verify if stream type have support to snapshot.
         /// </summary>
-        bool CheckSnapshotSupport(Type aggregateType);
+        bool CheckSnapshotSupport(Type streamType);
 
         /// <summary>
         /// Determines when it should be performed snapshot.
         /// </summary>
-        /// <param name="aggregate"></param>
+        /// <param name="stream"></param>
         /// <returns></returns>
-        bool ShouldMakeSnapshot(IAggregate aggregate);
+        bool ShouldMakeSnapshot(IStream stream);
     }
 }

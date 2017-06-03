@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 namespace Cars.EventSource.Projections
 {
     /// <summary>
-    /// Stores the aggregate projection
+    /// Stores the stream projection
     /// </summary>
     public interface IProjectionStore
     {

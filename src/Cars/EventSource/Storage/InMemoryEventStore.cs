@@ -54,17 +54,17 @@ namespace Cars.EventSource.Storage
             return Task.CompletedTask;
         }
 
-        public virtual Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public virtual Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid streamId)
         {
-            var snapshot = Snapshots.Where(e => e.AggregateId == aggregateId).OrderByDescending(e => e.AggregateVersion).Take(1).FirstOrDefault();
+            var snapshot = Snapshots.Where(e => e.StreamId == streamId).OrderByDescending(e => e.StreamVersion).Take(1).FirstOrDefault();
 
             return Task.FromResult(snapshot);
         }
 
-        public virtual Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
+        public virtual Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid streamId, int version)
         {
             var events = Events
-            .Where(e => e.AggregateId == aggregateId && e.Version > version)
+            .Where(e => e.StreamId == streamId && e.Version > version)
             .OrderBy(e => e.Version)
             .ToList();
 
@@ -90,7 +90,7 @@ namespace Cars.EventSource.Storage
 
             _uncommitedEvents.Clear();
 
-            var commitedSnapshots = _uncommitedSnapshots.Select(e => new InMemoryCommitedSnapshot(e.AggregateId, e.AggregateVersion, e.SerializedData, e.SerializedMetadata));
+            var commitedSnapshots = _uncommitedSnapshots.Select(e => new InMemoryCommitedSnapshot(e.StreamId, e.StreamVersion, e.SerializedData, e.SerializedMetadata));
             
             _snapshots.AddRange(commitedSnapshots);
             
@@ -125,7 +125,7 @@ namespace Cars.EventSource.Storage
         public virtual Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id)
         {
             var events = Events
-            .Where(e => e.AggregateId == id)
+            .Where(e => e.StreamId == id)
             .OrderBy(e => e.Version)
             .ToList();
 
@@ -155,20 +155,20 @@ namespace Cars.EventSource.Storage
 
         private static ICommitedEvent InstantiateCommitedEvent(ISerializedEvent serializedEvent)
         {
-            return new InMemoryCommitedEvent(serializedEvent.AggregateId, serializedEvent.Version, serializedEvent.SerializedData, serializedEvent.SerializedMetadata);
+            return new InMemoryCommitedEvent(serializedEvent.StreamId, serializedEvent.Version, serializedEvent.SerializedData, serializedEvent.SerializedMetadata);
         }
 
         internal class InMemoryCommitedEvent : ICommitedEvent
         {
-            public Guid AggregateId { get; }
+            public Guid StreamId { get; }
             public int Version { get; }
             public string SerializedData { get; }
             public string SerializedMetadata { get; }
 
-            public InMemoryCommitedEvent(Guid aggregateId, int aggregateVersion, string serializedData, string serializedMetadata)
+            public InMemoryCommitedEvent(Guid streamId, int streamVersion, string serializedData, string serializedMetadata)
             {
-                AggregateId = aggregateId;
-                Version = aggregateVersion;
+                StreamId = streamId;
+                Version = streamVersion;
                 SerializedData = serializedData;
                 SerializedMetadata = serializedMetadata;
             }
@@ -177,16 +177,16 @@ namespace Cars.EventSource.Storage
 
         internal class InMemoryCommitedSnapshot : ICommitedSnapshot
         {
-            public InMemoryCommitedSnapshot(Guid aggregateId, int aggregateVersion, string serializedData, string serializedMetadata)
+            public InMemoryCommitedSnapshot(Guid streamId, int streamVersion, string serializedData, string serializedMetadata)
             {
-                AggregateId = aggregateId;
-                AggregateVersion = aggregateVersion;
+                StreamId = streamId;
+                StreamVersion = streamVersion;
                 SerializedData = serializedData;
                 SerializedMetadata = serializedMetadata;
             }
 
-            public Guid AggregateId { get; }
-            public int AggregateVersion { get; }
+            public Guid StreamId { get; }
+            public int StreamVersion { get; }
             public string SerializedData { get; }
             public string SerializedMetadata { get; }
         }

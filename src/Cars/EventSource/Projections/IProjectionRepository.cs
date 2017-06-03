@@ -40,9 +40,9 @@ namespace Cars.EventSource.Projections
         
         /// <summary>
         /// <para>
-        /// Get the projection based on projection name (i.e. PersonAggregate-a5b4fd92-fcfa-4c50-b626-109c3e6d8967),
+        /// Get the projection based on projection name (i.e. PersonStream-a5b4fd92-fcfa-4c50-b626-109c3e6d8967),
         /// </para>
-        /// where PersonAggregate is the category of projection and a5b4fd92-fcfa-4c50-b626-109c3e6d8967 is the aggregate id.
+        /// where PersonStream is the category of projection and a5b4fd92-fcfa-4c50-b626-109c3e6d8967 is the stream id.
         /// </summary>
         /// <param name="projectionType"></param>
         /// <param name="name"></param>
@@ -63,7 +63,7 @@ namespace Cars.EventSource.Projections
         /// <para>
         /// Get the projection based on projection name (i.e. <see cref="TProjection"/>-a5b4fd92-fcfa-4c50-b626-109c3e6d8967),
         /// </para>
-        /// where PersonAggregate is the category of projection and a5b4fd92-fcfa-4c50-b626-109c3e6d8967 is the aggregate id.
+        /// where PersonStream is the category of projection and a5b4fd92-fcfa-4c50-b626-109c3e6d8967 is the stream id.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>

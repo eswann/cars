@@ -49,9 +49,9 @@ namespace Cars.EventSource
 
     public struct MetadataKeys
     {
-        public const string AggregateTypeFullname = "aggregateTypeFullname";
-        public const string AggregateId = "aggregateId";
-        public const string AggregateSequenceNumber = "aggregateSequenceNumber";
+        public const string StreamTypeFullname = "streamTypeFullname";
+        public const string StreamId = "streamId";
+        public const string StreamSequenceNumber = "streamSequenceNumber";
 
         public const string EventId = "eventId";
         public const string EventClrType = "eventClrType";

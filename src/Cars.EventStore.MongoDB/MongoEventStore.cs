@@ -63,7 +63,7 @@ namespace Cars.EventStore.MongoDB
             return Task.CompletedTask;
         }
 
-        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid streamId)
         {
             var db = Client.GetDatabase(Settings.Database);
             var snapshotCollection = db.GetCollection<SnapshotData>(Settings.SnapshotsCollectionName);
@@ -72,7 +72,7 @@ namespace Cars.EventStore.MongoDB
             var sort = Builders<SnapshotData>.Sort;
 
             var snapshots = await snapshotCollection
-                .Find(filter.Eq(x => x.AggregateId, aggregateId))
+                .Find(filter.Eq(x => x.StreamId, streamId))
                 .Sort(sort.Descending(x => x.Version))
                 .Limit(1)
                 .ToListAsync();
@@ -80,7 +80,7 @@ namespace Cars.EventStore.MongoDB
             return snapshots.Select(Deserialize).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
+        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid streamId, int version)
         {
             var db = Client.GetDatabase(Settings.Database);
             var collection = db.GetCollection<Event>(Settings.EventsCollectionName);
@@ -89,7 +89,7 @@ namespace Cars.EventStore.MongoDB
             var filterBuilder = Builders<Event>.Filter;
 
             var filter = filterBuilder.Empty
-                & filterBuilder.Eq(x => x.AggregateId, aggregateId)
+                & filterBuilder.Eq(x => x.StreamId, streamId)
                 & filterBuilder.Gt(x => x.Version, version)
                 & filterBuilder.Or(filterBuilder.Exists(x => x.Metadata[MetadataKeys.EventIgnore], exists: false), filterBuilder.Eq(x => x.Metadata[MetadataKeys.EventIgnore], false));
             
@@ -147,7 +147,7 @@ namespace Cars.EventStore.MongoDB
             var filterBuilder = Builders<Event>.Filter;
 
             var filter = filterBuilder.Empty 
-                & filterBuilder.Eq(x => x.AggregateId, id)
+                & filterBuilder.Eq(x => x.StreamId, id)
                 & filterBuilder.Or(filterBuilder.Exists(x => x.Metadata[MetadataKeys.EventIgnore], exists: false), filterBuilder.Eq(x => x.Metadata[MetadataKeys.EventIgnore], false));
 
             var events = await collection
@@ -185,7 +185,7 @@ namespace Cars.EventStore.MongoDB
                 Id = id,
                 Timestamp = DateTime.UtcNow,
                 EventType = eventType,
-                AggregateId = serializedEvent.AggregateId,
+                StreamId = serializedEvent.StreamId,
                 Version = serializedEvent.Version,
                 EventData = eventData,
                 Metadata = metadata
@@ -222,8 +222,8 @@ namespace Cars.EventStore.MongoDB
             {
                 Id = id,
                 Timestamp = DateTime.UtcNow,
-                AggregateId = serializedSnapshot.AggregateId,
-                Version = serializedSnapshot.AggregateVersion,
+                StreamId = serializedSnapshot.StreamId,
+                Version = serializedSnapshot.StreamVersion,
                 Data = eventData,
                 Metadata = metadata,
             };

@@ -18,7 +18,7 @@ namespace Cars.UnitTests.MessageBus
         private const string CategoryValue = "Event publisher";
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
+        [Fact]
         public void Instance_of_EventRouter_cannot_be_null()
         {
             Action act = () => new EventPublisher(null);
@@ -27,7 +27,7 @@ namespace Cars.UnitTests.MessageBus
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
+        [Fact]
         public async Task When_a_single_event_is_published_to_the_bus_containing_a_single_EventHandler()
         {
             var testEvent = new TestEvent(Guid.NewGuid());
@@ -46,11 +46,11 @@ namespace Cars.UnitTests.MessageBus
             await eventPublisher.PublishAsync<IDomainEvent>(new[] { testEvent }).ConfigureAwait(false);
             await eventPublisher.CommitAsync().ConfigureAwait(false);
 
-            handler.Ids.First().Should().Be(testEvent.AggregateId);
+            handler.Ids.First().Should().Be(testEvent.StreamId);
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
+        [Fact]
         public async Task When_a_single_event_is_published_to_the_bus_containing_multiple_EventHandlers()
         {
             var handler1 = new FirstTestEventHandler();
@@ -71,12 +71,12 @@ namespace Cars.UnitTests.MessageBus
             await eventPublisher.PublishAsync<IDomainEvent>(testEvent).ConfigureAwait(false);
             await eventPublisher.CommitAsync().ConfigureAwait(false);
 
-            handler1.Ids.First().Should().Be(testEvent.AggregateId);
-            handler2.Ids.First().Should().Be(testEvent.AggregateId);
+            handler1.Ids.First().Should().Be(testEvent.StreamId);
+            handler2.Ids.First().Should().Be(testEvent.StreamId);
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
+        [Fact]
         public async Task Events_should_be_published_on_correct_order()
         {
             var ids = new List<Tuple<Guid, int>>();

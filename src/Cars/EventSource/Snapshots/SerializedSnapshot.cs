@@ -26,16 +26,16 @@ namespace Cars.EventSource.Snapshots
 {
     public class SerializedSnapshot : ISerializedSnapshot
     {
-        public Guid AggregateId { get; }
-        public int AggregateVersion { get; }
+        public Guid StreamId { get; }
+        public int StreamVersion { get; }
         public string SerializedData { get; }
         public string SerializedMetadata { get; }
         public IMetadata Metadata { get; }
 
-        public SerializedSnapshot(Guid aggregateId, int aggregateVersion, string serializedData, string serializedMetadata, IMetadata metadata)
+        public SerializedSnapshot(Guid streamId, int streamVersion, string serializedData, string serializedMetadata, IMetadata metadata)
         {
-            AggregateId = aggregateId;
-            AggregateVersion = aggregateVersion;
+            StreamId = streamId;
+            StreamVersion = streamVersion;
             SerializedData = serializedData;
             SerializedMetadata = serializedMetadata;
             Metadata = metadata;

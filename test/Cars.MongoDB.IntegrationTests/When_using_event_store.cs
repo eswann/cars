@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cars.Core;
 using Cars.EventSource.Projections;
 using Cars.EventStore.MongoDB;
 using Cars.Testing.Shared.EventStore;
-using Cars.Testing.Shared.StubApplication.Domain.BarAggregate.Projections;
+using Cars.Testing.Shared.StubApplication.Domain.Bar.Projections;
 using FluentAssertions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -15,7 +14,7 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Xunit;
 
-namespace Cars.MongoDB.IntegrationTests.EventStore
+namespace Cars.MongoDB.IntegrationTests
 {
     public class When_using_event_store : IDisposable
     {
@@ -48,7 +47,7 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
         {
             var mongoHost = Environment.GetEnvironmentVariable("MONGODB_HOST");
 
-            if (string.IsNullOrWhiteSpace(mongoHost)) throw new ArgumentNullException("The variable 'MONGODB_HOST' was not configured.");
+            if (string.IsNullOrWhiteSpace(mongoHost)) throw new NullReferenceException("The variable 'MONGODB_HOST' was not configured.");
 
             _mongoClient = new MongoClient($"mongodb://{mongoHost}");
 
@@ -78,21 +77,21 @@ namespace Cars.MongoDB.IntegrationTests.EventStore
             {
                 var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(_bsonSerializer));
 
-                var aggregate = await eventStoreTestSuit.EventTestsAsync();
+                var stream = await eventStoreTestSuit.EventTestsAsync();
 
                 using (var projectionRepository = new MongoProjectionRepository(_mongoClient, _defaultSettings))
                 {
-                    var projection = await projectionRepository.GetAsync<BarProjection>(nameof(BarProjection), aggregate.Id);
+                    var projection = await projectionRepository.GetAsync<BarProjection>(nameof(BarProjection), stream.Id);
 
-                    projection.Id.Should().Be(aggregate.Id);
-                    projection.LastText.Should().Be(aggregate.LastText);
-                    projection.UpdatedAt.ToString("G").Should().Be(aggregate.UpdatedAt.ToString("G"));
-                    projection.Messages.Count.Should().Be(aggregate.Messages.Count);
+                    projection.Id.Should().Be(stream.Id);
+                    projection.LastText.Should().Be(stream.LastText);
+                    projection.UpdatedAt.ToString("G").Should().Be(stream.UpdatedAt.ToString("G"));
+                    projection.Messages.Count.Should().Be(stream.Messages.Count);
                 }
 
                 using (var projectionRepository = new MongoProjectionRepository<BarProjection>(_mongoClient, _defaultSettings))
                 {
-                    var projections = await projectionRepository.FindAsync(e => e.Id == aggregate.Id);
+                    var projections = await projectionRepository.FindAsync(e => e.Id == stream.Id);
 
                     projections.Count().Should().BeGreaterOrEqualTo(1);
                 }

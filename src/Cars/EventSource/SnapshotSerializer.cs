@@ -36,17 +36,17 @@ namespace Cars.EventSource
             _textSerializer = textSerializer;
         }
 
-        public ISerializedSnapshot Serialize(IAggregate aggregate, ISnapshot snapshot, IEnumerable<KeyValuePair<string, object>> metadatas)
+        public ISerializedSnapshot Serialize(IStream stream, ISnapshot snapshot, IEnumerable<KeyValuePair<string, object>> metadatas)
         {
             var metadata = new Metadata(metadatas);
 
-            var aggregateId = metadata.GetValue(MetadataKeys.AggregateId, (value) => Guid.Parse(value.ToString()));
-            var aggregateVersion = metadata.GetValue(MetadataKeys.AggregateSequenceNumber, (value) => int.Parse(value.ToString()));
+            var streamId = metadata.GetValue(MetadataKeys.StreamId, (value) => Guid.Parse(value.ToString()));
+            var streamVersion = metadata.GetValue(MetadataKeys.StreamSequenceNumber, (value) => int.Parse(value.ToString()));
 
             var serializedData = _textSerializer.Serialize(snapshot);
             var serializedMetadata = _textSerializer.Serialize(metadata);
 
-            return new SerializedSnapshot(aggregateId, aggregateVersion, serializedData, serializedMetadata, metadata);
+            return new SerializedSnapshot(streamId, streamVersion, serializedData, serializedMetadata, metadata);
         }
 
         public ISnapshotRestore Deserialize(ICommitedSnapshot commitedSnapshot)
@@ -57,7 +57,7 @@ namespace Cars.EventSource
 
             var snapshot = (ISnapshot) _textSerializer.Deserialize(commitedSnapshot.SerializedData, snapshotClrType);
 
-            return new SnapshotRestore(commitedSnapshot.AggregateId, commitedSnapshot.AggregateVersion, snapshot, metadata);
+            return new SnapshotRestore(commitedSnapshot.StreamId, commitedSnapshot.StreamVersion, snapshot, metadata);
         }
     }
 }

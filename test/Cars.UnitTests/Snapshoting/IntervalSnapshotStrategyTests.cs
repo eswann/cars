@@ -14,26 +14,26 @@ namespace Cars.UnitTests.Snapshoting
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
-        public void When_aggregate_type_have_support_snapshoting()
+        public void When_stream_type_have_support_snapshoting()
         {
-            var snapshotAggregateType = typeof(StubSnapshotAggregate);
+            var snapshotStreamType = typeof(StubSnapshotStream);
             
             var itervalSnapshotStrategy = new IntervalSnapshotStrategy();
-            var hasSupport = itervalSnapshotStrategy.CheckSnapshotSupport(snapshotAggregateType);
+            var hasSupport = itervalSnapshotStrategy.CheckSnapshotSupport(snapshotStreamType);
 
-            AssertionExtensions.Should((bool) hasSupport).BeTrue();
+            hasSupport.Should().BeTrue();
         }
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
-        public void When_aggregate_type_doesnt_have_support_snapshoting()
+        public void When_stream_type_doesnt_have_support_snapshoting()
         {
-            var snapshotAggregateType = typeof(StubAggregate);
+            var snapshotStreamType = typeof(StubStream);
 
             var defaultSnapshotStrategy = new IntervalSnapshotStrategy();
-            var hasSupport = defaultSnapshotStrategy.CheckSnapshotSupport(snapshotAggregateType);
+            var hasSupport = defaultSnapshotStrategy.CheckSnapshotSupport(snapshotStreamType);
 
-            AssertionExtensions.Should((bool) hasSupport).BeFalse();
+            hasSupport.Should().BeFalse();
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -44,18 +44,18 @@ namespace Cars.UnitTests.Snapshoting
         [InlineData(115, 15, false)]
         [InlineData(105, 15, true)]
         [InlineData(2, 5, false)]
-        public void Should_make_snapshot(int aggregateEventVersion, int snapshotInterval, bool expected)
+        public void Should_make_snapshot(int streamEventVersion, int snapshotInterval, bool expected)
         {
             var itervalSnapshotStrategy = new IntervalSnapshotStrategy(snapshotInterval);
 
-            var snapshotAggregateMock = new Mock<ISnapshotAggregate>();
-            snapshotAggregateMock.Setup(e => e.Sequence).Returns(aggregateEventVersion);
+            var snapshotStreamMock = new Mock<ISnapshotStream>();
+            snapshotStreamMock.Setup(e => e.Sequence).Returns(streamEventVersion);
 
-            var snapshotAggregate = snapshotAggregateMock.Object;
+            var snapshotStream = snapshotStreamMock.Object;
             
-            var makeSnapshot = itervalSnapshotStrategy.ShouldMakeSnapshot(snapshotAggregate);
+            var makeSnapshot = itervalSnapshotStrategy.ShouldMakeSnapshot(snapshotStream);
 
-            AssertionExtensions.Should((bool) makeSnapshot).Be(expected);
+            makeSnapshot.Should().Be(expected);
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -64,12 +64,12 @@ namespace Cars.UnitTests.Snapshoting
         {
             var itervalSnapshotStrategy = new IntervalSnapshotStrategy();
 
-            var aggregateMock = new Mock<IAggregate>();
-            var aggregate = aggregateMock.Object;
+            var streamMock = new Mock<IStream>();
+            var stream = streamMock.Object;
           
-            var makeSnapshot = itervalSnapshotStrategy.ShouldMakeSnapshot(aggregate);
+            var makeSnapshot = itervalSnapshotStrategy.ShouldMakeSnapshot(stream);
 
-            AssertionExtensions.Should((bool) makeSnapshot).BeFalse();
+            makeSnapshot.Should().BeFalse();
         }
     }
 }

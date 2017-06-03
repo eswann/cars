@@ -16,7 +16,7 @@ namespace Cars.UnitTests.MessageBus
         private const string CategoryValue = "Command dispatcher";
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
+        [Fact]
         public async void When_a_single_Command_is_published_to_the_bus_containing_a_single_CommandHandler()
         {
             var handler = new FirstTestCommandHandler();
@@ -41,11 +41,11 @@ namespace Cars.UnitTests.MessageBus
 
             await commandDispatcher.DispatchAsync(testCommand);
 
-            handler.Ids.First().Should().Be(testCommand.AggregateId);
+            handler.Ids.First().Should().Be(testCommand.StreamId);
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
+        [Fact]
         public async void When_a_single_Command_is_published_to_the_bus_containing_multiple_CommandHandlers()
         {
             var handler1 = new FirstTestCommandHandler();
@@ -72,8 +72,8 @@ namespace Cars.UnitTests.MessageBus
 
             await commandDispatcher.DispatchAsync(testCommand);
 
-            handler1.Ids.First().Should().Be(testCommand.AggregateId);
-            handler2.Ids.First().Should().Be(testCommand.AggregateId);
+            handler1.Ids.First().Should().Be(testCommand.StreamId);
+            handler2.Ids.First().Should().Be(testCommand.StreamId);
         }
 
         public class FirstTestCommandHandler : ICommandHandler<TestCommand>
@@ -82,7 +82,7 @@ namespace Cars.UnitTests.MessageBus
 
             public Task ExecuteAsync(TestCommand command)
             {
-                Ids.Add(command.AggregateId);
+                Ids.Add(command.StreamId);
 
                 return Task.CompletedTask;
             }
@@ -94,7 +94,7 @@ namespace Cars.UnitTests.MessageBus
 
             public Task ExecuteAsync(TestCommand command)
             {
-                Ids.Add(command.AggregateId);
+                Ids.Add(command.StreamId);
 
                 return Task.CompletedTask;
             }

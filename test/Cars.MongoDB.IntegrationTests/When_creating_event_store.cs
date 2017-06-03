@@ -22,7 +22,7 @@ namespace Cars.MongoDB.IntegrationTests
         {
             var mongoHost = Environment.GetEnvironmentVariable("MONGODB_HOST");
 
-            if (string.IsNullOrWhiteSpace(mongoHost)) throw new ArgumentNullException("The variable 'MONGODB_HOST' was not configured.");
+            if (string.IsNullOrWhiteSpace(mongoHost)) throw new NullReferenceException("The variable 'MONGODB_HOST' was not configured.");
 
             _mongoClient = new MongoClient($"mongodb://{mongoHost}");
 

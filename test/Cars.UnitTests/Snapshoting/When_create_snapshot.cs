@@ -14,28 +14,28 @@ namespace Cars.UnitTests.Snapshoting
         
         public When_create_snapshot()
         {
-            var stubSnapshotAggregate = StubSnapshotAggregate.Create("Superman");
-            stubSnapshotAggregate.ChangeName("Batman");
-            stubSnapshotAggregate.AddEntity("entity 1");
-            var entityId = stubSnapshotAggregate.AddEntity("entity 2");
+            var stubSnapshotStream = StubSnapshotStream.Create("Superman");
+            stubSnapshotStream.ChangeName("Batman");
+            stubSnapshotStream.AddEntity("entity 1");
+            var entityId = stubSnapshotStream.AddEntity("entity 2");
 
-            stubSnapshotAggregate.DisableEntity(entityId);
+            stubSnapshotStream.DisableEntity(entityId);
 
-            _snapshot = ((ISnapshotAggregate) stubSnapshotAggregate).CreateSnapshot();
+            _snapshot = ((ISnapshotStream) stubSnapshotStream).CreateSnapshot();
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
+        [Fact]
         public void Should_create_an_snapshot_object()
         {
-            AssertionExtensions.Should((object) _snapshot).BeOfType<StubSnapshotAggregateSnapshot>();
+            _snapshot.Should().BeOfType<StubSnapshotStreamSnapshot>();
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
+        [Fact]
         public void Should_verify_snapshot_properties()
         {
-            var snapshot = (StubSnapshotAggregateSnapshot) _snapshot;
+            var snapshot = (StubSnapshotStreamSnapshot) _snapshot;
 
             snapshot.Name.Should().Be("Batman");
             snapshot.SimpleEntities.Count.Should().Be(2);

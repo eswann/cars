@@ -37,8 +37,8 @@ namespace Cars.EventStore.MongoDB
         [BsonElement("eventType")]
         public string EventType { get; set; }
 
-        [BsonElement("aggregateId")]
-        public Guid AggregateId { get; set; }
+        [BsonElement("streamId")]
+        public Guid StreamId { get; set; }
 
         [BsonElement("version")]
         public int Version { get; set; }

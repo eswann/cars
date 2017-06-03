@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Cars.UnitTests.Handlers
 {
-    public class CommandHandlerTests : CommandTestFixture<CommandHandlerTests.CreateStubCommand, CommandHandlerTests.CreateStubCommandHandler, StubAggregate>
+    public class CommandHandlerTests : CommandTestFixture<CommandHandlerTests.CreateStubCommand, CommandHandlerTests.CreateStubCommandHandler, StubStream>
     {
         private const string CategoryName = "Unit";
         private const string CategoryValue = "Handlers";
@@ -23,22 +23,22 @@ namespace Cars.UnitTests.Handlers
         }
         
         [Trait(CategoryName, CategoryValue)]
-        [Then]
+        [Fact]
         public void Executed_property_should_be_true()
         {
-            AssertionExtensions.Should(CommandHandler.Executed).Be(true);
+            CommandHandler.Executed.Should().Be(true);
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
-        public void Should_pass_the_correct_AggregateId()
+        [Fact]
+        public void Should_pass_the_correct_StreamId()
         {
-            AssertionExtensions.Should(CommandHandler.AggregateId).Be(_id);
+            CommandHandler.StreamId.Should().Be(_id);
         }
 
         public class CreateStubCommand : Command
         {
-            public CreateStubCommand(Guid aggregateId) : base(aggregateId)
+            public CreateStubCommand(Guid streamId) : base(streamId)
             {
             }
         }
@@ -46,12 +46,12 @@ namespace Cars.UnitTests.Handlers
         public class CreateStubCommandHandler : ICommandHandler<CreateStubCommand>
         {
             public bool Executed { get; set; }
-            public Guid AggregateId { get; set; }
+            public Guid StreamId { get; set; }
 
             public Task ExecuteAsync(CreateStubCommand command)
             {
                 Executed = true;
-                AggregateId = command.AggregateId;
+                StreamId = command.StreamId;
 
                 return Task.CompletedTask;
             }

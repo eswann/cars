@@ -5,11 +5,11 @@ using Cars.Events;
 namespace Cars.UnitTests.Domain.Stubs.Events
 {
     [EventName("StubCreated")]
-    public class StubAggregateCreatedEvent : DomainEvent
+    public class StubStreamCreatedEvent : DomainEvent
     {
         public string Name { get; }
 
-        public StubAggregateCreatedEvent(Guid aggregateId, string name) : base(aggregateId)
+        public StubStreamCreatedEvent(Guid streamId, string name) : base(streamId)
         {
             Name = name;
         }

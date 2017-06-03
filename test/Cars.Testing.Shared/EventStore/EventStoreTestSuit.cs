@@ -5,8 +5,8 @@ using Cars.EventSource.Projections;
 using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
 using Cars.MessageBus.InProcess;
-using Cars.Testing.Shared.StubApplication.Domain.BarAggregate;
-using Cars.Testing.Shared.StubApplication.Domain.FooAggregate;
+using Cars.Testing.Shared.StubApplication.Domain.Bar;
+using Cars.Testing.Shared.StubApplication.Domain.Foo;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 
@@ -40,7 +40,7 @@ namespace Cars.Testing.Shared.EventStore
             var result = _eventStore.CalledMethods.HasFlag(EventStoreMethods.Ctor
                 | EventStoreMethods.BeginTransaction
                 | EventStoreMethods.SaveAsync
-                | EventStoreMethods.SaveAggregateProjection
+                | EventStoreMethods.SaveStreamProjection
                 | EventStoreMethods.CommitAsync
                 | EventStoreMethods.GetAllEventsAsync);
 

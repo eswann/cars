@@ -16,7 +16,7 @@ functionality whenever possible to reduce external dependencies or custom implem
 ## What's with the name?
 Google: "Did you mean Cars?"
 
-In the days of yore (like 10 years ago) if you searched for CQRS on Google, it thought it was Cars misspelled.
+In the days of yore (like 7 years ago) if you searched for CQRS on Google, it thought it was "Cars" misspelled.
 
 ## Features
 

@@ -24,16 +24,16 @@ using System;
 
 namespace Cars.EventSource.Exceptions
 {
-    public class ExpectedVersionException<TAggregate> : Exception
-        where TAggregate : Aggregate
+    public class ExpectedVersionException<TStream> : Exception
+        where TStream : Stream
     {
 
-        public TAggregate Aggregate { get; }
+        public TStream Stream { get; }
         public int ExpectedVersion { get; }
 
-        public ExpectedVersionException(TAggregate aggregate, int expectedVersion)
+        public ExpectedVersionException(TStream stream, int expectedVersion)
         {
-            Aggregate = aggregate;
+            Stream = stream;
             ExpectedVersion = expectedVersion;
         }
     }

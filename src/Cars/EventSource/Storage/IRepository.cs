@@ -26,23 +26,23 @@ using System.Threading.Tasks;
 namespace Cars.EventSource.Storage
 {
     /// <summary>
-    /// Represents an abstraction where an instance of <see cref="Aggregate"/> will be persisted.
+    /// Represents an abstraction where an instance of <see cref="Stream"/> will be persisted.
     /// </summary>
     public interface IRepository
     {
         /// <summary>
-        /// Retrieves an <typeparam name="TAggregate"></typeparam> based on your unique identifier property.
+        /// Retrieves an <typeparam name="TStream"></typeparam> based on your unique identifier property.
         /// </summary>
-        /// <typeparam name="TAggregate"></typeparam>
+        /// <typeparam name="TStream"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new();
+        Task<TStream> GetByIdAsync<TStream>(Guid id) where TStream : Stream, new();
 
         /// <summary>
-        /// Add an instance of <typeparam name="TAggregate"></typeparam> in repository.
+        /// Add an instance of <typeparam name="TStream"></typeparam> in repository.
         /// </summary>
-        /// <typeparam name="TAggregate"></typeparam>
-        /// <param name="aggregate"></param>
-        Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate;
+        /// <typeparam name="TStream"></typeparam>
+        /// <param name="stream"></param>
+        Task AddAsync<TStream>(TStream stream) where TStream : Stream;
     }
 }

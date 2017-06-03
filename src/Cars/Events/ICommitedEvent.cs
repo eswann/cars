@@ -26,7 +26,7 @@ namespace Cars.Events
 {
     public interface ICommitedEvent
     {
-        Guid AggregateId { get; }
+        Guid StreamId { get; }
         int Version { get; }
         string SerializedData { get; }
         string SerializedMetadata { get; }

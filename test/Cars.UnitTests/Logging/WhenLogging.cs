@@ -25,11 +25,11 @@ namespace Cars.UnitTests.Logging
             logger.LogCritical("Critical Message");
 
             var loggedMessage = _messages.LastOrDefault();
-            AssertionExtensions.Should((object) loggedMessage).NotBeNull();
-            AssertionExtensions.Should((string) loggedMessage.LogLevel.ToString()).Be("Critical");
-            AssertionExtensions.Should((object) loggedMessage.Exception).BeNull();
-            AssertionExtensions.Should((string) loggedMessage.LoggerName).Be("TestLogger");
-            AssertionExtensions.Should((string) loggedMessage.Message).Be("Critical Message");
+            loggedMessage.Should().NotBeNull();
+            loggedMessage.LogLevel.ToString().Should().Be("Critical");
+            loggedMessage.Exception.Should().BeNull();
+            loggedMessage.LoggerName.Should().Be("TestLogger");
+            loggedMessage.Message.Should().Be("Critical Message");
         }
 
         [Fact]
@@ -40,11 +40,11 @@ namespace Cars.UnitTests.Logging
             logger.LogError("Error Message");
 
             var loggedMessage = _messages.LastOrDefault();
-            AssertionExtensions.Should((object) loggedMessage).NotBeNull();
-            AssertionExtensions.Should((string) loggedMessage.LogLevel.ToString()).Be("Error");
-            AssertionExtensions.Should((object) loggedMessage.Exception).BeNull();
-            AssertionExtensions.Should((string) loggedMessage.LoggerName).Be("TestLogger");
-            AssertionExtensions.Should((string) loggedMessage.Message).Be("Error Message");
+            loggedMessage.Should().NotBeNull();
+            loggedMessage.LogLevel.ToString().Should().Be("Error");
+            loggedMessage.Exception.Should().BeNull();
+            loggedMessage.LoggerName.Should().Be("TestLogger");
+            loggedMessage.Message.Should().Be("Error Message");
         }
 
         [Fact]
@@ -55,11 +55,11 @@ namespace Cars.UnitTests.Logging
             logger.LogWarning("Warning Message");
 
             var loggedMessage = _messages.LastOrDefault();
-            AssertionExtensions.Should((object) loggedMessage).NotBeNull();
-            AssertionExtensions.Should((string) loggedMessage.LogLevel.ToString()).Be("Warning");
-            AssertionExtensions.Should((object) loggedMessage.Exception).BeNull();
-            AssertionExtensions.Should((string) loggedMessage.LoggerName).Be("TestLogger");
-            AssertionExtensions.Should((string) loggedMessage.Message).Be("Warning Message");
+            loggedMessage.Should().NotBeNull();
+            loggedMessage.LogLevel.ToString().Should().Be("Warning");
+            loggedMessage.Exception.Should().BeNull();
+            loggedMessage.LoggerName.Should().Be("TestLogger");
+            loggedMessage.Message.Should().Be("Warning Message");
         }
 
         [Fact]
@@ -70,11 +70,11 @@ namespace Cars.UnitTests.Logging
             logger.LogInformation("Information Message");
 
             var loggedMessage = _messages.LastOrDefault();
-            AssertionExtensions.Should((object) loggedMessage).NotBeNull();
-            AssertionExtensions.Should((string) loggedMessage.LogLevel.ToString()).Be("Information");
-            AssertionExtensions.Should((object) loggedMessage.Exception).BeNull();
-            AssertionExtensions.Should((string) loggedMessage.LoggerName).Be("TestLogger");
-            AssertionExtensions.Should((string) loggedMessage.Message).Be("Information Message");
+            loggedMessage.Should().NotBeNull();
+            loggedMessage.LogLevel.ToString().Should().Be("Information");
+            loggedMessage.Exception.Should().BeNull();
+            loggedMessage.LoggerName.Should().Be("TestLogger");
+            loggedMessage.Message.Should().Be("Information Message");
         }
 
         [Fact]
@@ -85,11 +85,11 @@ namespace Cars.UnitTests.Logging
             logger.LogDebug("Debug Message");
 
             var loggedMessage = _messages.LastOrDefault();
-            AssertionExtensions.Should((object) loggedMessage).NotBeNull();
-            AssertionExtensions.Should((string) loggedMessage.LogLevel.ToString()).Be("Debug");
-            AssertionExtensions.Should((object) loggedMessage.Exception).BeNull();
-            AssertionExtensions.Should((string) loggedMessage.LoggerName).Be("TestLogger");
-            AssertionExtensions.Should((string) loggedMessage.Message).Be("Debug Message");
+            loggedMessage.Should().NotBeNull();
+            loggedMessage.LogLevel.ToString().Should().Be("Debug");
+            loggedMessage.Exception.Should().BeNull();
+            loggedMessage.LoggerName.Should().Be("TestLogger");
+            loggedMessage.Message.Should().Be("Debug Message");
         }
 
         [Fact]
@@ -100,11 +100,11 @@ namespace Cars.UnitTests.Logging
             logger.LogTrace("Trace Message");
 
             var loggedMessage = _messages.LastOrDefault();
-            AssertionExtensions.Should((object) loggedMessage).NotBeNull();
-            AssertionExtensions.Should((string) loggedMessage.LogLevel.ToString()).Be("Trace");
-            AssertionExtensions.Should((object) loggedMessage.Exception).BeNull();
-            AssertionExtensions.Should((string) loggedMessage.LoggerName).Be("TestLogger");
-            AssertionExtensions.Should((string) loggedMessage.Message).Be("Trace Message");
+            loggedMessage.Should().NotBeNull();
+            loggedMessage.LogLevel.ToString().Should().Be("Trace");
+            loggedMessage.Exception.Should().BeNull();
+            loggedMessage.LoggerName.Should().Be("TestLogger");
+            loggedMessage.Message.Should().Be("Trace Message");
         }
 
         [Fact]
@@ -114,10 +114,10 @@ namespace Cars.UnitTests.Logging
             var loggerFactory = new TestLoggerFactory(false, _messages);
             var logger = loggerFactory.CreateLogger("DisabledLogger");
 
-            LoggerExtensions.LogCritical(logger, "Disabled logger message");
+            logger.LogCritical("Disabled logger message");
 
             var loggedMessage = _messages.LastOrDefault();
-            AssertionExtensions.Should((object) loggedMessage).BeNull();
+            loggedMessage.Should().BeNull();
         }
     }
 

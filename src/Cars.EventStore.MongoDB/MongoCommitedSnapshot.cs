@@ -28,8 +28,8 @@ namespace Cars.EventStore.MongoDB
 {
     internal class MongoCommitedSnapshot : ICommitedSnapshot
     {
-        public Guid AggregateId { get; private set; }
-        public int AggregateVersion { get; private set; }
+        public Guid StreamId { get; private set; }
+        public int StreamVersion { get; private set; }
         public string SerializedData { get; private set; }
         public string SerializedMetadata { get; private set; }
 
@@ -38,8 +38,8 @@ namespace Cars.EventStore.MongoDB
             return new MongoCommitedSnapshot
             {
 
-                AggregateId = snapshot.AggregateId,
-                AggregateVersion = snapshot.Version,
+                StreamId = snapshot.StreamId,
+                StreamVersion = snapshot.Version,
                 SerializedData = snapshot.Data.ToJson(),
                 SerializedMetadata = snapshot.Metadata.ToJson(),
             };

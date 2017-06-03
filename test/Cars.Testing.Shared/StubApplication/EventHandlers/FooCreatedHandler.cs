@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Cars.Events;
-using Cars.Testing.Shared.StubApplication.Domain.FooAggregate;
+using Cars.Testing.Shared.StubApplication.Domain.Foo;
 
 namespace Cars.Testing.Shared.StubApplication.EventHandlers
 {

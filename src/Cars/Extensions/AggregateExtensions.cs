@@ -29,24 +29,24 @@ using Cars.EventSource.Storage;
 
 namespace Cars.Extensions
 {
-    internal static class AggregateExtensions
+    internal static class StreamExtensions
     {
-        public static async Task TakeSnapshot(this Aggregate aggregate,
+        public static async Task TakeSnapshot(this Stream stream,
             IEventStore eventStore,
             ISnapshotSerializer snapshotSerializer)
         {
-            var snapshot = ((ISnapshotAggregate)aggregate).CreateSnapshot();
+            var snapshot = ((ISnapshotStream)stream).CreateSnapshot();
 
             var metadatas = new[]
             {
-                new KeyValuePair<string, object>(MetadataKeys.AggregateId, aggregate.Id),
-                new KeyValuePair<string, object>(MetadataKeys.AggregateSequenceNumber, aggregate.Sequence),
+                new KeyValuePair<string, object>(MetadataKeys.StreamId, stream.Id),
+                new KeyValuePair<string, object>(MetadataKeys.StreamSequenceNumber, stream.Sequence),
                 new KeyValuePair<string, object>(MetadataKeys.SnapshotId, Guid.NewGuid()),
                 new KeyValuePair<string, object>(MetadataKeys.SnapshotClrType, snapshot.GetType().AssemblyQualifiedName),
                 new KeyValuePair<string, object>(MetadataKeys.SnapshotName, snapshot.GetType().Name),
             };
 
-            var serializedSnapshot = snapshotSerializer.Serialize(aggregate, snapshot, metadatas);
+            var serializedSnapshot = snapshotSerializer.Serialize(stream, snapshot, metadatas);
 
             await eventStore.SaveSnapshotAsync(serializedSnapshot).ConfigureAwait(false);
         }

@@ -31,11 +31,11 @@ namespace Cars.EventSource.Snapshots
             SnapshotInterval = snapshotInterval;
         }
         
-        public override bool ShouldMakeSnapshot(IAggregate aggregate)
+        public override bool ShouldMakeSnapshot(IStream stream)
         {
-            if (!CheckSnapshotSupport(aggregate.GetType())) return false;
+            if (!CheckSnapshotSupport(stream.GetType())) return false;
 
-            return (aggregate.Sequence % SnapshotInterval == 0);
+            return (stream.Sequence % SnapshotInterval == 0);
         }
     }
 }

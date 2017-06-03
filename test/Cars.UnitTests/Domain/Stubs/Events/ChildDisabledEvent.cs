@@ -7,7 +7,7 @@ namespace Cars.UnitTests.Domain.Stubs.Events
     {
         public Guid EntityId { get; }
 
-        public ChildDisabledEvent(Guid aggregateId, Guid entityId) : base(aggregateId)
+        public ChildDisabledEvent(Guid streamId, Guid entityId) : base(streamId)
         {
             EntityId = entityId;
         }

@@ -14,26 +14,26 @@ namespace Cars.UnitTests.Snapshoting
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
-        public void When_aggregate_type_have_support_snapshoting()
+        public void When_stream_type_have_support_snapshoting()
         {
-            var snapshotAggregateType = typeof(StubSnapshotAggregate);
+            var snapshotStreamType = typeof(StubSnapshotStream);
             
-            var defaultSnapshotStrategy = new DefaultSnapshotStrategy();;
-            var hasSupport = defaultSnapshotStrategy.CheckSnapshotSupport(snapshotAggregateType);
+            var defaultSnapshotStrategy = new DefaultSnapshotStrategy();
+            var hasSupport = defaultSnapshotStrategy.CheckSnapshotSupport(snapshotStreamType);
 
-            AssertionExtensions.Should((bool) hasSupport).BeTrue();
+            hasSupport.Should().BeTrue();
         }
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
-        public void When_aggregate_type_doesnt_have_support_snapshoting()
+        public void When_stream_type_doesnt_have_support_snapshoting()
         {
-            var snapshotAggregateType = typeof(StubAggregate);
+            var snapshotStreamType = typeof(StubStream);
 
             var defaultSnapshotStrategy = new DefaultSnapshotStrategy();
-            var hasSupport = defaultSnapshotStrategy.CheckSnapshotSupport(snapshotAggregateType);
+            var hasSupport = defaultSnapshotStrategy.CheckSnapshotSupport(snapshotStreamType);
 
-            AssertionExtensions.Should((bool) hasSupport).BeFalse();
+            hasSupport.Should().BeFalse();
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -42,11 +42,11 @@ namespace Cars.UnitTests.Snapshoting
         {
             var defaultSnapshotStrategy = new DefaultSnapshotStrategy();
 
-            var snapshotAggregate = Mock.Of<ISnapshotAggregate>();
+            var snapshotStream = Mock.Of<ISnapshotStream>();
             
-            var makeSnapshot = defaultSnapshotStrategy.ShouldMakeSnapshot(snapshotAggregate);
+            var makeSnapshot = defaultSnapshotStrategy.ShouldMakeSnapshot(snapshotStream);
 
-            AssertionExtensions.Should((bool) makeSnapshot).BeTrue();
+            makeSnapshot.Should().BeTrue();
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -55,11 +55,11 @@ namespace Cars.UnitTests.Snapshoting
         {
             var defaultSnapshotStrategy = new DefaultSnapshotStrategy();
 
-            var aggregate = Mock.Of<IAggregate>();
+            var stream = Mock.Of<IStream>();
           
-            var makeSnapshot = defaultSnapshotStrategy.ShouldMakeSnapshot(aggregate);
+            var makeSnapshot = defaultSnapshotStrategy.ShouldMakeSnapshot(stream);
 
-            AssertionExtensions.Should((bool) makeSnapshot).BeFalse();
+            makeSnapshot.Should().BeFalse();
         }
     }
 }

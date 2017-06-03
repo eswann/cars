@@ -3,8 +3,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Cars.EventSource.Projections;
-using Cars.Testing.Shared.StubApplication.Domain.BarAggregate;
-using Cars.Testing.Shared.StubApplication.Domain.BarAggregate.Projections;
+using Cars.Testing.Shared.StubApplication.Domain.Bar;
+using Cars.Testing.Shared.StubApplication.Domain.Bar.Projections;
 using FluentAssertions;
 using Xunit;
 
@@ -13,7 +13,7 @@ namespace Cars.UnitTests.Projections
     public class ProjectionAttributeTests
     {
         [Fact]
-        public async Task Should_scan_all_attributes_for_aggregate()
+        public async Task Should_scan_all_attributes_for_stream()
         {
             var bar = Bar.Create(Guid.NewGuid());
 
@@ -25,17 +25,17 @@ namespace Cars.UnitTests.Projections
         }
 
         [Fact]
-        public void Should_throw_exception_when_target_is_not_aggregate()
+        public void Should_throw_exception_when_target_is_not_stream()
         {
             var scanner = new ProjectionProviderAttributeScanner();
 
-            Func<Task> func = async () => await scanner.ScanAsync(typeof(FakeNonAggregate)).ConfigureAwait(false);
+            Func<Task> func = async () => await scanner.ScanAsync(typeof(FakeNonStream)).ConfigureAwait(false);
 
             func.ShouldThrowExactly<TargetException>();
         }
 
         [Fact]
-        public async Task Should_provide_a_projection_instance_from_aggregate()
+        public async Task Should_provide_a_projection_instance_from_stream()
         {
             var bar = Bar.Create(Guid.NewGuid());
 
@@ -47,14 +47,14 @@ namespace Cars.UnitTests.Projections
 
             var projection = (BarProjection) provider.CreateProjection(bar);
 
-            AssertionExtensions.Should((Guid) projection.Id).Be(bar.Id);
-            AssertionExtensions.Should((string) projection.LastText).Be(bar.LastText);
-            AssertionExtensions.Should((int) projection.Messages.Count).Be(bar.Messages.Count);
-            AssertionExtensions.Should((DateTime) projection.UpdatedAt).Be(bar.UpdatedAt);
+            projection.Id.Should().Be(bar.Id);
+            projection.LastText.Should().Be(bar.LastText);
+            projection.Messages.Count.Should().Be(bar.Messages.Count);
+            projection.UpdatedAt.Should().Be(bar.UpdatedAt);
         }
     }
     
-    internal class FakeNonAggregate
+    internal class FakeNonStream
     {
 
     }

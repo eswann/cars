@@ -24,7 +24,7 @@ namespace Cars.UnitTests.Handlers
         [Fact]
         public void Should_output_formatted_text()
         {
-            AssertionExtensions.Should((string) EventHandler.Output).Be("** Hello World **");
+            EventHandler.Output.Should().Be("** Hello World **");
         }
     }
 
@@ -44,7 +44,7 @@ namespace Cars.UnitTests.Handlers
         [Fact]
         public void Should_throw_ArgumentNullException()
         {
-            AssertionExtensions.Should((object) CaughtException).BeOfType<ArgumentNullException>();
+            CaughtException.Should().BeOfType<ArgumentNullException>();
         }
     }
 }

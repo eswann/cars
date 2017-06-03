@@ -16,7 +16,7 @@ namespace Cars.UnitTests.MessageBus.Stubs
 
         public Task ExecuteAsync(OrderedTestEvent @event)
         {
-            _eventsBag.Add(new Tuple<Guid, int>(@event.AggregateId, @event.Order));
+            _eventsBag.Add(new Tuple<Guid, int>(@event.StreamId, @event.Order));
 
             return Task.CompletedTask;
         }

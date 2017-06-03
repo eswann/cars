@@ -26,13 +26,13 @@ using Cars.EventSource;
 
 namespace Cars.MetadataProviders
 {
-    public class AggregateTypeMetadataProvider : IMetadataProvider
+    public class StreamTypeMetadataProvider : IMetadataProvider
     {
-        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata) where TAggregate : IAggregate
+        public IEnumerable<KeyValuePair<string, object>> Provide<TStream>(TStream stream, IDomainEvent @event, IMetadata metadata) where TStream : IStream
         {
-            yield return new KeyValuePair<string, object>(MetadataKeys.AggregateId, aggregate.Id);
-            yield return new KeyValuePair<string, object>(MetadataKeys.AggregateSequenceNumber, aggregate.Sequence);
-            yield return new KeyValuePair<string, object>(MetadataKeys.AggregateTypeFullname, aggregate.GetType().FullName);
+            yield return new KeyValuePair<string, object>(MetadataKeys.StreamId, stream.Id);
+            yield return new KeyValuePair<string, object>(MetadataKeys.StreamSequenceNumber, stream.Sequence);
+            yield return new KeyValuePair<string, object>(MetadataKeys.StreamTypeFullname, stream.GetType().FullName);
         }
     }
 }

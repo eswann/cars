@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Cars.EventSource;
 using Cars.MetadataProviders;
 using Cars.UnitTests.Domain.Stubs;
@@ -17,50 +16,50 @@ namespace Cars.UnitTests.Metadata
         [Fact]
         public void Event_MetadataProvider()
         {
-            var stubAggregate = StubAggregate.Create("Test");
+            var stubStream = StubStream.Create("Test");
 
             var metadataProvider = new EventTypeMetadataProvider();
 
-            var metadata = Enumerable.SelectMany(stubAggregate.UncommitedEvents, e => metadataProvider.Provide(stubAggregate, e.OriginalEvent, EventSource.Metadata.Empty));
+            var metadata = stubStream.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubStream, e.OriginalEvent, EventSource.Metadata.Empty));
 
-            metadata.Count<KeyValuePair<string, object>>().Should().Be(2);
+            metadata.Count().Should().Be(2);
         }
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
-        public void Aggregate_MetadataProvider()
+        public void Stream_MetadataProvider()
         {
-            var stubAggregate = StubAggregate.Create("Test");
+            var stubStream = StubStream.Create("Test");
 
-            var metadataProvider = new AggregateTypeMetadataProvider();
+            var metadataProvider = new StreamTypeMetadataProvider();
 
-            var metadata = Enumerable.SelectMany(stubAggregate.UncommitedEvents, e => metadataProvider.Provide(stubAggregate, e.OriginalEvent, EventSource.Metadata.Empty));
+            var metadata = stubStream.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubStream, e.OriginalEvent, EventSource.Metadata.Empty));
 
-            metadata.Count<KeyValuePair<string, object>>().Should().Be(3);
+            metadata.Count().Should().Be(3);
         }
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void CorrelationId_MetadataProvider()
         {
-            var stubAggregate = StubAggregate.Create("Test");
-            stubAggregate.ChangeName("Test 1");
-            stubAggregate.ChangeName("Test 2");
+            var stubStream = StubStream.Create("Test");
+            stubStream.ChangeName("Test 1");
+            stubStream.ChangeName("Test 2");
 
             var metadataProvider = new CorrelationIdMetadataProvider();
 
-            var metadatas = Enumerable.SelectMany(stubAggregate.UncommitedEvents, e => metadataProvider.Provide(stubAggregate, e.OriginalEvent, EventSource.Metadata.Empty));
+            var metadatas = stubStream.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubStream, e.OriginalEvent, EventSource.Metadata.Empty));
 
-            metadatas.Select<KeyValuePair<string, object>, object>(e => e.Value).Distinct().Count().Should().Be(1);
+            metadatas.Select(e => e.Value).Distinct().Count().Should().Be(1);
         }
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void Should_take_event_name_based_on_attribute()
         {
-            var stubAggregate = StubAggregate.Create("Test");
+            var stubStream = StubStream.Create("Test");
             var metadataProvider = new EventTypeMetadataProvider();
-            var metadatas = Enumerable.SelectMany(stubAggregate.UncommitedEvents, e => metadataProvider.Provide(stubAggregate, e.OriginalEvent, EventSource.Metadata.Empty));
+            var metadatas = stubStream.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubStream, e.OriginalEvent, EventSource.Metadata.Empty));
 
             var metadata = new EventSource.Metadata(metadatas);
 

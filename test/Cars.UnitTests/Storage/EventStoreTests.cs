@@ -53,47 +53,47 @@ namespace Cars.UnitTests.Storage
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
+        [Fact]
         public async Task When_calling_Save_it_will_add_the_domain_events_to_the_domain_event_storage()
         {
-            var testAggregate = StubAggregate.Create("Walter White");
-            testAggregate.ChangeName("Heinsenberg");
+            var testStream = StubStream.Create("Walter White");
+            testStream.ChangeName("Heinsenberg");
 
-            await _repository.AddAsync(testAggregate).ConfigureAwait(false);
+            await _repository.AddAsync(testStream).ConfigureAwait(false);
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            var events = await _inMemoryDomainEventStore.GetAllEventsAsync(testAggregate.Id);
+            var events = await _inMemoryDomainEventStore.GetAllEventsAsync(testStream.Id);
             
-            Enumerable.Count(events).Should().Be(2);
+            events.Count().Should().Be(2);
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
+        [Fact]
         public async Task When_Save_Then_the_uncommited_events_should_be_published()
         {
-            var testAggregate = StubAggregate.Create("Walter White");
-            testAggregate.ChangeName("Heinsenberg");
+            var testStream = StubStream.Create("Walter White");
+            testStream.ChangeName("Heinsenberg");
 
-            await _repository.AddAsync(testAggregate).ConfigureAwait(false);
+            await _repository.AddAsync(testStream).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
             _mockEventPublisher.Verify(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>()));
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
-        public async Task When_load_aggregate_should_be_correct_version()
+        [Fact]
+        public async Task When_load_stream_should_be_correct_version()
         {
-            var testAggregate = StubAggregate.Create("Walter White");
-            testAggregate.ChangeName("Heinsenberg");
+            var testStream = StubStream.Create("Walter White");
+            testStream.ChangeName("Heinsenberg");
 
-            await _repository.AddAsync(testAggregate).ConfigureAwait(false);
+            await _repository.AddAsync(testStream).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            var testAggregate2 = await _repository.GetByIdAsync<StubAggregate>(testAggregate.Id).ConfigureAwait(false);
+            var testStream2 = await _repository.GetByIdAsync<StubStream>(testStream.Id).ConfigureAwait(false);
             
-            testAggregate.Version.Should().Be(testAggregate2.Version);
+            testStream.Version.Should().Be(testStream2.Version);
         }
     }
 }

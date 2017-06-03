@@ -22,35 +22,35 @@ namespace Cars.UnitTests.Handlers
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
+        [Fact]
         public void Executed_property_should_be_true()
         {
-            AssertionExtensions.Should(EventHandler.Executed).Be(true);
+            EventHandler.Executed.Should().Be(true);
         }
 
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
-        public void Should_pass_the_correct_AggregateId()
+        [Fact]
+        public void Should_pass_the_correct_StreamId()
         {
-            AssertionExtensions.Should(EventHandler.AggregateId).Be(_id);
+            EventHandler.StreamId.Should().Be(_id);
         }
         
         public class StubCreatedEvent : DomainEvent
         {
-            public StubCreatedEvent(Guid aggregateId) : base(aggregateId)
+            public StubCreatedEvent(Guid streamId) : base(streamId)
             {
             }
         }
 
         public class StubCreatedEventHandler : IEventHandler<StubCreatedEvent>
         {
-            public Guid AggregateId { get; private set; }
+            public Guid StreamId { get; private set; }
             public bool Executed { get; private set; }
 
             public Task ExecuteAsync(StubCreatedEvent @event)
             {
-                AggregateId = @event.AggregateId;
+                StreamId = @event.StreamId;
 
                 Executed = true;
 

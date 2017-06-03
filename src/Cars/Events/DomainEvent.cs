@@ -27,22 +27,22 @@ namespace Cars.Events
     /// <summary>
     /// Used to represent an Domain event.
     /// The domain event are things that have value for your domain.
-    /// They are raised when occur changes on the aggregate root.
+    /// They are raised when occur changes on the stream root.
     /// </summary>
     public abstract class DomainEvent : IDomainEvent
     {
         /// <summary>
-        /// Aggregate Unique identifier.
+        /// Stream Unique identifier.
         /// </summary>
-        public Guid AggregateId { get; }
+        public Guid StreamId { get; }
         
         /// <summary>
         /// Construct the domain event.
         /// </summary>
-        /// <param name="aggregateId"></param>
-        protected DomainEvent(Guid aggregateId)
+        /// <param name="streamId"></param>
+        protected DomainEvent(Guid streamId)
         {
-            AggregateId = aggregateId;
+            StreamId = streamId;
         }
     }
 }

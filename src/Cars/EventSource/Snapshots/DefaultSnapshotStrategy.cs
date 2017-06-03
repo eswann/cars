@@ -27,22 +27,22 @@ namespace Cars.EventSource.Snapshots
 {
     public class DefaultSnapshotStrategy : ISnapshotStrategy
     {
-        private static readonly Type _snapshotType = typeof (ISnapshotAggregate);
+        private static readonly Type _snapshotType = typeof (ISnapshotStream);
         
-        public bool CheckSnapshotSupport(Type aggregateType)
+        public bool CheckSnapshotSupport(Type streamType)
         {
-            var baseType = aggregateType.GetTypeInfo().BaseType;
+            var baseType = streamType.GetTypeInfo().BaseType;
 
             if (baseType == null) return false;
 
-            if (_snapshotType.IsAssignableFrom(aggregateType)) return true;
+            if (_snapshotType.IsAssignableFrom(streamType)) return true;
 
             return CheckSnapshotSupport(baseType);
         }
 
-        public virtual bool ShouldMakeSnapshot(IAggregate aggregate)
+        public virtual bool ShouldMakeSnapshot(IStream stream)
         {
-            return CheckSnapshotSupport(aggregate.GetType());
+            return CheckSnapshotSupport(stream.GetType());
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Cars.Events;
 using Cars.EventSource.Storage;
 using Cars.Testing.Shared.StubApplication.Domain;
-using Cars.Testing.Shared.StubApplication.Domain.BarAggregate;
+using Cars.Testing.Shared.StubApplication.Domain.Bar;
 
 namespace Cars.Testing.Shared.StubApplication.EventHandlers
 {

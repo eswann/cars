@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Cars.EventSource;
 using Cars.EventSource.Storage;
 using Cars.MessageBus;
-using Cars.Testing.Shared.StubApplication.Commands.FooAggregate;
-using Cars.Testing.Shared.StubApplication.Domain.FooAggregate;
+using Cars.Testing.Shared.StubApplication.Commands.Foo;
+using Cars.Testing.Shared.StubApplication.Domain.Foo;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cars.IntegrationTests.Controllers
@@ -54,11 +54,11 @@ namespace Cars.IntegrationTests.Controllers
 
             await _dispatcher.DispatchAsync(create);
 
-            var aggregate = await _repository.GetByIdAsync<Foo>(create.AggregateId);
+            var stream = await _repository.GetByIdAsync<Foo>(create.StreamId);
 
             for (var i = 1; i < times; i++)
             {
-                aggregate.DoSomething();
+                stream.DoSomething();
             }
 
             await _unitOfWork.CommitAsync();

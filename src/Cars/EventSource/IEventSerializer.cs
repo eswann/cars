@@ -28,13 +28,13 @@ namespace Cars.EventSource
 {
     public interface IEventSerializer
     {
-        ISerializedEvent Serialize(IAggregate aggregate, IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas);
+        ISerializedEvent Serialize(IStream stream, IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas);
         IDomainEvent Deserialize(ICommitedEvent commitedEvent);
     }
 
     public interface ISnapshotSerializer
     {
-        ISerializedSnapshot Serialize(IAggregate aggregate, ISnapshot snapshot, IEnumerable<KeyValuePair<string, object>> metadatas);
+        ISerializedSnapshot Serialize(IStream stream, ISnapshot snapshot, IEnumerable<KeyValuePair<string, object>> metadatas);
         ISnapshotRestore Deserialize(ICommitedSnapshot commitedSnapshot);
     }
 }

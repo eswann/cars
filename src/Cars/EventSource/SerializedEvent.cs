@@ -26,20 +26,20 @@ namespace Cars.EventSource
 {
     public class SerializedEvent : ISerializedEvent
     {
-        public Guid AggregateId { get; }
+        public Guid StreamId { get; }
         public int Version { get; }
         public string SerializedMetadata { get; }
         public string SerializedData { get; }
         public IMetadata Metadata { get; }
 
-        public SerializedEvent(Guid aggregateId, 
-            int aggregateVersion, 
+        public SerializedEvent(Guid streamId, 
+            int streamVersion, 
             string serializedData, 
             string serializedMetadata, 
             IMetadata metadata)
         {
-            AggregateId = aggregateId;
-            Version = aggregateVersion;
+            StreamId = streamId;
+            Version = streamVersion;
             SerializedData = serializedData;
             SerializedMetadata = serializedMetadata;
             Metadata = metadata;

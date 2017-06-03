@@ -29,18 +29,18 @@ namespace Cars.Testing.Shared.EventStore
             CalledMethods |= EventStoreMethods.SaveSnapshotAsync;
         }
 
-        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid streamId)
         {
-            var result = await _eventStore.GetLatestSnapshotByIdAsync(aggregateId).ConfigureAwait(false);
+            var result = await _eventStore.GetLatestSnapshotByIdAsync(streamId).ConfigureAwait(false);
 
             CalledMethods |= EventStoreMethods.GetLatestSnapshotByIdAsync;
 
             return result;
         }
 
-        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
+        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid streamId, int version)
         {
-            var result = await _eventStore.GetEventsForwardAsync(aggregateId, version).ConfigureAwait(false);
+            var result = await _eventStore.GetEventsForwardAsync(streamId, version).ConfigureAwait(false);
 
             CalledMethods |= EventStoreMethods.GetEventsForwardAsync;
 
@@ -95,7 +95,7 @@ namespace Cars.Testing.Shared.EventStore
         {
             await _eventStore.SaveProjectionAsync(projection);
 
-            CalledMethods |= EventStoreMethods.SaveAggregateProjection;
+            CalledMethods |= EventStoreMethods.SaveStreamProjection;
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Cars.EventSource
         {
             var eventType = @event.GetType();
 
-            if (!ContainsKey(eventType)) throw new HandleNotFound(eventType);
+            if (!ContainsKey(eventType)) throw new HandlerNotFound(eventType);
 
             this[eventType](@event);
         }

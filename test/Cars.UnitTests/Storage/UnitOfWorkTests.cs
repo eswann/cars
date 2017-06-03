@@ -20,10 +20,7 @@ namespace Cars.UnitTests.Storage
             Mock<ISession> mockSession = new Mock<ISession>();
             mockSession.SetupAllProperties();
             mockSession.Setup(e => e.CommitAsync())
-                .Callback(() =>
-                {
-                    throw new Exception("Intentional exception");
-                })
+                .Callback(() => throw new Exception("Intentional exception"))
                 .Returns(Task.CompletedTask);
 
             UnitOfWork unitOfWork = new UnitOfWork(mockSession.Object);

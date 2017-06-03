@@ -30,9 +30,9 @@ namespace Cars.IntegrationTests
 
             var result = await response.Content.ReadAsStringAsync();
 
-            var aggregateId = ExtractAggregateIdFromResponseContent(result);
+            var streamId = ExtractStreamIdFromResponseContent(result);
 
-            eventStore.Events.Count(e => e.AggregateId == aggregateId).Should().Be(1);
+            eventStore.Events.Count(e => e.StreamId == streamId).Should().Be(1);
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -47,13 +47,13 @@ namespace Cars.IntegrationTests
 
             var result = await response.Content.ReadAsStringAsync();
 
-            var aggregateId = ExtractAggregateIdFromResponseContent(result);
+            var streamId = ExtractStreamIdFromResponseContent(result);
 
-            response = await server.CreateRequest($"/command/foo/{aggregateId}/doSomething").PostAsync();
+            response = await server.CreateRequest($"/command/foo/{streamId}/doSomething").PostAsync();
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            aggregateId.Should().NotBeEmpty();
+            streamId.Should().NotBeEmpty();
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -82,13 +82,13 @@ namespace Cars.IntegrationTests
             return testServer;
         }
 
-        private Guid ExtractAggregateIdFromResponseContent(string content)
+        private Guid ExtractStreamIdFromResponseContent(string content)
         {
-            var match = Regex.Match(content, "{\"AggregateId\":\"(.*)\"}", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            var match = Regex.Match(content, "{\"StreamId\":\"(.*)\"}", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-            var aggregateId = match.Groups[1].Value;
+            var streamId = match.Groups[1].Value;
 
-            return Guid.Parse(aggregateId);
+            return Guid.Parse(streamId);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Cars.UnitTests.Domain.Stubs.Events
     {
         public string Name { get; }
 
-        public NameChangedEvent(Guid aggregateId, string name) : base(aggregateId)
+        public NameChangedEvent(Guid streamId, string name) : base(streamId)
         {
             Name = name;
         }

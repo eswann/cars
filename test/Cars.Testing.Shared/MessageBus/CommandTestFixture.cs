@@ -34,14 +34,14 @@ using Moq;
 
 namespace Cars.Testing.Shared.MessageBus
 {
-    public abstract class CommandTestFixture<TCommand, TCommandHandler, TAggregateRoot>
+    public abstract class CommandTestFixture<TCommand, TCommandHandler, TStreamRoot>
         where TCommand : class, ICommand
         where TCommandHandler : class, ICommandHandler<TCommand>
-        where TAggregateRoot : Aggregate, new()
+        where TStreamRoot : Stream, new()
     {
         private readonly IDictionary<Type, object> _mocks;
 
-        protected TAggregateRoot AggregateRoot;
+        protected TStreamRoot StreamRoot;
         protected TCommandHandler CommandHandler;
         protected Exception CaughtException;
         protected IEnumerable<IDomainEvent> PublishedEvents;
@@ -57,8 +57,8 @@ namespace Cars.Testing.Shared.MessageBus
         {
             _mocks = new Dictionary<Type, object>();
             CaughtException = new ThereWasNoExceptionButOneWasExpectedException();
-            AggregateRoot = new TAggregateRoot();
-            AggregateRoot.LoadFromHistory(new CommitedDomainEventCollection(Given()));
+            StreamRoot = new TStreamRoot();
+            StreamRoot.LoadFromHistory(new CommitedDomainEventCollection(Given()));
 
             CommandHandler = BuildHandler();
 
@@ -67,7 +67,7 @@ namespace Cars.Testing.Shared.MessageBus
             try
             {
                 CommandHandler.ExecuteAsync(When()).GetAwaiter().GetResult();
-                PublishedEvents = AggregateRoot.UncommitedEvents.Select(e => e.OriginalEvent);
+                PublishedEvents = StreamRoot.UncommitedEvents.Select(e => e.OriginalEvent);
             }
             catch (Exception exception)
             {
@@ -93,8 +93,8 @@ namespace Cars.Testing.Shared.MessageBus
                 if (parameter.ParameterType == typeof(IRepository))
                 {
                     var repositoryMock = new Mock<IRepository>();
-                    repositoryMock.Setup(x => x.GetByIdAsync<TAggregateRoot>(It.IsAny<Guid>())).Returns(Task.FromResult(AggregateRoot));
-                    repositoryMock.Setup(x => x.AddAsync(It.IsAny<TAggregateRoot>())).Callback<TAggregateRoot>(x => AggregateRoot = x).Returns(Task.CompletedTask);
+                    repositoryMock.Setup(x => x.GetByIdAsync<TStreamRoot>(It.IsAny<Guid>())).Returns(Task.FromResult(StreamRoot));
+                    repositoryMock.Setup(x => x.AddAsync(It.IsAny<TStreamRoot>())).Callback<TStreamRoot>(x => StreamRoot = x).Returns(Task.CompletedTask);
                     _mocks.Add(parameter.ParameterType, repositoryMock);
                     continue;
                 }

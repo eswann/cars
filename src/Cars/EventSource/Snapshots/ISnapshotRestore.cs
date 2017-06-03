@@ -26,8 +26,8 @@ namespace Cars.EventSource.Snapshots
 {
     public interface ISnapshotRestore
     {
-        Guid AggregateId { get; }
-        int AggregateVersion { get; }
+        Guid StreamId { get; }
+        int StreamVersion { get; }
         ISnapshot Snapshot { get; }
     }
 }

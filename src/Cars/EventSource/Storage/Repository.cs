@@ -37,18 +37,18 @@ namespace Cars.EventSource.Storage
             _logger = loggerFactory?.CreateLogger<Repository>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
-        public Task AddAsync<TStream>(TStream stream) where TStream : Stream
+        public Task AddAsync<TAggregate>(TAggregate stream) where TAggregate : Aggregate
         {
             _logger.LogDebug($"Called method: {nameof(Repository)}.{nameof(AddAsync)}.");
 
             return _session.AddAsync(stream);
         }
 
-        public Task<TStream> GetByIdAsync<TStream>(Guid id) where TStream : Stream, new()
+        public Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new()
         {
             _logger.LogDebug($"Called method: {nameof(Repository)}.{nameof(GetByIdAsync)}.");
 
-            return _session.GetByIdAsync<TStream>(id);
+            return _session.GetByIdAsync<TAggregate>(id);
         }
     }
 }

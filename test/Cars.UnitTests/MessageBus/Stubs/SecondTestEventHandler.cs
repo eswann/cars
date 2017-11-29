@@ -11,7 +11,7 @@ namespace Cars.UnitTests.MessageBus.Stubs
 
         public Task ExecuteAsync(TestEvent @event)
         {
-            Ids.Add(@event.StreamId);
+            Ids.Add(@event.AggregateId);
 
             return Task.CompletedTask;
         }

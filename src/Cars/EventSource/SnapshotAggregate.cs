@@ -20,11 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Cars.EventSource.Snapshots
+using Cars.EventSource.Snapshots;
+
+namespace Cars.EventSource
 {
-    public interface ISnapshotStream : IStream
+    public abstract class SnapshotAggregate<TSnapshot> : Aggregate, ISnapshotAggregate
+        where TSnapshot : Snapshot
     {
-        ISnapshot CreateSnapshot();
-        void Restore(ISnapshotRestore snapshotRestore);
+        ISnapshot ISnapshotAggregate.CreateSnapshot()
+        {
+            var snapshot = CreateSnapshot();
+            
+            return snapshot;
+        }
+
+        void ISnapshotAggregate.Restore(ISnapshotRestore snapshotRestore)
+        {
+            AggregateId = snapshotRestore.AggregateId;
+            Version = snapshotRestore.StreamVersion;
+
+            RestoreFromSnapshot((TSnapshot)snapshotRestore.Snapshot);
+        }
+        
+        protected abstract TSnapshot CreateSnapshot();
+        protected abstract void RestoreFromSnapshot(TSnapshot snapshot);
     }
 }

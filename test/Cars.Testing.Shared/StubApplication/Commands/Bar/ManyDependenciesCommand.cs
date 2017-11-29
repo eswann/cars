@@ -12,6 +12,6 @@ namespace Cars.Testing.Shared.StubApplication.Commands.Bar
             Text = text;
         }
 
-        public Guid StreamId { get; } = Guid.NewGuid();
+        public Guid AggregateId { get; } = Guid.NewGuid();
     }
 }

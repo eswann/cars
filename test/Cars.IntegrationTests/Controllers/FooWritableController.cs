@@ -28,7 +28,7 @@ namespace Cars.IntegrationTests.Controllers
         {
             var cmd = new CreateFooCommand(Guid.NewGuid());
 
-            await _dispatcher.DispatchAsync(cmd);
+            var response = await _dispatcher.DispatchAsync<CreateFooCommand, CreateFooResponse>(cmd);
 
             await _unitOfWork.CommitAsync();
 
@@ -40,11 +40,11 @@ namespace Cars.IntegrationTests.Controllers
         {
             var cmd = new DoSomethingCommand(Guid.Parse(id));
 
-            await _dispatcher.DispatchAsync(cmd);
+			var response = await _dispatcher.DispatchAsync<DoSomethingCommand, DoSomethingResponse>(cmd);
 
-            await _unitOfWork.CommitAsync();
+			await _unitOfWork.CommitAsync();
 
-            return Ok(cmd);
+            return Ok(response);
         }
 
         [HttpPost("flood/{times:int}")]
@@ -52,9 +52,9 @@ namespace Cars.IntegrationTests.Controllers
         {
             var create = new CreateFooCommand(Guid.NewGuid());
 
-            await _dispatcher.DispatchAsync(create);
+            var response = await _dispatcher.DispatchAsync<CreateFooCommand, CreateFooResponse>(create);
 
-            var stream = await _repository.GetByIdAsync<Foo>(create.StreamId);
+            var stream = await _repository.GetByIdAsync<Foo>(create.AggregateId);
 
             for (var i = 1; i < times; i++)
             {

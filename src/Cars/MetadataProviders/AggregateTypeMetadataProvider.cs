@@ -28,9 +28,9 @@ namespace Cars.MetadataProviders
 {
     public class StreamTypeMetadataProvider : IMetadataProvider
     {
-        public IEnumerable<KeyValuePair<string, object>> Provide<TStream>(TStream stream, IDomainEvent @event, IMetadata metadata) where TStream : IStream
+        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate stream, IDomainEvent @event, IMetadata metadata) where TAggregate : IAggregate
         {
-            yield return new KeyValuePair<string, object>(MetadataKeys.StreamId, stream.Id);
+            yield return new KeyValuePair<string, object>(MetadataKeys.AggregateId, stream.AggregateId);
             yield return new KeyValuePair<string, object>(MetadataKeys.StreamSequenceNumber, stream.Sequence);
             yield return new KeyValuePair<string, object>(MetadataKeys.StreamTypeFullname, stream.GetType().FullName);
         }

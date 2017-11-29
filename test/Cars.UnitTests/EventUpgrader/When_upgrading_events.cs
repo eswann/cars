@@ -32,7 +32,7 @@ namespace Cars.UnitTests.EventUpgrader
 
             var v2 = (EventWithoutCounter) events.First();
 
-            v2.StreamId.Should().Be(v1.StreamId);
+            v2.AggregateId.Should().Be(v1.AggregateId);
             v2.Something.Should().Be(v1.Something);
         }
 
@@ -46,7 +46,7 @@ namespace Cars.UnitTests.EventUpgrader
 
             var v2 = (EventWithCounter) events.First();
 
-            v2.StreamId.Should().Be(v1.StreamId);
+            v2.AggregateId.Should().Be(v1.AggregateId);
             v2.Something.Should().Be(v1.Something);
             v2.Counter.Should().Be(1);
         }
@@ -103,7 +103,7 @@ namespace Cars.UnitTests.EventUpgrader
 
             // Assert
 
-            stream.Id.Should().Be(id);
+            stream.AggregateId.Should().Be(id);
             stream.FirstName.Should().Be("Jean");
             stream.LastName.Should().Be("Grey");
             stream.Version.Should().Be(4);
@@ -163,13 +163,13 @@ namespace Cars.UnitTests.EventUpgrader
             
             // Assert
 
-            stream.Id.Should().Be(id);
+            stream.AggregateId.Should().Be(id);
             stream.FirstName.Should().Be("Jean");
             stream.LastName.Should().Be("Grey");
         }
 
-        private async Task<Session> ArrangeSessionAsync<TStream>(Guid streamId, IEventUpdateManager eventUpdateManager = null, params IDomainEvent[] arrangeEvents)
-            where TStream : Stream, new()
+        private async Task<Session> ArrangeSessionAsync<TAggregate>(Guid aggregateId, IEventUpdateManager eventUpdateManager = null, params IDomainEvent[] arrangeEvents)
+            where TAggregate : Aggregate, new()
         {
             var metadataProviders = new IMetadataProvider[]
             {
@@ -188,7 +188,7 @@ namespace Cars.UnitTests.EventUpgrader
 
             var session = new Session(loggerFactory, eventStore, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, eventUpdateManager: eventUpdateManager);
             
-            var stream = (TStream) Activator.CreateInstance(typeof(TStream), args: streamId);
+            var stream = (TAggregate) Activator.CreateInstance(typeof(TAggregate), args: aggregateId);
             
             stream.UpdateVersion(arrangeEvents.Length - 1);
 
@@ -218,7 +218,7 @@ namespace Cars.UnitTests.EventUpgrader
     {
         public string Name { get; }
 
-        public NameChanged(Guid streamId, string name) : base(streamId)
+        public NameChanged(Guid aggregateId, string name) : base(aggregateId)
         {
             Name = name;
         }
@@ -232,7 +232,7 @@ namespace Cars.UnitTests.EventUpgrader
             var fname = oldEvent.Name.Split(' ')[0];
             var lname = oldEvent.Name.Split(' ')[1];
 
-            yield return new FullNameChanged(oldEvent.StreamId, fname, lname);
+            yield return new FullNameChanged(oldEvent.AggregateId, fname, lname);
         }
     }
 
@@ -240,7 +240,7 @@ namespace Cars.UnitTests.EventUpgrader
     {
         public IEnumerable<IDomainEvent> Update(EventWithCounter oldEvent)
         {
-            yield return new EventWithoutCounter(oldEvent.StreamId, oldEvent.Something);
+            yield return new EventWithoutCounter(oldEvent.AggregateId, oldEvent.Something);
         }
     }
 
@@ -248,7 +248,7 @@ namespace Cars.UnitTests.EventUpgrader
     {
         public IEnumerable<IDomainEvent> Update(EventWithoutCounter oldEvent)
         {
-            yield return new EventWithCounter(oldEvent.StreamId, oldEvent.Something, 1);
+            yield return new EventWithCounter(oldEvent.AggregateId, oldEvent.Something, 1);
         }
     }
 
@@ -258,7 +258,7 @@ namespace Cars.UnitTests.EventUpgrader
 
         public int Counter { get; }
 
-        public EventWithCounter(Guid streamId, string something, int counter) : base(streamId)
+        public EventWithCounter(Guid aggregateId, string something, int counter) : base(aggregateId)
         {
             Something = something;
             Counter = counter;
@@ -268,7 +268,7 @@ namespace Cars.UnitTests.EventUpgrader
     public class EventWithoutCounter : DomainEvent
     {
         public string Something { get; }
-        public EventWithoutCounter(Guid streamId, string something) : base(streamId)
+        public EventWithoutCounter(Guid aggregateId, string something) : base(aggregateId)
         {
             Something = something;
         }

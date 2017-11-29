@@ -4,7 +4,7 @@ using Cars.EventSource.Storage;
 
 namespace Cars.Testing.Shared.StubApplication.Commands.Foo
 {
-    public class DoSomethingCommandHandler : ICommandHandler<DoSomethingCommand>
+    public class DoSomethingCommandHandler : ICommandHandler<DoSomethingCommand, DoSomethingResponse>
     {
         private readonly IRepository _repository;
 
@@ -13,10 +13,11 @@ namespace Cars.Testing.Shared.StubApplication.Commands.Foo
             _repository = repository;
         }
 
-        public async Task ExecuteAsync(DoSomethingCommand command)
+        public async Task<DoSomethingResponse> ExecuteAsync(DoSomethingCommand command)
         {
-            var foo = await _repository.GetByIdAsync<Domain.Foo.Foo>(command.StreamId);
+            var foo = await _repository.GetByIdAsync<Domain.Foo.Foo>(command.AggregateId);
             foo.DoSomething();
+	        return new DoSomethingResponse(command.AggregateId);
         }
     }
 }

@@ -12,6 +12,6 @@ namespace Cars.Testing.Shared.StubApplication.EventHandlers
             Text = text;
         }
 
-        public Guid StreamId { get; } = Guid.NewGuid();
+        public Guid AggregateId { get; } = Guid.NewGuid();
     }
 }

@@ -6,13 +6,13 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Bar.Projections
 {
     public class BarProjectionProvider : IProjectionProvider
     {
-        public object CreateProjection(IStream stream)
+        public object CreateProjection(IAggregate aggregate)
         {
-            var target = (Bar)stream;
+            var target = (Bar)aggregate;
 
             return new BarProjection
             {
-                Id = target.Id,
+                Id = target.AggregateId,
                 LastText = target.LastText,
                 UpdatedAt = target.UpdatedAt,
                 Messages = new List<string>(target.Messages)
@@ -22,13 +22,13 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Bar.Projections
 
     public class BarWithoutMessagesProjectionProvider : IProjectionProvider
     {
-        public object CreateProjection(IStream stream)
+        public object CreateProjection(IAggregate aggregate)
         {
-            var target = (Bar)stream;
+            var target = (Bar)aggregate;
 
             return new BarWithoutMessagesProjection
             {
-                Id = target.Id,
+                Id = target.AggregateId,
                 LastText = target.LastText,
                 UpdatedAt = target.UpdatedAt
             };
@@ -41,7 +41,7 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Bar.Projections
         {
             return new BarWithIdOnlyProjection
             {
-                Id = stream.Id
+                Id = stream.AggregateId
             };
         }
     }

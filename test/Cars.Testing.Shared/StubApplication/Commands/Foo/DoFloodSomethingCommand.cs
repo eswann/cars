@@ -7,7 +7,7 @@ namespace Cars.Testing.Shared.StubApplication.Commands.Foo
     {
         public int Times { get; }
 
-        public DoFloodSomethingCommand(Guid streamId, int times) : base(streamId)
+        public DoFloodSomethingCommand(Guid aggregateId, int times) : base(aggregateId)
         {
             Times = times;
         }

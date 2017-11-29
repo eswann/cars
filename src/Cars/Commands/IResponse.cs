@@ -20,29 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Cars.EventSource.Snapshots;
+using System;
 
-namespace Cars.EventSource
+namespace Cars.Commands
 {
-    public abstract class SnapshotStream<TSnapshot> : Stream, ISnapshotStream
-        where TSnapshot : Snapshot
+    /// <summary>
+    /// Represent the User Intention (UI) abstraction.
+    /// </summary>
+    public interface IResponse
     {
-        ISnapshot ISnapshotStream.CreateSnapshot()
-        {
-            var snapshot = CreateSnapshot();
-            
-            return snapshot;
-        }
-
-        void ISnapshotStream.Restore(ISnapshotRestore snapshotRestore)
-        {
-            Id = snapshotRestore.StreamId;
-            Version = snapshotRestore.StreamVersion;
-
-            RestoreFromSnapshot((TSnapshot)snapshotRestore.Snapshot);
-        }
-        
-        protected abstract TSnapshot CreateSnapshot();
-        protected abstract void RestoreFromSnapshot(TSnapshot snapshot);
+        Guid AggregateId { get; }
     }
 }

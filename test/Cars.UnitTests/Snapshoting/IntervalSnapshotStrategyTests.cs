@@ -16,7 +16,7 @@ namespace Cars.UnitTests.Snapshoting
         [Fact]
         public void When_stream_type_have_support_snapshoting()
         {
-            var snapshotStreamType = typeof(StubSnapshotStream);
+            var snapshotStreamType = typeof(StubSnapshotAggregate);
             
             var itervalSnapshotStrategy = new IntervalSnapshotStrategy();
             var hasSupport = itervalSnapshotStrategy.CheckSnapshotSupport(snapshotStreamType);
@@ -28,7 +28,7 @@ namespace Cars.UnitTests.Snapshoting
         [Fact]
         public void When_stream_type_doesnt_have_support_snapshoting()
         {
-            var snapshotStreamType = typeof(StubStream);
+            var snapshotStreamType = typeof(StubAggregate);
 
             var defaultSnapshotStrategy = new IntervalSnapshotStrategy();
             var hasSupport = defaultSnapshotStrategy.CheckSnapshotSupport(snapshotStreamType);
@@ -48,7 +48,7 @@ namespace Cars.UnitTests.Snapshoting
         {
             var itervalSnapshotStrategy = new IntervalSnapshotStrategy(snapshotInterval);
 
-            var snapshotStreamMock = new Mock<ISnapshotStream>();
+            var snapshotStreamMock = new Mock<ISnapshotAggregate>();
             snapshotStreamMock.Setup(e => e.Sequence).Returns(streamEventVersion);
 
             var snapshotStream = snapshotStreamMock.Object;
@@ -64,7 +64,7 @@ namespace Cars.UnitTests.Snapshoting
         {
             var itervalSnapshotStrategy = new IntervalSnapshotStrategy();
 
-            var streamMock = new Mock<IStream>();
+            var streamMock = new Mock<IAggregate>();
             var stream = streamMock.Object;
           
             var makeSnapshot = itervalSnapshotStrategy.ShouldMakeSnapshot(stream);

@@ -29,8 +29,8 @@ namespace Cars.MetadataProviders
 {
     public class EventTypeMetadataProvider : IMetadataProvider
     {
-        public IEnumerable<KeyValuePair<string, object>> Provide<TStream>(TStream stream, IDomainEvent @event, IMetadata metadata)
-            where TStream : IStream
+        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate stream, IDomainEvent @event, IMetadata metadata)
+            where TAggregate : IAggregate
         {
             string eventName;
 

@@ -35,7 +35,7 @@ namespace Cars.Testing.Shared.EventStore
 
             session = CreateSession();
 
-            var bar2 = await session.GetByIdAsync<Bar>(bar.Id).ConfigureAwait(false);
+            var bar2 = await session.GetByIdAsync<Bar>(bar.AggregateId).ConfigureAwait(false);
 
             var result = _eventStore.CalledMethods.HasFlag(EventStoreMethods.Ctor
                 | EventStoreMethods.BeginTransaction
@@ -44,7 +44,7 @@ namespace Cars.Testing.Shared.EventStore
                 | EventStoreMethods.CommitAsync
                 | EventStoreMethods.GetAllEventsAsync);
 
-            bar.Id.Should().Be(bar2.Id);
+            bar.AggregateId.Should().Be(bar2.AggregateId);
 
             result.Should().BeTrue();
 
@@ -62,7 +62,7 @@ namespace Cars.Testing.Shared.EventStore
 
             session = CreateSession();
 
-            var foo2 = await session.GetByIdAsync<Foo>(foo.Id).ConfigureAwait(false);
+            var foo2 = await session.GetByIdAsync<Foo>(foo.AggregateId).ConfigureAwait(false);
             
             var result = _eventStore.CalledMethods.HasFlag(
                 EventStoreMethods.Ctor 
@@ -72,7 +72,7 @@ namespace Cars.Testing.Shared.EventStore
                 | EventStoreMethods.GetLatestSnapshotByIdAsync 
                 | EventStoreMethods.GetEventsForwardAsync);
 
-            foo.Id.Should().Be(foo2.Id);
+            foo.AggregateId.Should().Be(foo2.AggregateId);
 
             result.Should().BeTrue();
         }

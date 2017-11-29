@@ -19,11 +19,11 @@ namespace Cars.UnitTests.Storage
             return base.SaveAsync(collection);
         }
 
-        public override Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid streamId)
+        public override Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
             GetSnapshotMethodCalled = true;
 
-            return base.GetLatestSnapshotByIdAsync(streamId);
+            return base.GetLatestSnapshotByIdAsync(aggregateId);
         }
     }
 }

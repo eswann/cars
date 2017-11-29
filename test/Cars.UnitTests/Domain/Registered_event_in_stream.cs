@@ -7,15 +7,15 @@ using Xunit;
 
 namespace Cars.UnitTests.Domain
 {
-    public class Registered_event_in_stream : StreamTestFixture<StubStream>
+    public class Registered_event_in_stream : StreamTestFixture<StubAggregate>
     {
         public const string CategoryName = "Unit";
         public const string CategoryValue = "Stream";
 
         protected override void When()
         {
-            StreamRoot = StubStream.Create("Heinsenberg");
-            StreamRoot.ChangeName("Walter White");
+            AggregateRoot = StubAggregate.Create("Heinsenberg");
+            AggregateRoot.ChangeName("Walter White");
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -29,7 +29,7 @@ namespace Cars.UnitTests.Domain
         [Fact]
         public void Then_verify_name_property()
         {
-            PublishedEvents.Last().As<NameChangedEvent>().Name.Should().Be(StreamRoot.Name);
+            PublishedEvents.Last().As<NameChangedEvent>().Name.Should().Be(AggregateRoot.Name);
         }
     }
 }

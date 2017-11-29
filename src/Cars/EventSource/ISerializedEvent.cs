@@ -26,7 +26,7 @@ namespace Cars.EventSource
 {
     public interface ISerializedEvent
     {
-        Guid StreamId { get; }
+        Guid AggregateId { get; }
         int Version { get; }
         string SerializedMetadata { get; }
         string SerializedData { get; }

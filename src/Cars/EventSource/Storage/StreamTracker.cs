@@ -30,41 +30,41 @@ namespace Cars.EventSource.Storage
     {
         private readonly ConcurrentDictionary<Type, Dictionary<Guid, object>> _track = new ConcurrentDictionary<Type, Dictionary<Guid, object>>();
 
-        public TStream GetById<TStream>(Guid id) where TStream : Stream
+        public TAggregate GetById<TAggregate>(Guid id) where TAggregate : Aggregate
         {
             Dictionary<Guid, object> streams;
-            if (!_track.TryGetValue(typeof(TStream), out streams))
+            if (!_track.TryGetValue(typeof(TAggregate), out streams))
                 return null;
 
             object stream;
             if (!streams.TryGetValue(id, out stream))
                 return null;
 
-            return (TStream)stream;
+            return (TAggregate)stream;
         }
         
-        public void Add<TStream>(TStream streamRoot) where TStream : Stream
+        public void Add<TAggregate>(TAggregate streamRoot) where TAggregate : Aggregate
         {
             Dictionary<Guid, object> streams;
-            if (!_track.TryGetValue(typeof(TStream), out streams))
+            if (!_track.TryGetValue(typeof(TAggregate), out streams))
             {
                 streams = new Dictionary<Guid, object>();
-                _track.TryAdd(typeof(TStream), streams);
+                _track.TryAdd(typeof(TAggregate), streams);
             }
 
-            if (streams.ContainsKey(streamRoot.Id))
+            if (streams.ContainsKey(streamRoot.AggregateId))
                 return;
 
-            streams.Add(streamRoot.Id, streamRoot);
+            streams.Add(streamRoot.AggregateId, streamRoot);
         }
 
-        public void Remove(Type streamType, Guid streamId)
+        public void Remove(Type streamType, Guid aggregateId)
         {
             Dictionary<Guid, object> streams;
             if (!_track.TryGetValue(streamType, out streams))
                 return;
 
-            streams.Remove(streamId);
+            streams.Remove(aggregateId);
         }
         
     }

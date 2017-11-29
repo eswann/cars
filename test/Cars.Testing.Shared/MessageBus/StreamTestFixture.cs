@@ -29,9 +29,9 @@ using Cars.EventSource;
 
 namespace Cars.Testing.Shared.MessageBus
 {
-    public abstract class StreamTestFixture<TStreamRoot> where TStreamRoot : Stream, new()
+    public abstract class StreamTestFixture<TAggregate> where TAggregate : Aggregate, new()
     {
-        protected TStreamRoot StreamRoot;
+        protected TAggregate AggregateRoot;
         protected Exception CaughtException;
         protected IEnumerable<IDomainEvent> PublishedEvents;
         protected virtual IEnumerable<IDomainEvent> Given()
@@ -44,13 +44,13 @@ namespace Cars.Testing.Shared.MessageBus
         protected StreamTestFixture()
         {
             CaughtException = new ThereWasNoExceptionButOneWasExpectedException();
-            StreamRoot = new TStreamRoot();
-            StreamRoot.LoadFromHistory(new CommitedDomainEventCollection(Given()));
+            AggregateRoot = new TAggregate();
+            AggregateRoot.LoadFromHistory(new CommitedDomainEventCollection(Given()));
 
             try
             {
                 When();
-                PublishedEvents = StreamRoot.UncommitedEvents.Select(e => e.OriginalEvent);
+                PublishedEvents = AggregateRoot.UncommitedEvents.Select(e => e.OriginalEvent);
             }
             catch (Exception exception)
             {

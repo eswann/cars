@@ -28,7 +28,7 @@ using Cars.Events;
 
 namespace Cars.EventSource
 {
-    public abstract class Stream : IStream
+    public abstract class Aggregate : IAggregate
     {
         private readonly List<UncommitedEvent> _uncommitedEvents = new List<UncommitedEvent>();
         private readonly Route<IDomainEvent> _routeEvents = new Route<IDomainEvent>();
@@ -42,7 +42,7 @@ namespace Cars.EventSource
         /// <summary>
         /// Unique identifier.
         /// </summary>
-        public Guid Id { get; protected set; }
+        public Guid AggregateId { get; protected set; }
 
         /// <summary>
         /// Current version of the Stream.
@@ -57,7 +57,7 @@ namespace Cars.EventSource
         /// <summary>
         /// Stream default constructor.
         /// </summary>
-        protected Stream()
+        protected Aggregate()
         {
             RegisterEvents();
         }

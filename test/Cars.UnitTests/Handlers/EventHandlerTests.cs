@@ -31,26 +31,26 @@ namespace Cars.UnitTests.Handlers
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
-        public void Should_pass_the_correct_StreamId()
+        public void Should_pass_the_correct_AggregateId()
         {
-            EventHandler.StreamId.Should().Be(_id);
+            EventHandler.AggregateId.Should().Be(_id);
         }
         
         public class StubCreatedEvent : DomainEvent
         {
-            public StubCreatedEvent(Guid streamId) : base(streamId)
+            public StubCreatedEvent(Guid aggregateId) : base(aggregateId)
             {
             }
         }
 
         public class StubCreatedEventHandler : IEventHandler<StubCreatedEvent>
         {
-            public Guid StreamId { get; private set; }
+            public Guid AggregateId { get; private set; }
             public bool Executed { get; private set; }
 
             public Task ExecuteAsync(StubCreatedEvent @event)
             {
-                StreamId = @event.StreamId;
+                AggregateId = @event.AggregateId;
 
                 Executed = true;
 

@@ -7,7 +7,7 @@ namespace Cars.Testing.Shared.StubApplication.Commands.Bar
     {
         public string Text { get; }
 
-        public SpeakCommand(Guid streamId, string text) : base(streamId)
+        public SpeakCommand(Guid aggregateId, string text) : base(aggregateId)
         {
             Text = text;
         }

@@ -8,7 +8,7 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Foo
         public string FirstName { get; }
         public string LastName { get; }
 
-        public FullNameChanged(Guid streamId, string firstName, string lastName) : base(streamId)
+        public FullNameChanged(Guid aggregateId, string firstName, string lastName) : base(aggregateId)
         {
             LastName = lastName;
             FirstName = firstName;

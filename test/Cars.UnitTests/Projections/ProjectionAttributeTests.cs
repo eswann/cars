@@ -47,7 +47,7 @@ namespace Cars.UnitTests.Projections
 
             var projection = (BarProjection) provider.CreateProjection(bar);
 
-            projection.Id.Should().Be(bar.Id);
+            projection.Id.Should().Be(bar.AggregateId);
             projection.LastText.Should().Be(bar.LastText);
             projection.Messages.Count.Should().Be(bar.Messages.Count);
             projection.UpdatedAt.Should().Be(bar.UpdatedAt);

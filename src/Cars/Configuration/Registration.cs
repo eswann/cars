@@ -18,7 +18,7 @@ namespace Cars.Configuration
 {
 	public static class Registration
 	{
-		private static readonly Type _commandType = typeof(ICommandHandler<>);
+		private static readonly Type _commandType = typeof(ICommandHandler<,>);
 		private static readonly Type _eventType = typeof(IEventHandler<>);
 
 		public static IServiceCollection AddCars(this IServiceCollection services)

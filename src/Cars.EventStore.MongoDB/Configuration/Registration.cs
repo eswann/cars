@@ -8,16 +8,16 @@ namespace Cars.EventStore.MongoDB.Configuration
 {
     public static class Registration
     {
-        public static IServiceCollection AddCarsMongo(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddCarsMongo(this IServiceCollection services)
         {
-	        serviceCollection.AddCars();
+	        services.AddCars();
 
-            serviceCollection.AddSingleton<ITextSerializer, BsonTextSerializer>();
-            serviceCollection.AddSingleton<IEventStore, MongoEventStore>();
-			serviceCollection.AddSingleton<IProjectionRepository, MongoProjectionRepository>();
-	        serviceCollection.AddSingleton(typeof(IProjectionRepository<>), typeof(MongoProjectionRepository<>));
+            services.AddSingleton<ITextSerializer, BsonTextSerializer>();
+            services.AddSingleton<IEventStore, MongoEventStore>();
+			services.AddSingleton<IProjectionRepository, MongoProjectionRepository>();
+	        services.AddSingleton(typeof(IProjectionRepository<>), typeof(MongoProjectionRepository<>));
 
-			return serviceCollection;
+			return services;
 		}
 
 	}

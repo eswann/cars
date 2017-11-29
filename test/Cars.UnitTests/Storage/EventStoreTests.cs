@@ -56,14 +56,14 @@ namespace Cars.UnitTests.Storage
         [Fact]
         public async Task When_calling_Save_it_will_add_the_domain_events_to_the_domain_event_storage()
         {
-            var testStream = StubStream.Create("Walter White");
+            var testStream = StubAggregate.Create("Walter White");
             testStream.ChangeName("Heinsenberg");
 
             await _repository.AddAsync(testStream).ConfigureAwait(false);
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            var events = await _inMemoryDomainEventStore.GetAllEventsAsync(testStream.Id);
+            var events = await _inMemoryDomainEventStore.GetAllEventsAsync(testStream.AggregateId);
             
             events.Count().Should().Be(2);
         }
@@ -72,7 +72,7 @@ namespace Cars.UnitTests.Storage
         [Fact]
         public async Task When_Save_Then_the_uncommited_events_should_be_published()
         {
-            var testStream = StubStream.Create("Walter White");
+            var testStream = StubAggregate.Create("Walter White");
             testStream.ChangeName("Heinsenberg");
 
             await _repository.AddAsync(testStream).ConfigureAwait(false);
@@ -85,13 +85,13 @@ namespace Cars.UnitTests.Storage
         [Fact]
         public async Task When_load_stream_should_be_correct_version()
         {
-            var testStream = StubStream.Create("Walter White");
+            var testStream = StubAggregate.Create("Walter White");
             testStream.ChangeName("Heinsenberg");
 
             await _repository.AddAsync(testStream).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            var testStream2 = await _repository.GetByIdAsync<StubStream>(testStream.Id).ConfigureAwait(false);
+            var testStream2 = await _repository.GetByIdAsync<StubAggregate>(testStream.AggregateId).ConfigureAwait(false);
             
             testStream.Version.Should().Be(testStream2.Version);
         }

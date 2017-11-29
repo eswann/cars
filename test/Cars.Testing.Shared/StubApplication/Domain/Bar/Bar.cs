@@ -10,7 +10,7 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Bar
     [ProjectionProvider(typeof(BarWithoutMessagesProjectionProvider))]
     [ProjectionProvider(typeof(BarProjectionProvider))]
     [ProjectionProvider(typeof(BarProjectionProvider))]
-    public class Bar : Stream
+    public class Bar : Aggregate
     {
         private List<string> _messages = new List<string>();
 
@@ -47,7 +47,7 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Bar
         {
             SubscribeTo<BarCreated>(e =>
             {
-                Id = e.StreamId;
+                AggregateId = e.AggregateId;
                 UpdatedAt = DateTime.Now;
             });
 

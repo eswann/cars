@@ -27,12 +27,12 @@ namespace Cars.EventSource.Exceptions
     public class StreamNotFoundException : Exception
     {
         public string StreamName { get; }
-        public Guid StreamId { get; }
+        public Guid AggregateId { get; }
 
-        public StreamNotFoundException(string streamName, Guid streamId) : base($"The stream '{streamName}' with identifier '{streamId}' was not found.")
+        public StreamNotFoundException(string streamName, Guid aggregateId) : base($"The stream '{streamName}' with identifier '{aggregateId}' was not found.")
         {
             StreamName = streamName;
-            StreamId = streamId;
+            AggregateId = aggregateId;
         }
     }
 }

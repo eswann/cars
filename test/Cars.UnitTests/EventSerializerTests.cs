@@ -23,14 +23,14 @@ namespace Cars.UnitTests
 
             var metadata = new EventSource.Metadata(new[]
             {
-                new KeyValuePair<string, object>(MetadataKeys.StreamId, Guid.NewGuid().ToString()),
+                new KeyValuePair<string, object>(MetadataKeys.AggregateId, Guid.NewGuid().ToString()),
                 new KeyValuePair<string, object>(MetadataKeys.StreamSequenceNumber, 1.ToString()),
                 new KeyValuePair<string, object>(MetadataKeys.EventClrType, "Cars.UnitTests.EventSerializerTests+NotFoundClrType, Cars.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")
             });
             
             var mockCommitedEvent = new Mock<ICommitedEvent>();
             mockCommitedEvent.Setup(e => e.Version).Returns(1);
-            mockCommitedEvent.Setup(e => e.StreamId).Returns(Guid.NewGuid);
+            mockCommitedEvent.Setup(e => e.AggregateId).Returns(Guid.NewGuid);
             mockCommitedEvent.Setup(e => e.SerializedData).Returns(serializedData);
             mockCommitedEvent.Setup(e => e.SerializedMetadata).Returns(textSerializer.Serialize(metadata));
 

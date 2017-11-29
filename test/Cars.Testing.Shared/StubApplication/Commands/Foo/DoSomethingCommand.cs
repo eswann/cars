@@ -5,7 +5,7 @@ namespace Cars.Testing.Shared.StubApplication.Commands.Foo
 {
     public class DoSomethingCommand : Command
     {
-        public DoSomethingCommand(Guid streamId) : base(streamId)
+        public DoSomethingCommand(Guid aggregateId) : base(aggregateId)
         {
         }
     }

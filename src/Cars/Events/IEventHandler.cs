@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace Cars.Events
 {
-    public interface IEventHandler<TEvent> where TEvent : IDomainEvent
+    public interface IEventHandler<in TEvent> where TEvent : IDomainEvent
     {
         Task ExecuteAsync(TEvent @event);
     }

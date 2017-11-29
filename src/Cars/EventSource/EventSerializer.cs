@@ -36,17 +36,17 @@ namespace Cars.EventSource
             _textSerializer = textSerializer;
         }
 
-        public ISerializedEvent Serialize(IStream stream, IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas)
+        public ISerializedEvent Serialize(IAggregate aggregate, IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas)
         {
             var metadata = new Metadata(metadatas);
             
-            var streamId = metadata.GetValue(MetadataKeys.StreamId, (value) => Guid.Parse(value.ToString()));
-            var streamVersion = metadata.GetValue(MetadataKeys.StreamSequenceNumber, (value) => int.Parse(value.ToString()));
+            var aggregateId = metadata.GetValue(MetadataKeys.AggregateId, (value) => Guid.Parse(value.ToString()));
+            var version = metadata.GetValue(MetadataKeys.StreamSequenceNumber, (value) => int.Parse(value.ToString()));
 
             var serializedData = _textSerializer.Serialize(@event);
             var serializedMetadata = _textSerializer.Serialize(metadata);
 
-            return new SerializedEvent(streamId, streamVersion, serializedData, serializedMetadata, metadata);
+            return new SerializedEvent(aggregateId, version, serializedData, serializedMetadata, metadata);
         }
 
         public IDomainEvent Deserialize(ICommitedEvent commitedEvent)

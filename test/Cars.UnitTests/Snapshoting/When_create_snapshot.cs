@@ -14,14 +14,14 @@ namespace Cars.UnitTests.Snapshoting
         
         public When_create_snapshot()
         {
-            var stubSnapshotStream = StubSnapshotStream.Create("Superman");
+            var stubSnapshotStream = StubSnapshotAggregate.Create("Superman");
             stubSnapshotStream.ChangeName("Batman");
             stubSnapshotStream.AddEntity("entity 1");
             var entityId = stubSnapshotStream.AddEntity("entity 2");
 
             stubSnapshotStream.DisableEntity(entityId);
 
-            _snapshot = ((ISnapshotStream) stubSnapshotStream).CreateSnapshot();
+            _snapshot = ((ISnapshotAggregate) stubSnapshotStream).CreateSnapshot();
         }
 
         [Trait(CategoryName, CategoryValue)]

@@ -107,7 +107,7 @@ namespace Cars.UnitTests.Storage
             // create first session instance
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, null);
 
-            var stubStream1 = StubStream.Create("Walter White");
+            var stubStream1 = StubAggregate.Create("Walter White");
 
             await session.AddAsync(stubStream1).ConfigureAwait(false);
 
@@ -118,7 +118,7 @@ namespace Cars.UnitTests.Storage
             // create second session instance to getting clear tracking
             session = _sessionFactory(eventStore, _eventPublisherMock.Object, null);
 
-            var stubStream2 = await session.GetByIdAsync<StubStream>(stubStream1.Id).ConfigureAwait(false);
+            var stubStream2 = await session.GetByIdAsync<StubAggregate>(stubStream1.AggregateId).ConfigureAwait(false);
 
             stubStream2.ChangeName("Going to Version 2");
 
@@ -127,7 +127,7 @@ namespace Cars.UnitTests.Storage
 
             Func<Task> wrongVersion = async () => await session.AddAsync(stubStream1);
 
-            wrongVersion.ShouldThrowExactly<ExpectedVersionException<StubStream>>().And.Stream.Should().Be(stubStream1);
+            wrongVersion.ShouldThrowExactly<ExpectedVersionException<StubAggregate>>().And.Stream.Should().Be(stubStream1);
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -138,7 +138,7 @@ namespace Cars.UnitTests.Storage
 
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, null);
 
-            var stubStream1 = StubStream.Create("Walter White");
+            var stubStream1 = StubAggregate.Create("Walter White");
 
             await session.AddAsync(stubStream1).ConfigureAwait(false);
 
@@ -146,7 +146,7 @@ namespace Cars.UnitTests.Storage
 
             stubStream1.ChangeName("Changes");
 
-            var stubStream2 = await session.GetByIdAsync<StubStream>(stubStream1.Id).ConfigureAwait(false);
+            var stubStream2 = await session.GetByIdAsync<StubAggregate>(stubStream1.AggregateId).ConfigureAwait(false);
 
             stubStream2.ChangeName("More changes");
 
@@ -167,12 +167,12 @@ namespace Cars.UnitTests.Storage
 
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, null);
 
-            var stubStream1 = StubStream.Create("Walter White");
-            var stubStream2 = StubStream.Create("Heinsenberg");
+            var stubStream1 = StubAggregate.Create("Walter White");
+            var stubStream2 = StubAggregate.Create("Heinsenberg");
 
             stubStream1.ChangeName("Saul Goodman");
 
-            stubStream2.Relationship(stubStream1.Id);
+            stubStream2.Relationship(stubStream1.AggregateId);
 
             stubStream1.ChangeName("Jesse Pinkman");
 
@@ -181,19 +181,19 @@ namespace Cars.UnitTests.Storage
 
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            events[0].Should().BeOfType<StubStreamCreatedEvent>().Which.StreamId.Should().Be(stubStream1.Id);
+            events[0].Should().BeOfType<StubStreamCreatedEvent>().Which.AggregateId.Should().Be(stubStream1.AggregateId);
             events[0].Should().BeOfType<StubStreamCreatedEvent>().Which.Name.Should().Be("Walter White");
 
-            events[1].Should().BeOfType<StubStreamCreatedEvent>().Which.StreamId.Should().Be(stubStream2.Id);
+            events[1].Should().BeOfType<StubStreamCreatedEvent>().Which.AggregateId.Should().Be(stubStream2.AggregateId);
             events[1].Should().BeOfType<StubStreamCreatedEvent>().Which.Name.Should().Be("Heinsenberg");
 
-            events[2].Should().BeOfType<NameChangedEvent>().Which.StreamId.Should().Be(stubStream1.Id);
+            events[2].Should().BeOfType<NameChangedEvent>().Which.AggregateId.Should().Be(stubStream1.AggregateId);
             events[2].Should().BeOfType<NameChangedEvent>().Which.Name.Should().Be("Saul Goodman");
 
-            events[3].Should().BeOfType<StubStreamRelatedEvent>().Which.StreamId.Should().Be(stubStream2.Id);
-            events[3].Should().BeOfType<StubStreamRelatedEvent>().Which.StubStreamId.Should().Be(stubStream1.Id);
+            events[3].Should().BeOfType<StubStreamRelatedEvent>().Which.AggregateId.Should().Be(stubStream2.AggregateId);
+            events[3].Should().BeOfType<StubStreamRelatedEvent>().Which.StubAggregateId.Should().Be(stubStream1.AggregateId);
 
-            events[4].Should().BeOfType<NameChangedEvent>().Which.StreamId.Should().Be(stubStream1.Id);
+            events[4].Should().BeOfType<NameChangedEvent>().Which.AggregateId.Should().Be(stubStream1.AggregateId);
             events[4].Should().BeOfType<NameChangedEvent>().Which.Name.Should().Be("Jesse Pinkman");
         }
 
@@ -208,7 +208,7 @@ namespace Cars.UnitTests.Storage
             var eventStore = new StubEventStore();
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
 
-            var stubStream = StubSnapshotStream.Create("Snap");
+            var stubStream = StubSnapshotAggregate.Create("Snap");
 
             stubStream.AddEntity("Child 1");
             stubStream.AddEntity("Child 2");
@@ -223,7 +223,7 @@ namespace Cars.UnitTests.Storage
 
             eventStore.SaveSnapshotMethodCalled.Should().BeTrue();
 
-            var commitedSnapshot = eventStore.Snapshots.First(e => e.StreamId == stubStream.Id);
+            var commitedSnapshot = eventStore.Snapshots.First(e => e.AggregateId == stubStream.AggregateId);
 
             commitedSnapshot.Should().NotBeNull();
 
@@ -249,7 +249,7 @@ namespace Cars.UnitTests.Storage
 
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
 
-            var stubStream = StubSnapshotStream.Create("Snap");
+            var stubStream = StubSnapshotAggregate.Create("Snap");
 
             stubStream.AddEntity("Child 1");
             stubStream.AddEntity("Child 2");
@@ -259,12 +259,12 @@ namespace Cars.UnitTests.Storage
 
             session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
 
-            var stream = await session.GetByIdAsync<StubSnapshotStream>(stubStream.Id).ConfigureAwait(false);
+            var stream = await session.GetByIdAsync<StubSnapshotAggregate>(stubStream.AggregateId).ConfigureAwait(false);
 
             eventStore.GetSnapshotMethodCalled.Should().BeTrue();
 
             stream.Version.Should().Be(3);
-            stream.Id.Should().Be(stubStream.Id);
+            stream.AggregateId.Should().Be(stubStream.AggregateId);
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -277,7 +277,7 @@ namespace Cars.UnitTests.Storage
 
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
 
-            var stubStream = StubSnapshotStream.Create("Snap");
+            var stubStream = StubSnapshotAggregate.Create("Snap");
 
             stubStream.AddEntity("Child 1");
             stubStream.AddEntity("Child 2");
@@ -287,7 +287,7 @@ namespace Cars.UnitTests.Storage
 
             session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
 
-            var stream = await session.GetByIdAsync<StubSnapshotStream>(stubStream.Id).ConfigureAwait(false);
+            var stream = await session.GetByIdAsync<StubSnapshotAggregate>(stubStream.AggregateId).ConfigureAwait(false);
 
             stream.Name.Should().Be(stubStream.Name);
             stream.Entities.Count.Should().Be(stubStream.Entities.Count);
@@ -303,7 +303,7 @@ namespace Cars.UnitTests.Storage
 
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
 
-            var stubStream = StubSnapshotStream.Create("Snap");
+            var stubStream = StubSnapshotAggregate.Create("Snap");
 
             await session.AddAsync(stubStream).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false); // Version 1
@@ -319,7 +319,7 @@ namespace Cars.UnitTests.Storage
             await session.AddAsync(stubStream).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false); // Version 3
 
-            var stubStreamFromSnapshot = await session.GetByIdAsync<StubSnapshotStream>(stubStream.Id).ConfigureAwait(false);
+            var stubStreamFromSnapshot = await session.GetByIdAsync<StubSnapshotAggregate>(stubStream.AggregateId).ConfigureAwait(false);
 
             stubStreamFromSnapshot.Version.Should().Be(3);
         }
@@ -338,13 +338,13 @@ namespace Cars.UnitTests.Storage
 
             Func<Task> act = async () =>
             {
-                await session.GetByIdAsync<StubStream>(newId).ConfigureAwait(false);
+                await session.GetByIdAsync<StubAggregate>(newId).ConfigureAwait(false);
             };
 
             var assertion = act.ShouldThrowExactly<StreamNotFoundException>();
 
-            assertion.Which.StreamName.Should().Be(typeof(StubStream).Name);
-            assertion.Which.StreamId.Should().Be(newId);
+            assertion.Which.StreamName.Should().Be(typeof(StubAggregate).Name);
+            assertion.Which.AggregateId.Should().Be(newId);
 
             return Task.CompletedTask;
         }
@@ -362,7 +362,7 @@ namespace Cars.UnitTests.Storage
 
             var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy);
 
-            var stubStream = StubStream.Create("Guilty");
+            var stubStream = StubAggregate.Create("Guilty");
 
             await session.AddAsync(stubStream).ConfigureAwait(false);
 
@@ -393,7 +393,7 @@ namespace Cars.UnitTests.Storage
 
             var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy);
 
-            var stubStream = StubStream.Create("Guilty");
+            var stubStream = StubAggregate.Create("Guilty");
 
             session.BeginTransaction();
 
@@ -452,7 +452,7 @@ namespace Cars.UnitTests.Storage
 
             var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy);
 
-            await session.AddAsync(StubStream.Create("Test"));
+            await session.AddAsync(StubAggregate.Create("Test"));
 
             try
             {
@@ -479,7 +479,7 @@ namespace Cars.UnitTests.Storage
 
             var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy);
 
-            await session.AddAsync(StubStream.Create("Test")).ConfigureAwait(false);
+            await session.AddAsync(StubAggregate.Create("Test")).ConfigureAwait(false);
 
             try
             {
@@ -502,7 +502,7 @@ namespace Cars.UnitTests.Storage
 
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
 
-            var stubStream1 = StubStream.Create("Walter White");
+            var stubStream1 = StubAggregate.Create("Walter White");
 
             stubStream1.ChangeName("Saul Goodman");
             stubStream1.ChangeName("Jesse Pinkman");
@@ -511,13 +511,13 @@ namespace Cars.UnitTests.Storage
 
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            var projectionKey = new InMemoryEventStore.ProjectionKey(stubStream1.Id, typeof(StubStreamProjection).Name);
+            var projectionKey = new InMemoryEventStore.ProjectionKey(stubStream1.AggregateId, typeof(StubStreamProjection).Name);
 
             eventStore.Projections.ContainsKey(projectionKey).Should().BeTrue();
 
             var projection = _textSerializer.Deserialize<StubStreamProjection>(eventStore.Projections[projectionKey].ToString());
             
-            projection.Id.Should().Be(stubStream1.Id);
+            projection.Id.Should().Be(stubStream1.AggregateId);
             projection.Name.Should().Be(stubStream1.Name);
         }
 
@@ -531,12 +531,12 @@ namespace Cars.UnitTests.Storage
 
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
 
-            var stubStream1 = StubStream.Create("Walter White");
+            var stubStream1 = StubAggregate.Create("Walter White");
 
             await session.AddAsync(stubStream1).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            stubStream1 = await session.GetByIdAsync<StubStream>(stubStream1.Id).ConfigureAwait(false);
+            stubStream1 = await session.GetByIdAsync<StubAggregate>(stubStream1.AggregateId).ConfigureAwait(false);
 
             stubStream1.ChangeName("Jesse Pinkman");
 
@@ -544,12 +544,12 @@ namespace Cars.UnitTests.Storage
 
             eventStore.Projections.Count.Should().Be(1);
 
-            var projectionKey = new InMemoryEventStore.ProjectionKey(stubStream1.Id, typeof(StubStreamProjection).Name);
+            var projectionKey = new InMemoryEventStore.ProjectionKey(stubStream1.AggregateId, typeof(StubStreamProjection).Name);
             eventStore.Projections.ContainsKey(projectionKey).Should().BeTrue();
 
             var projection = _textSerializer.Deserialize<StubStreamProjection>(eventStore.Projections[projectionKey].ToString());
 
-            projection.Id.Should().Be(stubStream1.Id);
+            projection.Id.Should().Be(stubStream1.AggregateId);
             projection.Name.Should().Be(stubStream1.Name);
         }
 
@@ -557,7 +557,7 @@ namespace Cars.UnitTests.Storage
         {
             var snapshotStrategyMock = new Mock<ISnapshotStrategy>();
             snapshotStrategyMock.Setup(e => e.CheckSnapshotSupport(It.IsAny<Type>())).Returns(true);
-            snapshotStrategyMock.Setup(e => e.ShouldMakeSnapshot(It.IsAny<IStream>())).Returns(makeSnapshot);
+            snapshotStrategyMock.Setup(e => e.ShouldMakeSnapshot(It.IsAny<IAggregate>())).Returns(makeSnapshot);
 
             return snapshotStrategyMock.Object;
         }

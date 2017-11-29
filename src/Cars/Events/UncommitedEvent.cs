@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2016 Nelson Corrêa V. Júnior
+// Copyright (c) 2016 Nelson Corrêa V. Júnior, Eric Swann
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,12 +30,12 @@ namespace Cars.Events
         private readonly long _ticks;
         public DateTime CreatedAt => new DateTime(_ticks);
         public IDomainEvent OriginalEvent { get; }
-        public Stream Stream { get; }
+        public Aggregate Aggregate { get; }
         public int Version { get; }
 
-        public UncommitedEvent(Stream stream, IDomainEvent @event, int version)
+        public UncommitedEvent(Aggregate aggregate, IDomainEvent @event, int version)
         {
-            Stream = stream;
+            Aggregate = aggregate;
             OriginalEvent = @event;
             Version = version;
 

@@ -46,7 +46,7 @@ namespace Cars.UnitTests.MessageBus
             await eventPublisher.PublishAsync<IDomainEvent>(new[] { testEvent }).ConfigureAwait(false);
             await eventPublisher.CommitAsync().ConfigureAwait(false);
 
-            handler.Ids.First().Should().Be(testEvent.StreamId);
+            handler.Ids.First().Should().Be(testEvent.AggregateId);
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -71,8 +71,8 @@ namespace Cars.UnitTests.MessageBus
             await eventPublisher.PublishAsync<IDomainEvent>(testEvent).ConfigureAwait(false);
             await eventPublisher.CommitAsync().ConfigureAwait(false);
 
-            handler1.Ids.First().Should().Be(testEvent.StreamId);
-            handler2.Ids.First().Should().Be(testEvent.StreamId);
+            handler1.Ids.First().Should().Be(testEvent.AggregateId);
+            handler2.Ids.First().Should().Be(testEvent.AggregateId);
         }
 
         [Trait(CategoryName, CategoryValue)]

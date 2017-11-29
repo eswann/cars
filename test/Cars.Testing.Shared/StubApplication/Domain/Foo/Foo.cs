@@ -3,7 +3,7 @@ using Cars.EventSource;
 
 namespace Cars.Testing.Shared.StubApplication.Domain.Foo
 {
-    public class Foo : SnapshotStream<FooSnapshot>
+    public class Foo : SnapshotAggregate<FooSnapshot>
     {
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
@@ -20,19 +20,19 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Foo
 
         public void ChangeName(string firstname, string lastname)
         {
-            Emit(new FullNameChanged(Id, firstname, lastname));
+            Emit(new FullNameChanged(AggregateId, firstname, lastname));
         }
 
         public void DoSomething()
         {
-            Emit(new DidSomething(Id));
+            Emit(new DidSomething(AggregateId));
         }
 
         protected override void RegisterEvents()
         {
             SubscribeTo<FooCreated>(e =>
             {
-                Id = e.StreamId;
+                AggregateId = e.AggregateId;
             });
 
             SubscribeTo<DidSomething>(e =>

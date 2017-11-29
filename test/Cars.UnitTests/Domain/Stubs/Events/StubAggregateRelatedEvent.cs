@@ -5,11 +5,11 @@ namespace Cars.UnitTests.Domain.Stubs.Events
 {
     public class StubStreamRelatedEvent : DomainEvent
     {
-        public Guid StubStreamId { get; }
+        public Guid StubAggregateId { get; }
 
-        public StubStreamRelatedEvent(Guid streamId, Guid stubStreamId) : base(streamId)
+        public StubStreamRelatedEvent(Guid aggregateId, Guid stubAggregateId) : base(aggregateId)
         {
-            StubStreamId = stubStreamId;
+            StubAggregateId = stubAggregateId;
         }
     }
 }

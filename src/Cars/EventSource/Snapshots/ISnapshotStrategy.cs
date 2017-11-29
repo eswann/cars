@@ -35,8 +35,8 @@ namespace Cars.EventSource.Snapshots
         /// <summary>
         /// Determines when it should be performed snapshot.
         /// </summary>
-        /// <param name="stream"></param>
+        /// <param name="aggregate"></param>
         /// <returns></returns>
-        bool ShouldMakeSnapshot(IStream stream);
+        bool ShouldMakeSnapshot(IAggregate aggregate);
     }
 }

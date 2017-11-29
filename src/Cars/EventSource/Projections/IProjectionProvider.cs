@@ -2,6 +2,6 @@
 {
     public interface IProjectionProvider
     {
-        object CreateProjection(IStream stream);
+        object CreateProjection(IAggregate aggregate);
     }
 }

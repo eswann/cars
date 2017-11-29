@@ -1,17 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionPrefix>1.1.1</VersionPrefix>
-    <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
+    <VersionPrefix>1.2.1</VersionPrefix>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Cars.EventStore.MongoDB</AssemblyName>
     <PackageId>Cars.EventStore.MongoDB</PackageId>
     <Authors>Eric Swann</Authors>
     <Description>Cars Event Store implementation with MongoDB</Description>
     <Copyright>Copyright Eric Swann 2017</Copyright>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dotnet5.6</PackageTargetFallback>
-    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
     <DebugType>full</DebugType>
-    <PackageTags>.NET CQRS EventSource EventSourcing Mongo MongoDB</PackageTags>
+    <PackageTags>CQRS EventSource EventSourcing Mongo MongoDB</PackageTags>
     <PackageProjectUrl>https://github.com/eswann/cars</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/eswann/cars/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
@@ -20,17 +18,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.*" />
     <PackageReference Include="MongoDB.Bson" Version="2.4.*" />
     <PackageReference Include="MongoDB.Driver" Version="2.4.*" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.*" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
-    <PackageReference Include="Microsoft.CSharp" Version="4.3.*" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.*" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.*" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.4.*" />
   </ItemGroup>
 
   <ItemGroup>

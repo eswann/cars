@@ -16,7 +16,7 @@ namespace Cars.UnitTests.Metadata
         [Fact]
         public void Event_MetadataProvider()
         {
-            var stubStream = StubStream.Create("Test");
+            var stubStream = StubAggregate.Create("Test");
 
             var metadataProvider = new EventTypeMetadataProvider();
 
@@ -29,7 +29,7 @@ namespace Cars.UnitTests.Metadata
         [Fact]
         public void Stream_MetadataProvider()
         {
-            var stubStream = StubStream.Create("Test");
+            var stubStream = StubAggregate.Create("Test");
 
             var metadataProvider = new StreamTypeMetadataProvider();
 
@@ -42,7 +42,7 @@ namespace Cars.UnitTests.Metadata
         [Fact]
         public void CorrelationId_MetadataProvider()
         {
-            var stubStream = StubStream.Create("Test");
+            var stubStream = StubAggregate.Create("Test");
             stubStream.ChangeName("Test 1");
             stubStream.ChangeName("Test 2");
 
@@ -57,7 +57,7 @@ namespace Cars.UnitTests.Metadata
         [Fact]
         public void Should_take_event_name_based_on_attribute()
         {
-            var stubStream = StubStream.Create("Test");
+            var stubStream = StubAggregate.Create("Test");
             var metadataProvider = new EventTypeMetadataProvider();
             var metadatas = stubStream.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubStream, e.OriginalEvent, EventSource.Metadata.Empty));
 

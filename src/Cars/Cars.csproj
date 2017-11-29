@@ -1,39 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionPrefix>1.1.1</VersionPrefix>
-    <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
-    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <VersionPrefix>1.2.1</VersionPrefix>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Cars</AssemblyName>
     <PackageId>Cars</PackageId>
     <Authors>Eric Swann</Authors>
     <Copyright>Copyright 2017 Eric Swann</Copyright>
     <Description>Cars and Event Store and CQRS implementation for .Net Core</Description>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
-    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
     <DebugType>full</DebugType>
-    <PackageTags>.NET CQRS EventSource EventSourcing</PackageTags>
+    <PackageTags>CQRS EventSource EventSourcing</PackageTags>
     <PackageProjectUrl>https://github.com/eswann/cars</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/eswann/cars/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.*" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
-    <PackageReference Include="Microsoft.CSharp" Version="4.3.*" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.*" />
-    <PackageReference Include="System.Dynamic.Runtime" Version="4.3.*" />
-  </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
-    <DefineConstants>$(DefineConstants);NETSTANDARD1_6</DefineConstants>
-  </PropertyGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.*" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.4.*" />
   </ItemGroup>
 
 </Project>

@@ -29,6 +29,6 @@ namespace Cars.Commands
     /// </summary>
     public interface ICommand
     {
-        Guid StreamId { get; }
+        Guid AggregateId { get; }
     }
 }

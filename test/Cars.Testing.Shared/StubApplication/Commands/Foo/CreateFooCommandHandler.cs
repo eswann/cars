@@ -4,7 +4,7 @@ using Cars.EventSource.Storage;
 
 namespace Cars.Testing.Shared.StubApplication.Commands.Foo
 {
-    public class CreateFooCommandHandler : ICommandHandler<CreateFooCommand>
+    public class CreateFooCommandHandler : ICommandHandler<CreateFooCommand, CreateFooResponse>
     {
         private readonly IRepository _repository;
 
@@ -13,10 +13,12 @@ namespace Cars.Testing.Shared.StubApplication.Commands.Foo
             _repository = repository;
         }
 
-        public async Task ExecuteAsync(CreateFooCommand command)
+        public async Task<CreateFooResponse> ExecuteAsync(CreateFooCommand command)
         {
-            var foo = new Domain.Foo.Foo(command.StreamId);
+            var foo = new Domain.Foo.Foo(command.AggregateId);
             await _repository.AddAsync(foo);
+
+			return new CreateFooResponse(command.AggregateId);
         }
     }
 }

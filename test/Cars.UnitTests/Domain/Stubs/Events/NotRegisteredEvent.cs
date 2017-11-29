@@ -5,7 +5,7 @@ namespace Cars.UnitTests.Domain.Stubs.Events
 {
     public class NotRegisteredEvent : DomainEvent
     {
-        public NotRegisteredEvent(Guid streamId) : base(streamId)
+        public NotRegisteredEvent(Guid aggregateId) : base(aggregateId)
         {
         }
     }

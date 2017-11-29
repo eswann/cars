@@ -6,7 +6,7 @@ using Cars.UnitTests.Domain.Stubs.Events;
 
 namespace Cars.UnitTests.Domain.Stubs
 {
-    public class StubSnapshotStream : SnapshotStream<StubSnapshotStreamSnapshot>
+    public class StubSnapshotAggregate : SnapshotAggregate<StubSnapshotStreamSnapshot>
     {
         private readonly List<SimpleEntity> _entities = new List<SimpleEntity>();
 
@@ -14,44 +14,44 @@ namespace Cars.UnitTests.Domain.Stubs
 
         public IReadOnlyList<SimpleEntity> Entities => _entities.AsReadOnly();
 
-        private StubSnapshotStream(Guid newGuid, string name)
+        private StubSnapshotAggregate(Guid newGuid, string name)
         {
             Emit(new StubStreamCreatedEvent(newGuid, name));
         }
 
-        public StubSnapshotStream()
+        public StubSnapshotAggregate()
         {
         }
         
-        public static StubSnapshotStream Create(string name)
+        public static StubSnapshotAggregate Create(string name)
         {
-            return new StubSnapshotStream(Guid.NewGuid(), name);
+            return new StubSnapshotAggregate(Guid.NewGuid(), name);
         }
 
         public void ChangeName(string name)
         {
-            Emit(new NameChangedEvent(Id, name));
+            Emit(new NameChangedEvent(AggregateId, name));
         }
 
         public Guid AddEntity(string entityName)
         {
             var entityId = Guid.NewGuid();
 
-            Emit(new ChildCreatedEvent(Id, entityId, entityName));
+            Emit(new ChildCreatedEvent(AggregateId, entityId, entityName));
 
             return entityId;
         }
 
         public void DisableEntity(Guid entityId)
         {
-            Emit(new ChildDisabledEvent(Id, entityId));
+            Emit(new ChildDisabledEvent(AggregateId, entityId));
         }
         
         protected override void RegisterEvents()
         {
             SubscribeTo<StubStreamCreatedEvent>(x =>
             {
-                Id = x.StreamId;
+                AggregateId = x.AggregateId;
                 Name = x.Name;
             });
 
@@ -60,11 +60,11 @@ namespace Cars.UnitTests.Domain.Stubs
                 Name = x.Name;
             });
 
-            SubscribeTo<ChildCreatedEvent>(x => _entities.Add(new SimpleEntity(x.StreamId, x.Name)));
+            SubscribeTo<ChildCreatedEvent>(x => _entities.Add(new SimpleEntity(x.entityId, x.Name)));
 
             SubscribeTo<ChildDisabledEvent>(x =>
             {
-                var entity = _entities.FirstOrDefault(e => e.Id == x.StreamId);
+                var entity = _entities.FirstOrDefault(e => e.Id == x.EntityId);
                 entity?.Disable();
             });
         }

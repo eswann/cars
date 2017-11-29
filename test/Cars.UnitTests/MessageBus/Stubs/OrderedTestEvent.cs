@@ -7,7 +7,7 @@ namespace Cars.UnitTests.MessageBus.Stubs
     {
         public int Order { get; }
 
-        public OrderedTestEvent(Guid streamId, int order) : base(streamId)
+        public OrderedTestEvent(Guid aggregateId, int order) : base(aggregateId)
         {
             Order = order;
         }

@@ -31,22 +31,22 @@ namespace Cars.Extensions
 {
     internal static class StreamExtensions
     {
-        public static async Task TakeSnapshot(this Stream stream,
+        public static async Task TakeSnapshot(this Aggregate aggregate,
             IEventStore eventStore,
             ISnapshotSerializer snapshotSerializer)
         {
-            var snapshot = ((ISnapshotStream)stream).CreateSnapshot();
+            var snapshot = ((ISnapshotAggregate)aggregate).CreateSnapshot();
 
             var metadatas = new[]
             {
-                new KeyValuePair<string, object>(MetadataKeys.StreamId, stream.Id),
-                new KeyValuePair<string, object>(MetadataKeys.StreamSequenceNumber, stream.Sequence),
+                new KeyValuePair<string, object>(MetadataKeys.AggregateId, aggregate.AggregateId),
+                new KeyValuePair<string, object>(MetadataKeys.StreamSequenceNumber, aggregate.Sequence),
                 new KeyValuePair<string, object>(MetadataKeys.SnapshotId, Guid.NewGuid()),
                 new KeyValuePair<string, object>(MetadataKeys.SnapshotClrType, snapshot.GetType().AssemblyQualifiedName),
                 new KeyValuePair<string, object>(MetadataKeys.SnapshotName, snapshot.GetType().Name),
             };
 
-            var serializedSnapshot = snapshotSerializer.Serialize(stream, snapshot, metadatas);
+            var serializedSnapshot = snapshotSerializer.Serialize(aggregate, snapshot, metadatas);
 
             await eventStore.SaveSnapshotAsync(serializedSnapshot).ConfigureAwait(false);
         }

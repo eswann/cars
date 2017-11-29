@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Cars.Collections;
 using Cars.Commands;
@@ -34,14 +33,15 @@ using Moq;
 
 namespace Cars.Testing.Shared.MessageBus
 {
-    public abstract class CommandTestFixture<TCommand, TCommandHandler, TStreamRoot>
+    public abstract class CommandTestFixture<TCommand, TResponse, TCommandHandler, TAggregate>
         where TCommand : class, ICommand
-        where TCommandHandler : class, ICommandHandler<TCommand>
-        where TStreamRoot : Stream, new()
+        where TCommandHandler : class, ICommandHandler<TCommand, TResponse>
+        where TAggregate : Aggregate, new()
+		where TResponse : IResponse
     {
         private readonly IDictionary<Type, object> _mocks;
 
-        protected TStreamRoot StreamRoot;
+        protected TAggregate AggregateRoot;
         protected TCommandHandler CommandHandler;
         protected Exception CaughtException;
         protected IEnumerable<IDomainEvent> PublishedEvents;
@@ -57,8 +57,8 @@ namespace Cars.Testing.Shared.MessageBus
         {
             _mocks = new Dictionary<Type, object>();
             CaughtException = new ThereWasNoExceptionButOneWasExpectedException();
-            StreamRoot = new TStreamRoot();
-            StreamRoot.LoadFromHistory(new CommitedDomainEventCollection(Given()));
+            AggregateRoot = new TAggregate();
+            AggregateRoot.LoadFromHistory(new CommitedDomainEventCollection(Given()));
 
             CommandHandler = BuildHandler();
 
@@ -67,7 +67,7 @@ namespace Cars.Testing.Shared.MessageBus
             try
             {
                 CommandHandler.ExecuteAsync(When()).GetAwaiter().GetResult();
-                PublishedEvents = StreamRoot.UncommitedEvents.Select(e => e.OriginalEvent);
+                PublishedEvents = AggregateRoot.UncommitedEvents.Select(e => e.OriginalEvent);
             }
             catch (Exception exception)
             {
@@ -93,8 +93,8 @@ namespace Cars.Testing.Shared.MessageBus
                 if (parameter.ParameterType == typeof(IRepository))
                 {
                     var repositoryMock = new Mock<IRepository>();
-                    repositoryMock.Setup(x => x.GetByIdAsync<TStreamRoot>(It.IsAny<Guid>())).Returns(Task.FromResult(StreamRoot));
-                    repositoryMock.Setup(x => x.AddAsync(It.IsAny<TStreamRoot>())).Callback<TStreamRoot>(x => StreamRoot = x).Returns(Task.CompletedTask);
+                    repositoryMock.Setup(x => x.GetByIdAsync<TAggregate>(It.IsAny<Guid>())).Returns(Task.FromResult(AggregateRoot));
+                    repositoryMock.Setup(x => x.AddAsync(It.IsAny<TAggregate>())).Callback<TAggregate>(x => AggregateRoot = x).Returns(Task.CompletedTask);
                     _mocks.Add(parameter.ParameterType, repositoryMock);
                     continue;
                 }

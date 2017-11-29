@@ -5,7 +5,7 @@ namespace Cars.UnitTests.MessageBus.Stubs
 {
     public class TestEvent : DomainEvent
     {
-        public TestEvent(Guid streamId) : base(streamId)
+        public TestEvent(Guid aggregateId) : base(aggregateId)
         {
         }
     }

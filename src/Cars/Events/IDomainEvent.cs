@@ -31,6 +31,6 @@ namespace Cars.Events
     /// </summary>
     public interface IDomainEvent
     {
-        Guid StreamId { get; }
+        Guid AggregateId { get; }
     }
 }

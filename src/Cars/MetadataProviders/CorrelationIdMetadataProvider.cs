@@ -7,14 +7,14 @@ namespace Cars.MetadataProviders
 {
     public class CorrelationIdMetadataProvider : IMetadataProvider
     {
-        private Guid _correlationId;
+        private readonly Guid _correlationId;
 
         public CorrelationIdMetadataProvider()
         {
             _correlationId = Guid.NewGuid();
         }
 
-        public IEnumerable<KeyValuePair<string, object>> Provide<TStream>(TStream stream, IDomainEvent @event, IMetadata metadata) where TStream : IStream
+        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate stream, IDomainEvent @event, IMetadata metadata) where TAggregate : IAggregate
         {
             yield return new KeyValuePair<string, object>(MetadataKeys.CorrelationId, _correlationId);
         }

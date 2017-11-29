@@ -7,14 +7,14 @@ using Xunit;
 
 namespace Cars.UnitTests.Domain
 {
-    public class Not_registered_event_in_stream : StreamTestFixture<StubStream>
+    public class Not_registered_event_in_stream : StreamTestFixture<StubAggregate>
     {
         public const string CategoryName = "Unit";
         public const string CategoryValue = "Stream";
 
         protected override void When()
         {
-            StreamRoot.DoSomethingWithoutEventSubscription();
+            AggregateRoot.DoSomethingWithoutEventSubscription();
         }
 
         [Trait(CategoryName, CategoryValue)]

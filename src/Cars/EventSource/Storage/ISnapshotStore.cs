@@ -43,16 +43,16 @@ namespace Cars.EventSource.Storage
         /// <summary>
         /// Retrieves the latest stream's snapshot.
         /// </summary>
-        /// <param name="streamId"></param>
+        /// <param name="aggregateId"></param>
         /// <returns></returns>
-        Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid streamId);
+        Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId);
 
         /// <summary>
         /// Retrieves the forward events from <param name="version"></param>.
         /// </summary>
-        /// <param name="streamId"></param>
+        /// <param name="aggregateId"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid streamId, int version);
+        Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version);
     }
 }

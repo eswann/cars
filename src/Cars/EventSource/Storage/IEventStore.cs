@@ -17,7 +17,7 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THEB
 // SOFTWARE.
 
 using System;
@@ -49,11 +49,11 @@ namespace Cars.EventSource.Storage
         void Rollback();
 
         /// <summary>
-        /// Retrieve all events based on <param name="id"></param>.
+        /// Retrieve all events based on <param name="aggregateId"></param>.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="aggregateId"></param>
         /// <returns></returns>
-        Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id);
+        Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid aggregateId);
 
         /// <summary>
         /// Save the events in Event Store.

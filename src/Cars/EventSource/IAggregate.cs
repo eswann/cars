@@ -27,9 +27,9 @@ using Cars.Events;
 
 namespace Cars.EventSource
 {
-    public interface IStream
+    public interface IAggregate
     {
-        Guid Id { get; }
+        Guid AggregateId { get; }
         int Sequence { get; }
         IReadOnlyCollection<IUncommitedEvent> UncommitedEvents { get; }
         int Version { get; }

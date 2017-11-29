@@ -30,12 +30,12 @@ namespace Cars.EventSource
         /// <summary>
         /// Provides a collection of key pair value that will be used to generate event metadata on the save moment.
         /// </summary>
-        /// <typeparam name="TStream"></typeparam>
+        /// <typeparam name="TAggregate"></typeparam>
         /// <param name="stream"></param>
         /// <param name="event"></param>
         /// <param name="metadata"></param>
         /// <returns></returns>
-        IEnumerable<KeyValuePair<string, object>> Provide<TStream>(TStream stream, IDomainEvent @event, IMetadata metadata)
-            where TStream : IStream;
+        IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate stream, IDomainEvent @event, IMetadata metadata)
+            where TAggregate : IAggregate;
     }
 }

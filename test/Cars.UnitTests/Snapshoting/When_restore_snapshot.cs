@@ -12,11 +12,11 @@ namespace Cars.UnitTests.Snapshoting
         public const string CategoryValue = "Snapshot";
 
         private readonly StubSnapshotStreamSnapshot _snapshot;
-        private readonly StubSnapshotStream _stubStream;
+        private readonly StubSnapshotAggregate _stubAggregate;
 
         public When_restore_snapshot()
         {
-            var streamId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid();
             var version = 1;
 
             _snapshot = new StubSnapshotStreamSnapshot
@@ -24,17 +24,17 @@ namespace Cars.UnitTests.Snapshoting
                 Name = "Coringa",
             };
             
-            _stubStream = new StubSnapshotStream();
-            ((ISnapshotStream)_stubStream).Restore(new SnapshotRestore(streamId, version, _snapshot, EventSource.Metadata.Empty));
+            _stubAggregate = new StubSnapshotAggregate();
+            ((ISnapshotAggregate)_stubAggregate).Restore(new SnapshotRestore(aggregateId, version, _snapshot, EventSource.Metadata.Empty));
         }
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void Should_set_stream_properties()
         {
-            _stubStream.Name.Should().Be(_snapshot.Name);
+            _stubAggregate.Name.Should().Be(_snapshot.Name);
 
-            _stubStream.Version.Should().Be(1);
+            _stubAggregate.Version.Should().Be(1);
         }
     }
 }

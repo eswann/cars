@@ -30,13 +30,13 @@ namespace Cars.Commands
     public abstract class Command : ICommand
     {
         /// <summary>
-        /// Stream identifier.
+        /// Aggregate identifier.
         /// </summary>
-        public Guid StreamId { get; }
+        public Guid AggregateId { get; }
 
-        protected Command(Guid streamId)
+        protected Command(Guid aggregateId)
         {
-            StreamId = streamId;
+            AggregateId = aggregateId;
         }
     }
 }

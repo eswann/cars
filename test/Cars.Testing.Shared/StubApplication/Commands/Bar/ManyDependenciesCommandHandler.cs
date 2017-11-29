@@ -6,7 +6,7 @@ using Cars.Testing.Shared.StubApplication.Domain;
 
 namespace Cars.Testing.Shared.StubApplication.Commands.Bar
 {
-    public class ManyDependenciesCommandHandler : ICommandHandler<ManyDependenciesCommand>
+    public class ManyDependenciesCommandHandler : ICommandHandler<ManyDependenciesCommand, DefaultResponse>
     {
         private readonly IRepository _repository;
         private readonly IBooleanService _booleanService;
@@ -21,7 +21,7 @@ namespace Cars.Testing.Shared.StubApplication.Commands.Bar
             _stringService = stringService;
         }
 
-        public async Task ExecuteAsync(ManyDependenciesCommand command)
+        public async Task<DefaultResponse> ExecuteAsync(ManyDependenciesCommand command)
         {
             if (string.IsNullOrWhiteSpace(command.Text))
                 throw new ArgumentNullException(nameof(command.Text));
@@ -32,6 +32,8 @@ namespace Cars.Testing.Shared.StubApplication.Commands.Bar
             }
 
             await _repository.AddAsync(Domain.Bar.Bar.Create(Guid.NewGuid())).ConfigureAwait(false);
+
+	        return new DefaultResponse(command.AggregateId);
         }
     }
 }

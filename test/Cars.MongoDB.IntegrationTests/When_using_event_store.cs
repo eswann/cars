@@ -45,11 +45,9 @@ namespace Cars.MongoDB.IntegrationTests
 
         public When_using_event_store()
         {
-            var mongoHost = Environment.GetEnvironmentVariable("MONGODB_HOST");
+            if (string.IsNullOrWhiteSpace(Test_Settings.MongoHost)) throw new NullReferenceException("The variable 'MONGODB_HOST' was not configured.");
 
-            if (string.IsNullOrWhiteSpace(mongoHost)) throw new NullReferenceException("The variable 'MONGODB_HOST' was not configured.");
-
-            _mongoClient = new MongoClient($"mongodb://{mongoHost}");
+            _mongoClient = new MongoClient($"mongodb://{Test_Settings.MongoHost}");
 
             _mongoClient.DropDatabase(DatabaseName);
         }
@@ -81,9 +79,9 @@ namespace Cars.MongoDB.IntegrationTests
 
                 using (var projectionRepository = new MongoProjectionRepository(_mongoClient, _defaultSettings))
                 {
-                    var projection = await projectionRepository.GetAsync<BarProjection>(nameof(BarProjection), stream.Id);
+                    var projection = await projectionRepository.GetAsync<BarProjection>(nameof(BarProjection), stream.AggregateId);
 
-                    projection.Id.Should().Be(stream.Id);
+                    projection.Id.Should().Be(stream.AggregateId);
                     projection.LastText.Should().Be(stream.LastText);
                     projection.UpdatedAt.ToString("G").Should().Be(stream.UpdatedAt.ToString("G"));
                     projection.Messages.Count.Should().Be(stream.Messages.Count);
@@ -91,7 +89,7 @@ namespace Cars.MongoDB.IntegrationTests
 
                 using (var projectionRepository = new MongoProjectionRepository<BarProjection>(_mongoClient, _defaultSettings))
                 {
-                    var projections = await projectionRepository.FindAsync(e => e.Id == stream.Id);
+                    var projections = await projectionRepository.FindAsync(p => p.Id == stream.AggregateId);
 
                     projections.Count().Should().BeGreaterOrEqualTo(1);
                 }

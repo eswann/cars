@@ -29,18 +29,18 @@ namespace Cars.Testing.Shared.EventStore
             CalledMethods |= EventStoreMethods.SaveSnapshotAsync;
         }
 
-        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid streamId)
+        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
-            var result = await _eventStore.GetLatestSnapshotByIdAsync(streamId).ConfigureAwait(false);
+            var result = await _eventStore.GetLatestSnapshotByIdAsync(aggregateId).ConfigureAwait(false);
 
             CalledMethods |= EventStoreMethods.GetLatestSnapshotByIdAsync;
 
             return result;
         }
 
-        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid streamId, int version)
+        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
         {
-            var result = await _eventStore.GetEventsForwardAsync(streamId, version).ConfigureAwait(false);
+            var result = await _eventStore.GetEventsForwardAsync(aggregateId, version).ConfigureAwait(false);
 
             CalledMethods |= EventStoreMethods.GetEventsForwardAsync;
 
@@ -75,9 +75,9 @@ namespace Cars.Testing.Shared.EventStore
             CalledMethods |= EventStoreMethods.Rollback;
         }
 
-        public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id)
+        public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid aggregateId)
         {
-            var result = await _eventStore.GetAllEventsAsync(id).ConfigureAwait(false);
+            var result = await _eventStore.GetAllEventsAsync(aggregateId).ConfigureAwait(false);
 
             CalledMethods |= EventStoreMethods.GetAllEventsAsync;
 

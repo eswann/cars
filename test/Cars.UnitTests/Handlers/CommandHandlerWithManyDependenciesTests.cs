@@ -1,4 +1,5 @@
 ﻿using System;
+using Cars.Commands;
 using Cars.Testing.Shared.MessageBus;
 using Cars.Testing.Shared.StubApplication.Commands.Bar;
 using Cars.Testing.Shared.StubApplication.Domain;
@@ -9,7 +10,7 @@ using Xunit;
 
 namespace Cars.UnitTests.Handlers
 {
-    public class PrintSomethingTests : CommandTestFixture<ManyDependenciesCommand, ManyDependenciesCommandHandler, Bar>
+    public class PrintSomethingTests : CommandTestFixture<ManyDependenciesCommand, DefaultResponse, ManyDependenciesCommandHandler, Bar>
     {
         protected override void SetupDependencies()
         {
@@ -31,7 +32,7 @@ namespace Cars.UnitTests.Handlers
         }
     }
 
-    public class CaughtExceptionCommandHandlerTests : CommandTestFixture<ManyDependenciesCommand, ManyDependenciesCommandHandler, Bar>
+    public class CaughtExceptionCommandHandlerTests : CommandTestFixture<ManyDependenciesCommand, DefaultResponse, ManyDependenciesCommandHandler, Bar>
     {
         protected override void SetupDependencies()
         {

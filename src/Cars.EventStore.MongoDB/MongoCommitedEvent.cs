@@ -28,7 +28,7 @@ namespace Cars.EventStore.MongoDB
 {
     internal class MongoCommitedEvent : ICommitedEvent
     {
-        public Guid StreamId { get; private set; }
+        public Guid AggregateId { get; private set; }
         public int Version { get; private set; }
         public string SerializedData { get; private set; }
         public string SerializedMetadata { get; private set; }
@@ -37,7 +37,7 @@ namespace Cars.EventStore.MongoDB
         {
             return new MongoCommitedEvent
             {
-                StreamId = e.StreamId,
+                AggregateId = e.AggregateId,
                 Version = e.Version,
                 SerializedData = e.EventData.ToJson(),
                 SerializedMetadata = e.Metadata.ToJson(),

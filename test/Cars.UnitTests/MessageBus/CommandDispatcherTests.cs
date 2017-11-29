@@ -12,16 +12,18 @@ namespace Cars.UnitTests.MessageBus
 {
     public class CommandDispatcherTests
     {
-        private const string CategoryName = "Unit";
-        private const string CategoryValue = "Command dispatcher";
+        private const string _categoryName = "Unit";
+        private const string _categoryValue = "Command dispatcher";
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async void When_a_single_Command_is_published_to_the_bus_containing_a_single_CommandHandler()
         {
             var handler = new FirstTestCommandHandler();
 
-            List<Action<TestCommand>> handlers = new List<Action<TestCommand>>
+	        var testCommand = new TestCommand(Guid.NewGuid());
+
+			List<Action<TestCommand>> handlers = new List<Action<TestCommand>>
             {
                 command => handler.ExecuteAsync(command)
             };
@@ -33,18 +35,17 @@ namespace Cars.UnitTests.MessageBus
                 {
                     action((TestCommand) command);
                 });
-            }).Returns(Task.CompletedTask);
+            }).Returns(Task.FromResult(new DefaultResponse(testCommand.AggregateId) as IResponse));
 
-            var testCommand = new TestCommand(Guid.NewGuid());
 
             ICommandDispatcher commandDispatcher = commandDispatcherMock.Object;
 
             await commandDispatcher.DispatchAsync(testCommand);
 
-            handler.Ids.First().Should().Be(testCommand.StreamId);
+            handler.Ids.First().Should().Be(testCommand.AggregateId);
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async void When_a_single_Command_is_published_to_the_bus_containing_multiple_CommandHandlers()
         {
@@ -64,7 +65,7 @@ namespace Cars.UnitTests.MessageBus
                 {
                     action((TestCommand)command);
                 });
-            }).Returns(Task.CompletedTask);
+            }).Returns(Task.FromResult(new DefaultResponse(Guid.NewGuid())as IResponse));
 
             var testCommand = new TestCommand(Guid.NewGuid());
 
@@ -72,31 +73,31 @@ namespace Cars.UnitTests.MessageBus
 
             await commandDispatcher.DispatchAsync(testCommand);
 
-            handler1.Ids.First().Should().Be(testCommand.StreamId);
-            handler2.Ids.First().Should().Be(testCommand.StreamId);
+            handler1.Ids.First().Should().Be(testCommand.AggregateId);
+            handler2.Ids.First().Should().Be(testCommand.AggregateId);
         }
 
-        public class FirstTestCommandHandler : ICommandHandler<TestCommand>
-        {
+        public class FirstTestCommandHandler : ICommandHandler<TestCommand, DefaultResponse>
+		{
             public List<Guid> Ids { get; } = new List<Guid>();
 
-            public Task ExecuteAsync(TestCommand command)
+            public Task<DefaultResponse> ExecuteAsync(TestCommand command)
             {
-                Ids.Add(command.StreamId);
+                Ids.Add(command.AggregateId);
 
-                return Task.CompletedTask;
+                return Task.FromResult(new DefaultResponse(command.AggregateId));
             }
         }
 
-        public class SecondTestCommandHandler : ICommandHandler<TestCommand>
+        public class SecondTestCommandHandler : ICommandHandler<TestCommand, DefaultResponse>
         {
             public List<Guid> Ids { get; } = new List<Guid>();
 
-            public Task ExecuteAsync(TestCommand command)
+            public Task<DefaultResponse> ExecuteAsync(TestCommand command)
             {
-                Ids.Add(command.StreamId);
+                Ids.Add(command.AggregateId);
 
-                return Task.CompletedTask;
+                return Task.FromResult(new DefaultResponse(command.AggregateId));
             }
         }
 

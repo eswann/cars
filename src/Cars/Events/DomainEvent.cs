@@ -32,17 +32,17 @@ namespace Cars.Events
     public abstract class DomainEvent : IDomainEvent
     {
         /// <summary>
-        /// Stream Unique identifier.
+        /// Aggregate Unique identifier.
         /// </summary>
-        public Guid StreamId { get; }
+        public Guid AggregateId { get; }
         
         /// <summary>
         /// Construct the domain event.
         /// </summary>
-        /// <param name="streamId"></param>
-        protected DomainEvent(Guid streamId)
+        /// <param name="aggregateId"></param>
+        protected DomainEvent(Guid aggregateId)
         {
-            StreamId = streamId;
+            AggregateId = aggregateId;
         }
     }
 }

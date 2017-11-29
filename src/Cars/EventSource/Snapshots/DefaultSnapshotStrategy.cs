@@ -27,7 +27,7 @@ namespace Cars.EventSource.Snapshots
 {
     public class DefaultSnapshotStrategy : ISnapshotStrategy
     {
-        private static readonly Type _snapshotType = typeof (ISnapshotStream);
+        private static readonly Type _snapshotType = typeof (ISnapshotAggregate);
         
         public bool CheckSnapshotSupport(Type streamType)
         {
@@ -40,9 +40,9 @@ namespace Cars.EventSource.Snapshots
             return CheckSnapshotSupport(baseType);
         }
 
-        public virtual bool ShouldMakeSnapshot(IStream stream)
+        public virtual bool ShouldMakeSnapshot(IAggregate aggregate)
         {
-            return CheckSnapshotSupport(stream.GetType());
+            return CheckSnapshotSupport(aggregate.GetType());
         }
     }
 }

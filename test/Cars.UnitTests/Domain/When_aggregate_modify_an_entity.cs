@@ -14,14 +14,17 @@ namespace Cars.UnitTests.Domain
     {
         private const string _categoryName = "Unit";
         private const string _categoryValue = "Snapshot";
-        
-        private readonly ChildCreatedEvent _event2 = new ChildCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), "Child 2");
+
+	    private readonly Guid _aggregateId = Guid.NewGuid();
+        private ChildCreatedEvent _event2;
 
         protected override IEnumerable<IDomainEvent> Given()
         {
-            yield return new StubStreamCreatedEvent(Guid.NewGuid(), "Mother");
-            yield return new ChildCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), "Child 1");
-            yield return _event2;
+	        _event2 = new ChildCreatedEvent(_aggregateId, Guid.NewGuid(), "Child 2");
+
+			yield return new StubStreamCreatedEvent(_aggregateId, "Mother");
+            yield return new ChildCreatedEvent(_aggregateId, Guid.NewGuid(), "Child 1");
+	        yield return _event2;
         }
 
         protected override void When()

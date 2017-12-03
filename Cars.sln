@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.4
+VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F375D78C-9BF2-446A-927A-E6DBBF82C843}"
 EndProject
@@ -31,11 +31,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cars.IntegrationTests", "te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo", "demo", "{20895042-764C-4545-9DB8-EFE98F2D29E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cars.Demo.Api", "demo\Cars.Demo.Api\Cars.Demo.Api.csproj", "{CC330F5A-0B05-4BFD-8E01-2F8C7B2EDDAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cars.Demo.Api", "demo\Cars.Demo.Api\Cars.Demo.Api.csproj", "{CC330F5A-0B05-4BFD-8E01-2F8C7B2EDDAE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cars.Demo.Domain", "demo\Cars.Demo.Domain\Cars.Demo.Domain.csproj", "{3C63273F-6C96-4FF3-B43F-1534211FF08C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cars.Demo.Services", "demo\Cars.Demo.Services\Cars.Demo.Services.csproj", "{C6FD6D6A-35A4-4B94-886E-1AEDFF0BCBDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cars.Demo.Services", "demo\Cars.Demo.Services\Cars.Demo.Services.csproj", "{C6FD6D6A-35A4-4B94-886E-1AEDFF0BCBDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cars.Demo.Models", "demo\Cars.Demo.Models\Cars.Demo.Models.csproj", "{C7A05C55-2C12-4573-91F0-0B34FD725CF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +81,10 @@ Global
 		{C6FD6D6A-35A4-4B94-886E-1AEDFF0BCBDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6FD6D6A-35A4-4B94-886E-1AEDFF0BCBDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6FD6D6A-35A4-4B94-886E-1AEDFF0BCBDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7A05C55-2C12-4573-91F0-0B34FD725CF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7A05C55-2C12-4573-91F0-0B34FD725CF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7A05C55-2C12-4573-91F0-0B34FD725CF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7A05C55-2C12-4573-91F0-0B34FD725CF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,5 +99,9 @@ Global
 		{CC330F5A-0B05-4BFD-8E01-2F8C7B2EDDAE} = {20895042-764C-4545-9DB8-EFE98F2D29E1}
 		{3C63273F-6C96-4FF3-B43F-1534211FF08C} = {20895042-764C-4545-9DB8-EFE98F2D29E1}
 		{C6FD6D6A-35A4-4B94-886E-1AEDFF0BCBDA} = {20895042-764C-4545-9DB8-EFE98F2D29E1}
+		{C7A05C55-2C12-4573-91F0-0B34FD725CF2} = {20895042-764C-4545-9DB8-EFE98F2D29E1}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D182AC46-23C9-4342-93E0-C81D34E72D32}
 	EndGlobalSection
 EndGlobal

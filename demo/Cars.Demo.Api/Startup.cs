@@ -1,4 +1,5 @@
-﻿using Cars.EventStore.MongoDB;
+﻿using Cars.Demo.Services.Configuration;
+using Cars.EventStore.MongoDB;
 using Cars.EventStore.MongoDB.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +29,12 @@ namespace Cars.Demo.Api
 	        services.Configure<MongoEventStoreSettings>(Configuration.GetSection("EventStoreSettings"));
 	        services.AddSingleton<IMongoEventStoreSettings>(provider => provider.GetService<IOptions<MongoEventStoreSettings>>().Value);
 
-			services.AddCarsMongo();
+            services.Configure<ProductCatalogSettings>(Configuration.GetSection("ProductCatalogSettings"));
+            services.AddSingleton<IProductCatalogSettings>(provider => provider.GetService<IOptions<ProductCatalogSettings>>().Value);
+
+            services.RegisterDemoServices();
+
+            services.AddCarsMongo();
             // Add framework services.
             services.AddMvc();
         }

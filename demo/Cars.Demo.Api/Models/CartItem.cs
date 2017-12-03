@@ -1,8 +1,10 @@
-﻿namespace Cars.Demo.Api.Models
+﻿using Cars.Demo.Models;
+
+namespace Cars.Demo.Api.Models
 {
 	public class CartItem
 	{ 
-		public CartProduct Product { get; set; }
+		public Product Product { get; set; }
 
 		public int Quantity { get; set; }
 

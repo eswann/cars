@@ -11,11 +11,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.*" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.*" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.*" />
     <PackageReference Include="Mapster" Version="3.1.*" />
   </ItemGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Cars.EventStore.MongoDB\Cars.EventStore.MongoDB.csproj" />

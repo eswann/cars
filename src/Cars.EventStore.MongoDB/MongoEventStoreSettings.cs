@@ -28,7 +28,6 @@ namespace Cars.EventStore.MongoDB
         public string EventsCollectionName { get; set; } = "Events";
         public string SnapshotsCollectionName { get; set; } = "Snapshots";
         public string ProjectionsCollectionName { get; set; } = "Projections";
-       
     }
 
 }

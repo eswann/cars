@@ -18,7 +18,6 @@ namespace Cars.UnitTests.Handlers
         protected override CreateStubCommand When()
         {
             _id = Guid.NewGuid();
-
             return new CreateStubCommand(_id);
         }
         

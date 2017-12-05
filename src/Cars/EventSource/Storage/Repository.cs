@@ -44,11 +44,11 @@ namespace Cars.EventSource.Storage
             return _session.AddAsync(aggregate);
         }
 
-        public Task<TProjection> GetByIdAsync<TProjection>(Guid id) where TProjection : AggregateProjection, new()
+        public Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new()
         {
             _logger.LogDebug($"Called method: {nameof(Repository)}.{nameof(GetByIdAsync)}.");
 
-            return _session.GetByIdAsync<TProjection>(id);
+            return _session.GetByIdAsync<TAggregate>(id);
         }
     }
 }

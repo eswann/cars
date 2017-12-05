@@ -30,23 +30,23 @@ namespace Cars.EventSource.Storage
     {
         private readonly ConcurrentDictionary<Type, Dictionary<Guid, object>> _track = new ConcurrentDictionary<Type, Dictionary<Guid, object>>();
 
-        public TProjection GetById<TProjection>(Guid id) where TProjection : IAggregateProjection
+        public TAggregate GetById<TAggregate>(Guid id) where TAggregate : IAggregate
         {
-            if (!_track.TryGetValue(typeof(TProjection), out var streams))
-                return default(TProjection);
+            if (!_track.TryGetValue(typeof(TAggregate), out var streams))
+                return default(TAggregate);
 
             if (!streams.TryGetValue(id, out var stream))
-                return default(TProjection);
+                return default(TAggregate);
 
-            return (TProjection)stream;
+            return (TAggregate)stream;
         }
         
-        public void Add<TProjection>(TProjection projection) where TProjection : IAggregateProjection
+        public void Add<TAggregate>(TAggregate projection) where TAggregate : IAggregate
         {
-            if (!_track.TryGetValue(typeof(TProjection), out var streams))
+            if (!_track.TryGetValue(typeof(TAggregate), out var streams))
             {
                 streams = new Dictionary<Guid, object>();
-                _track.TryAdd(typeof(TProjection), streams);
+                _track.TryAdd(typeof(TAggregate), streams);
             }
 
             if (streams.ContainsKey(projection.AggregateId))

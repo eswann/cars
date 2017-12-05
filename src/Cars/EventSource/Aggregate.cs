@@ -20,15 +20,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cars.Collections;
 using Cars.Events;
 
 namespace Cars.EventSource
 {
-    public abstract class Aggregate : AggregateProjection, IAggregate
+    public abstract class Aggregate : IAggregate
     {
+        private readonly Route<IDomainEvent> _routeEvents = new Route<IDomainEvent>();
         private readonly List<UncommitedEvent> _uncommitedEvents = new List<UncommitedEvent>();
+
+        /// <summary>
+        /// Aggregate default constructor.
+        /// </summary>
+        protected Aggregate()
+        {
+            RegisterEvents();
+        }
+
+        /// <summary>
+        /// Unique identifier.
+        /// </summary>
+        public Guid AggregateId { get; protected set; }
+
+        /// <summary>
+        /// Current version of the Aggregate.
+        /// </summary>
+        public int Version { get; protected set; }
+
 
         /// <summary>
         /// Collection of <see cref="IDomainEvent"/> that contains uncommited events.
@@ -51,6 +73,18 @@ namespace Cars.EventSource
         }
 
         /// <summary>
+        /// This method is called internaly and you can put all handlers here.
+        /// </summary>
+        protected abstract void RegisterEvents();
+
+        protected void SubscribeTo<T>(Action<T> action)
+            where T : class, IDomainEvent
+        {
+            _routeEvents.Add(typeof(T), o => action(o as T));
+        }
+
+
+        /// <summary>
         /// Apply the event in Aggregate and store the event in Uncommited list.
         /// The last event applied is the current state of the Aggregate.
         /// </summary>
@@ -58,7 +92,7 @@ namespace Cars.EventSource
         /// <param name="isNew"></param>
         private void ApplyEvent(IDomainEvent @event, bool isNew = false)
         {
-            RouteEvents.Handle(@event);
+            _routeEvents.Handle(@event);
 
             if (isNew)
             {
@@ -74,6 +108,27 @@ namespace Cars.EventSource
         public void ClearUncommitedEvents()
         {
             _uncommitedEvents.Clear();
+        }
+
+        /// <summary>
+        /// Load the events in the Aggregate.
+        /// </summary>
+        /// <param name="domainEvents"></param>
+        public void LoadFromHistory(CommitedDomainEventCollection domainEvents)
+        {
+            foreach (var @event in domainEvents)
+            {
+                ApplyEvent(@event);
+            }
+        }
+
+        /// <summary>
+        /// Update stream's version.
+        /// </summary>
+        /// <param name="version"></param>
+        internal void SetVersion(int version)
+        {
+            Version = version;
         }
 
     }

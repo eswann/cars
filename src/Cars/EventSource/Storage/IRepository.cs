@@ -31,11 +31,11 @@ namespace Cars.EventSource.Storage
     public interface IRepository
     {
         /// <summary>
-        /// Retrieves an <typeparam name="TProjection"></typeparam> based on your unique identifier property.
+        /// Retrieves an <typeparam name="TAggregate"></typeparam> based on your unique identifier property.
         /// </summary>
-        /// <typeparam name="TProjection"></typeparam>
+        /// <typeparam name="TAggregate"></typeparam>
         /// <param name="id"></param>
-        Task<TProjection> GetByIdAsync<TProjection>(Guid id) where TProjection : AggregateProjection, new();
+        Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new();
 
         /// <summary>
         /// Add an instance of <typeparam name="TAggregate"></typeparam> in repository.

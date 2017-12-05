@@ -94,21 +94,21 @@ namespace Cars.EventSource.Storage
         /// <summary>
         /// Retrieves an stream, load your historical events and add to tracking.
         /// </summary>
-        /// <typeparam name="TProjection"></typeparam>
+        /// <typeparam name="TAggregate"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="StreamNotFoundException"></exception>
-        public async Task<TProjection> GetByIdAsync<TProjection>(Guid id) where TProjection : AggregateProjection, new()
+        public async Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new()
         {
-            _logger.LogDebug($"Getting stream '{typeof(TProjection).FullName}' with identifier: '{id}'.");           
-            var isMutator = typeof(TProjection).GetTypeInfo().IsSubclassOf(typeof(Aggregate));
+            _logger.LogDebug($"Getting stream '{typeof(TAggregate).FullName}' with identifier: '{id}'.");           
+            var isMutator = typeof(TAggregate).GetTypeInfo().IsSubclassOf(typeof(Aggregate));
 
             _logger.LogDebug("Returning an stream tracked.");
 
-            TProjection projection;
+            TAggregate projection;
             if (isMutator)
             {
-                projection =_streamTracker.GetById<TProjection>(id);
+                projection =_streamTracker.GetById<TAggregate>(id);
                 if (projection != null)
                 {
                     RegisterForTracking(projection as Aggregate);
@@ -116,7 +116,7 @@ namespace Cars.EventSource.Storage
                 }
             }
 
-            projection = new TProjection();
+            projection = new TAggregate();
 
             IEnumerable<ICommitedEvent> events;
 
@@ -156,9 +156,9 @@ namespace Cars.EventSource.Storage
 
             if (projection.AggregateId.Equals(Guid.Empty))
             {
-                _logger.LogError($"The stream ({typeof(TProjection).FullName} {id}) was not found.");
+                _logger.LogError($"The stream ({typeof(TAggregate).FullName} {id}) was not found.");
 
-                throw new StreamNotFoundException(typeof(TProjection).Name, id);
+                throw new StreamNotFoundException(typeof(TAggregate).Name, id);
             }
 
             if (isMutator)
@@ -377,7 +377,7 @@ namespace Cars.EventSource.Storage
             }
         }
 
-        private void LoadStream<TProjection>(TProjection projection, IEnumerable<ICommitedEvent> commitedEvents) where TProjection : AggregateProjection
+        private void LoadStream<TAggregate>(TAggregate projection, IEnumerable<ICommitedEvent> commitedEvents) where TAggregate : Aggregate
         {
             var flatten = commitedEvents as ICommitedEvent[] ?? commitedEvents.ToArray();
 

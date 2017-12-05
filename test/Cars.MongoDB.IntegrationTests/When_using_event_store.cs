@@ -37,9 +37,7 @@ namespace Cars.MongoDB.IntegrationTests
             };
 
             ConventionRegistry.Register("camelCase", pack, t => true);
-
             BsonSerializer.RegisterSerializer(typeof(DateTime), DateTimeSerializer.LocalInstance);
-
             BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
         }
 

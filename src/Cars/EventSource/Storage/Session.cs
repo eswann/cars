@@ -226,7 +226,7 @@ namespace Cars.EventSource.Storage
 
                 var serializedEvents = uncommitedEvents.Select(uncommitedEvent =>
                 {
-                    var metadatas = _metadataProviders.SelectMany(md => md.Provide(uncommitedEvent.Aggregate,
+                    var metadata = _metadataProviders.SelectMany(md => md.Provide(uncommitedEvent.Aggregate,
                         uncommitedEvent.OriginalEvent,
                         Metadata.Empty)).Concat(new[]
                     {
@@ -234,11 +234,10 @@ namespace Cars.EventSource.Storage
                         new KeyValuePair<string, object>(MetadataKeys.EventVersion, uncommitedEvent.Version)
                     });
 
-                    var serializeEvent = _eventSerializer.Serialize(uncommitedEvent.Aggregate,
-                        uncommitedEvent.OriginalEvent,
-                        metadatas);
+                    var serializedEvent = _eventSerializer.Serialize(uncommitedEvent.Aggregate,
+                        uncommitedEvent.OriginalEvent, metadata);
 
-                    return serializeEvent;
+                    return serializedEvent;
                 });
 
                 _logger.LogInformation("Saving events on Event Store.");

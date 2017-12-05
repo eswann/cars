@@ -5,6 +5,8 @@ namespace Cars.Demo.Domain.Events
 {
     public class CartCreated : DomainEvent
     {
+        public CartCreated() { }
+
         public CartCreated(Guid aggregateId, string userId) : base(aggregateId)
         {
             UserId = userId;

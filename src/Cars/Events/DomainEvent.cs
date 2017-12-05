@@ -37,6 +37,11 @@ namespace Cars.Events
         public Guid AggregateId { get; }
         
         /// <summary>
+        /// Empty constructor is needed for serialization
+        /// </summary>
+        protected DomainEvent() { }
+
+        /// <summary>
         /// Construct the domain event.
         /// </summary>
         /// <param name="aggregateId"></param>

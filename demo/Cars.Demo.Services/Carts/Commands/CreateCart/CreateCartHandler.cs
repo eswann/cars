@@ -1,23 +1,27 @@
 ﻿using System.Threading.Tasks;
+using Cars.EventSource;
 using Cars.EventSource.Storage;
 
 namespace Cars.Demo.Services.Carts.Commands.CreateCart
 {
     public class CreateCartHandler : ICreateCartHandler
     {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository _repository;
 
-        public CreateCartHandler(IRepository repository)
+        public CreateCartHandler(IUnitOfWork unitOfWork, IRepository repository)
         {
+            _unitOfWork = unitOfWork;
             _repository = repository;
         }
 
-        public Task<CreateCartResponse> ExecuteAsync(CreateCartCommand command)
+        public async Task<CreateCartResponse> ExecuteAsync(CreateCartCommand command)
 	    {   
             var cartCreator = new CartCreator(command.UserId);
-	        _repository.AddAsync(cartCreator);
+	        await _repository.AddAsync(cartCreator);
+	        await _unitOfWork.CommitAsync();
 
-            return Task.FromResult(new CreateCartResponse(cartCreator.AggregateId));
+            return new CreateCartResponse(cartCreator.AggregateId);
 	    }
 
     }

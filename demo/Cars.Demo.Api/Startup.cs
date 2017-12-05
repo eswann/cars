@@ -27,15 +27,16 @@ namespace Cars.Demo.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-	        services.Configure<MongoEventStoreSettings>(Configuration.GetSection("EventStoreSettings"));
+            services.Configure<MongoEventStoreSettings>(Configuration.GetSection("EventStoreSettings"));
 	        services.AddSingleton<IMongoEventStoreSettings>(provider => provider.GetService<IOptions<MongoEventStoreSettings>>().Value);
 
             services.Configure<ProductCatalogSettings>(Configuration.GetSection("ProductCatalogSettings"));
             services.AddSingleton<IProductCatalogSettings>(provider => provider.GetService<IOptions<ProductCatalogSettings>>().Value);
 
+            services.AddCarsMongo();
+
             services.RegisterDemoServices();
 
-            services.AddCarsMongo();
             // Add framework services.
             services.AddMvc();
 

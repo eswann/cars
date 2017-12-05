@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace Cars.Commands
 {
-    public interface ICommandHandler<in TCommand, TResponse> where TCommand : ICommand
+    public interface ICommandHandler<in TCommand, TResponse>
     {
         Task<TResponse> ExecuteAsync(TCommand command);
     }

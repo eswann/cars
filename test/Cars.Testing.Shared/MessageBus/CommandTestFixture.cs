@@ -34,7 +34,7 @@ using Moq;
 namespace Cars.Testing.Shared.MessageBus
 {
     public abstract class CommandTestFixture<TCommand, TResponse, TCommandHandler, TAggregate>
-        where TCommand : class, ICommand
+        where TCommand : class
         where TCommandHandler : class, ICommandHandler<TCommand, TResponse>
         where TAggregate : Aggregate, new()
     {

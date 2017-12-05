@@ -3,7 +3,7 @@ using Cars.Commands;
 
 namespace Cars.Testing.Shared.StubApplication.Commands.Bar
 {
-    public class ManyDependenciesCommand : ICommand
+    public class ManyDependenciesCommand
     {
         public string Text { get; }
 

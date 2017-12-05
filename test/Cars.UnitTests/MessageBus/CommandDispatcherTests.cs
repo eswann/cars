@@ -29,11 +29,11 @@ namespace Cars.UnitTests.MessageBus
             };
 
             Mock<ICommandDispatcher> commandDispatcherMock = new Mock<ICommandDispatcher>();
-            commandDispatcherMock.Setup(e => e.DispatchAsync(It.IsAny<TestCommand>())).Callback((ICommand command) =>
+            commandDispatcherMock.Setup(e => e.DispatchAsync(It.IsAny<TestCommand>())).Callback((TestCommand command) =>
             {
                 handlers.ForEach(action =>
                 {
-                    action((TestCommand) command);
+                    action(command);
                 });
             }).Returns(Task.FromResult(new DefaultResponse(testCommand.AggregateId)));
 
@@ -59,11 +59,11 @@ namespace Cars.UnitTests.MessageBus
             };
 
             Mock<ICommandDispatcher> commandDispatcherMock = new Mock<ICommandDispatcher>();
-            commandDispatcherMock.Setup(e => e.DispatchAsync(It.IsAny<TestCommand>())).Callback((ICommand command) =>
+            commandDispatcherMock.Setup(e => e.DispatchAsync(It.IsAny<TestCommand>())).Callback((TestCommand command) =>
             {
                 handlers.ForEach(action =>
                 {
-                    action((TestCommand)command);
+                    action(command);
                 });
             }).Returns(Task.FromResult(new DefaultResponse(Guid.NewGuid())));
 

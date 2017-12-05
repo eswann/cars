@@ -3,7 +3,7 @@ using Cars.Commands;
 
 namespace Cars.Demo.Services.Carts.Commands.CreateCart
 {
-    public class CreateCartCommand : ICommand
+    public class CreateCartCommand
     {
         public CreateCartCommand(string userId)
         {

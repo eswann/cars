@@ -2,7 +2,7 @@
 
 namespace Cars.Commands
 {
-    public class CommandBase : ICommand
+    public class CommandBase
     {
         public CommandBase(Guid aggregateId)
         {

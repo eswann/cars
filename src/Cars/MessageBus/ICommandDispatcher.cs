@@ -30,8 +30,8 @@ namespace Cars.MessageBus
         /// <summary>
         /// Dispatch the command to the handler.
         /// </summary>
-        Task<TResponse> DispatchAsync<TCommand, TResponse>(TCommand command) where TCommand : ICommand;
+        Task<TResponse> DispatchAsync<TCommand, TResponse>(TCommand command);
 
-        Task<DefaultResponse> DispatchAsync<TCommand>(TCommand command) where TCommand : ICommand;
+        Task<DefaultResponse> DispatchAsync<TCommand>(TCommand command);
     }
 }

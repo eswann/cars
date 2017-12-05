@@ -26,43 +26,43 @@ using System.Collections.Generic;
 
 namespace Cars.EventSource.Storage
 {
-    public class StreamTracker
+    public class AggregateTracker
     {
         private readonly ConcurrentDictionary<Type, Dictionary<Guid, object>> _track = new ConcurrentDictionary<Type, Dictionary<Guid, object>>();
 
         public TAggregate GetById<TAggregate>(Guid id) where TAggregate : IAggregate
         {
-            if (!_track.TryGetValue(typeof(TAggregate), out var streams))
+            if (!_track.TryGetValue(typeof(TAggregate), out var aggregates))
                 return default(TAggregate);
 
-            if (!streams.TryGetValue(id, out var stream))
+            if (!aggregates.TryGetValue(id, out var aggregate))
                 return default(TAggregate);
 
-            return (TAggregate)stream;
+            return (TAggregate)aggregate;
         }
         
         public void Add<TAggregate>(TAggregate projection) where TAggregate : IAggregate
         {
-            if (!_track.TryGetValue(typeof(TAggregate), out var streams))
+            if (!_track.TryGetValue(typeof(TAggregate), out var aggregates))
             {
-                streams = new Dictionary<Guid, object>();
-                _track.TryAdd(typeof(TAggregate), streams);
+                aggregates = new Dictionary<Guid, object>();
+                _track.TryAdd(typeof(TAggregate), aggregates);
             }
 
-            if (streams.ContainsKey(projection.AggregateId))
+            if (aggregates.ContainsKey(projection.AggregateId))
                 return;
 
-            streams.Add(projection.AggregateId, projection);
+            aggregates.Add(projection.AggregateId, projection);
         }
 
-        public void Remove(Type projection, Guid aggregateId)
+        public void Remove(Type aggregateType, Guid aggregateId)
         {
-            if (!_track.TryGetValue(projection, out var streams))
+            if (!_track.TryGetValue(aggregateType, out var aggregates))
             {
                 return;
             }
 
-            streams.Remove(aggregateId);
+            aggregates.Remove(aggregateId);
         }
         
     }

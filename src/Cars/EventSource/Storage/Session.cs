@@ -40,7 +40,7 @@ namespace Cars.EventSource.Storage
 {
     public class Session : ISession
     {
-        private readonly StreamTracker _streamTracker = new StreamTracker();
+        private readonly AggregateTracker _aggregateTracker = new AggregateTracker();
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
         private readonly IEventStore _eventStore;
         private readonly IEventPublisher _eventPublisher;
@@ -108,7 +108,7 @@ namespace Cars.EventSource.Storage
             TAggregate projection;
             if (isMutator)
             {
-                projection =_streamTracker.GetById<TAggregate>(id);
+                projection =_aggregateTracker.GetById<TAggregate>(id);
                 if (projection != null)
                 {
                     RegisterForTracking(projection as Aggregate);
@@ -343,7 +343,7 @@ namespace Cars.EventSource.Storage
 
             foreach (var stream in _aggregates)
             {
-                _streamTracker.Remove(stream.GetType(), stream.AggregateId);
+                _aggregateTracker.Remove(stream.GetType(), stream.AggregateId);
             }
 
             _aggregates.Clear();
@@ -358,14 +358,14 @@ namespace Cars.EventSource.Storage
                 _aggregates.Add(aggregate);
             }
 
-            _streamTracker.Add(aggregate);
+            _aggregateTracker.Add(aggregate);
         }
 
         private void CheckConcurrency<TAggregate>(TAggregate aggregate) where TAggregate : IAggregate
         {
             _logger.LogDebug("Checking concurrency.");
 
-            var trackedStream = _streamTracker.GetById<TAggregate>(aggregate.AggregateId);
+            var trackedStream = _aggregateTracker.GetById<TAggregate>(aggregate.AggregateId);
 
             if (trackedStream == null) return;
 

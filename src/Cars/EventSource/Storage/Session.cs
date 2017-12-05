@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Cars.Collections;
 using Cars.Core;
@@ -87,7 +86,7 @@ namespace Cars.EventSource.Storage
                 new CorrelationIdMetadataProvider()
             });
             _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
-			_projectionProviderScanner = projectionProviderScanner ?? new ProjectionProviderAttributeScanner();
+            _projectionProviderScanner = projectionProviderScanner ?? new ProjectionProviderAttributeScanner();
 
         }
 
@@ -100,31 +99,25 @@ namespace Cars.EventSource.Storage
         /// <exception cref="StreamNotFoundException"></exception>
         public async Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new()
         {
-            _logger.LogDebug($"Getting stream '{typeof(TAggregate).FullName}' with identifier: '{id}'.");           
-            var isMutator = typeof(TAggregate).GetTypeInfo().IsSubclassOf(typeof(Aggregate));
+            _logger.LogDebug($"Getting stream '{typeof(TAggregate).FullName}' with identifier: '{id}'.");
 
             _logger.LogDebug("Returning an stream tracked.");
 
-            TAggregate projection;
-            if (isMutator)
+            TAggregate aggregate = _aggregateTracker.GetById<TAggregate>(id);
+            if (aggregate != null)
             {
-                projection =_aggregateTracker.GetById<TAggregate>(id);
-                if (projection != null)
-                {
-                    RegisterForTracking(projection as Aggregate);
-                    return projection;
-                }
+                RegisterForTracking(aggregate);
+                return aggregate;
             }
 
-            projection = new TAggregate();
-
+            aggregate = new TAggregate();
             IEnumerable<ICommitedEvent> events;
 
             _logger.LogDebug("Checking if stream has snapshot support.");
 
-            if (_snapshotStrategy.CheckSnapshotSupport(projection.GetType()))
+            if (_snapshotStrategy.CheckSnapshotSupport(aggregate.GetType()))
             {
-                if (projection is ISnapshotAggregate snapshotStream)
+                if (aggregate is ISnapshotAggregate snapshotStream)
                 {
                     int version = 0;
                     var snapshot = await _eventStore.GetLatestSnapshotByIdAsync(id).ConfigureAwait(false);
@@ -134,39 +127,31 @@ namespace Cars.EventSource.Storage
                         version = snapshot.Version;
 
                         _logger.LogDebug("Restoring snapshot.");
-
                         var snapshotRestore = _snapshotSerializer.Deserialize(snapshot);
-
                         snapshotStream.Restore(snapshotRestore);
-
                         _logger.LogDebug("Snapshot restored.");
                     }
 
                     events = await _eventStore.GetEventsForwardAsync(id, version).ConfigureAwait(false);
-
-                    LoadStream(projection, events);
+                    LoadStream(aggregate, events);
                 }
             }
             else
             {
                 events = await _eventStore.GetAllEventsAsync(id).ConfigureAwait(false);
-
-                LoadStream(projection, events);
+                LoadStream(aggregate, events);
             }
 
-            if (projection.AggregateId.Equals(Guid.Empty))
+            if (aggregate.AggregateId.Equals(Guid.Empty))
             {
                 _logger.LogError($"The stream ({typeof(TAggregate).FullName} {id}) was not found.");
 
                 throw new StreamNotFoundException(typeof(TAggregate).Name, id);
             }
 
-            if (isMutator)
-            {
-                RegisterForTracking(projection as Aggregate);
-            }
+            RegisterForTracking(aggregate as Aggregate);
 
-            return projection;
+            return aggregate;
         }
 
         /// <summary>
@@ -179,10 +164,10 @@ namespace Cars.EventSource.Storage
             CheckConcurrency(aggregate);
 
             RegisterForTracking(aggregate);
-            
+
             return Task.CompletedTask;
         }
-        
+
         /// <summary>
         /// Start transaction.
         /// </summary>
@@ -238,7 +223,7 @@ namespace Cars.EventSource.Storage
                     .OrderBy(o => o.CreatedAt)
                     .Cast<UncommitedEvent>()
                     .ToList();
-                
+
                 var serializedEvents = uncommitedEvents.Select(uncommitedEvent =>
                 {
                     var metadatas = _metadataProviders.SelectMany(md => md.Provide(uncommitedEvent.Aggregate,
@@ -293,7 +278,7 @@ namespace Cars.EventSource.Storage
 
                         await _eventStore.SaveProjectionAsync(projectionSerialized).ConfigureAwait(false);
                     }
-                                        
+
                 }
 
                 _logger.LogDebug("End iterate.");
@@ -303,7 +288,7 @@ namespace Cars.EventSource.Storage
                 await _eventPublisher.PublishAsync(uncommitedEvents.Select(e => e.OriginalEvent)).ConfigureAwait(false);
 
                 _logger.LogInformation("Published events.");
-                
+
                 _aggregates.Clear();
 
                 await _eventPublisher.CommitAsync().ConfigureAwait(false);
@@ -372,12 +357,11 @@ namespace Cars.EventSource.Storage
             if (trackedStream.Version != aggregate.Version)
             {
                 _logger.LogError($"Aggregate's current version is: {aggregate.Version} - expected is: {trackedStream.Version}.");
-
                 throw new ExpectedVersionException<TAggregate>(aggregate, trackedStream.Version);
             }
         }
 
-        private void LoadStream<TAggregate>(TAggregate projection, IEnumerable<ICommitedEvent> commitedEvents) where TAggregate : Aggregate
+        private void LoadStream(Aggregate projection, IEnumerable<ICommitedEvent> commitedEvents)
         {
             var flatten = commitedEvents as ICommitedEvent[] ?? commitedEvents.ToArray();
 

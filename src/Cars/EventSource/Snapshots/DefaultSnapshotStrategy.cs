@@ -40,9 +40,9 @@ namespace Cars.EventSource.Snapshots
             return CheckSnapshotSupport(baseType);
         }
 
-        public virtual bool ShouldMakeSnapshot(IAggregateMutator mutator)
+        public virtual bool ShouldMakeSnapshot(IAggregate aggregate)
         {
-            return CheckSnapshotSupport(mutator.GetType());
+            return CheckSnapshotSupport(aggregate.GetType());
         }
     }
 }

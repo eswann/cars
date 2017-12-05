@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-
 namespace Cars.Commands
 {
     /// <summary>
@@ -29,6 +27,5 @@ namespace Cars.Commands
     /// </summary>
     public interface ICommand
     {
-        Guid AggregateId { get; }
     }
 }

@@ -22,7 +22,7 @@
 
 namespace Cars.EventSource.Snapshots
 {
-    public abstract class SnapshotAggregate<TSnapshot> : AggregateMutator, ISnapshotAggregate
+    public abstract class SnapshotAggregate<TSnapshot> : Aggregate, ISnapshotAggregate
         where TSnapshot : Snapshot
     {
         ISnapshot ISnapshotAggregate.CreateSnapshot()

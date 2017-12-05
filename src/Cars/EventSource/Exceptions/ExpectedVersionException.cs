@@ -24,15 +24,15 @@ using System;
 
 namespace Cars.EventSource.Exceptions
 {
-    public class ExpectedVersionException<TMutator> : Exception
-        where TMutator : IAggregateMutator
+    public class ExpectedVersionException<TAggregate> : Exception
+        where TAggregate : IAggregate
     {
-        public TMutator Mutator { get; }
+        public TAggregate Aggregate { get; }
         public int ExpectedVersion { get; }
 
-        public ExpectedVersionException(TMutator mutator, int expectedVersion)
+        public ExpectedVersionException(TAggregate aggregate, int expectedVersion)
         {
-            Mutator = mutator;
+            Aggregate = aggregate;
             ExpectedVersion = expectedVersion;
         }
     }

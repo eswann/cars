@@ -128,7 +128,7 @@ namespace Cars.UnitTests.Storage
 
             Func<Task> wrongVersion = async () => await session.AddAsync(stubStream1);
 
-            wrongVersion.ShouldThrowExactly<ExpectedVersionException<StubAggregate>>().And.Mutator.Should().Be(stubStream1);
+            wrongVersion.ShouldThrowExactly<ExpectedVersionException<StubAggregate>>().And.Aggregate.Should().Be(stubStream1);
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -558,7 +558,7 @@ namespace Cars.UnitTests.Storage
         {
             var snapshotStrategyMock = new Mock<ISnapshotStrategy>();
             snapshotStrategyMock.Setup(e => e.CheckSnapshotSupport(It.IsAny<Type>())).Returns(true);
-            snapshotStrategyMock.Setup(e => e.ShouldMakeSnapshot(It.IsAny<IAggregateMutator>())).Returns(makeSnapshot);
+            snapshotStrategyMock.Setup(e => e.ShouldMakeSnapshot(It.IsAny<IAggregate>())).Returns(makeSnapshot);
 
             return snapshotStrategyMock.Object;
         }

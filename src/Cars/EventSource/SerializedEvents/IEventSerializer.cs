@@ -28,7 +28,7 @@ namespace Cars.EventSource
 {
     public interface IEventSerializer
     {
-        ISerializedEvent Serialize(IAggregateMutator mutator, IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas);
+        ISerializedEvent Serialize(IAggregate aggregate, IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas);
         IDomainEvent Deserialize(ICommitedEvent commitedEvent);
     }
 }

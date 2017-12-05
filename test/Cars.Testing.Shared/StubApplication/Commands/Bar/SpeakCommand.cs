@@ -3,7 +3,7 @@ using Cars.Commands;
 
 namespace Cars.Testing.Shared.StubApplication.Commands.Bar
 {
-    public class SpeakCommand : Command
+    public class SpeakCommand : CommandBase
     {
         public string Text { get; }
 

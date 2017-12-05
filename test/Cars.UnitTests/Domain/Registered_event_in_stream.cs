@@ -10,7 +10,7 @@ namespace Cars.UnitTests.Domain
     public class Registered_event_in_stream : StreamTestFixture<StubAggregate>
     {
         public const string CategoryName = "Unit";
-        public const string CategoryValue = "Mutator";
+        public const string CategoryValue = "Aggregate";
 
         protected override void When()
         {

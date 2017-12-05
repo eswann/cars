@@ -3,7 +3,7 @@ using Cars.Commands;
 
 namespace Cars.Testing.Shared.StubApplication.Commands.Foo
 {
-    public class DoFloodSomethingCommand : Command
+    public class DoFloodSomethingCommand : CommandBase
     {
         public int Times { get; }
 

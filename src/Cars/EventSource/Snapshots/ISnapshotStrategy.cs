@@ -35,8 +35,8 @@ namespace Cars.EventSource.Snapshots
         /// <summary>
         /// Determines when it should be performed snapshot.
         /// </summary>
-        /// <param name="mutator"></param>
+        /// <param name="aggregate"></param>
         /// <returns></returns>
-        bool ShouldMakeSnapshot(IAggregateMutator mutator);
+        bool ShouldMakeSnapshot(IAggregate aggregate);
     }
 }

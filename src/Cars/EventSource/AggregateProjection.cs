@@ -62,8 +62,8 @@ namespace Cars.EventSource
         }
 
         /// <summary>
-        /// Apply the event in Mutator.
-        /// The last event applied is the current state of the Mutator.
+        /// Apply the event in Aggregate.
+        /// The last event applied is the current state of the Aggregate.
         /// </summary>
         /// <param name="event"></param>
         private void ApplyEvent(IDomainEvent @event)
@@ -72,7 +72,7 @@ namespace Cars.EventSource
         }
 
         /// <summary>
-        /// Load the events in the Mutator.
+        /// Load the events in the Aggregate.
         /// </summary>
         /// <param name="domainEvents"></param>
         public void LoadFromHistory(CommitedDomainEventCollection domainEvents)

@@ -26,7 +26,7 @@ namespace Cars.EventSource.Snapshots
 {
     public interface ISnapshotSerializer
     {
-        ISerializedSnapshot Serialize(IAggregateMutator mutator, ISnapshot snapshot, IEnumerable<KeyValuePair<string, object>> metadatas);
+        ISerializedSnapshot Serialize(IAggregate aggregate, ISnapshot snapshot, IEnumerable<KeyValuePair<string, object>> metadatas);
         ISnapshotRestore Deserialize(ICommitedSnapshot commitedSnapshot);
     }
 }

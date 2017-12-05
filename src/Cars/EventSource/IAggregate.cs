@@ -20,23 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using System.Collections.Generic;
+using Cars.Events;
 
-namespace Cars.Commands
+namespace Cars.EventSource
 {
-    /// <summary>
-    /// Represent the User Intention (UI) abstraction.
-    /// </summary>
-    public abstract class Command : ICommand
+    public interface IAggregate : IAggregateProjection
     {
-        /// <summary>
-        /// Aggregate identifier.
-        /// </summary>
-        public Guid AggregateId { get; }
-
-        protected Command(Guid aggregateId)
-        {
-            AggregateId = aggregateId;
-        }
+        int UncommittedVersion { get; }
+        IReadOnlyCollection<IUncommitedEvent> UncommitedEvents { get; }
+        void ClearUncommitedEvents();
     }
 }

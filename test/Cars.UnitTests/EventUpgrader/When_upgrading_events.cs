@@ -171,7 +171,7 @@ namespace Cars.UnitTests.EventUpgrader
         }
 
         private async Task<Session> ArrangeSessionAsync<TAggregate>(Guid aggregateId, IEventUpdateManager eventUpdateManager = null, params IDomainEvent[] arrangeEvents)
-            where TAggregate : AggregateMutator, new()
+            where TAggregate : Aggregate, new()
         {
             var metadataProviders = new IMetadataProvider[]
             {

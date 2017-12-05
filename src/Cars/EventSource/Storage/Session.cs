@@ -41,7 +41,7 @@ namespace Cars.EventSource.Storage
     public class Session : ISession
     {
         private readonly StreamTracker _streamTracker = new StreamTracker();
-        private readonly List<AggregateMutator> _mutators = new List<AggregateMutator>();
+        private readonly List<Aggregate> _aggregates = new List<Aggregate>();
         private readonly IEventStore _eventStore;
         private readonly IEventPublisher _eventPublisher;
         private readonly IEventSerializer _eventSerializer;
@@ -55,7 +55,7 @@ namespace Cars.EventSource.Storage
 
         private bool _externalTransaction;
 
-        public IReadOnlyList<IAggregateMutator> Mutators => _mutators;
+        public IReadOnlyList<IAggregate> Aggregates => _aggregates;
 
         public Session(
             ILoggerFactory loggerFactory,
@@ -101,7 +101,7 @@ namespace Cars.EventSource.Storage
         public async Task<TProjection> GetByIdAsync<TProjection>(Guid id) where TProjection : AggregateProjection, new()
         {
             _logger.LogDebug($"Getting stream '{typeof(TProjection).FullName}' with identifier: '{id}'.");           
-            var isMutator = typeof(TProjection).GetTypeInfo().IsSubclassOf(typeof(AggregateMutator));
+            var isMutator = typeof(TProjection).GetTypeInfo().IsSubclassOf(typeof(Aggregate));
 
             _logger.LogDebug("Returning an stream tracked.");
 
@@ -111,7 +111,7 @@ namespace Cars.EventSource.Storage
                 projection =_streamTracker.GetById<TProjection>(id);
                 if (projection != null)
                 {
-                    RegisterForTracking(projection as AggregateMutator);
+                    RegisterForTracking(projection as Aggregate);
                     return projection;
                 }
             }
@@ -163,7 +163,7 @@ namespace Cars.EventSource.Storage
 
             if (isMutator)
             {
-                RegisterForTracking(projection as AggregateMutator);
+                RegisterForTracking(projection as Aggregate);
             }
 
             return projection;
@@ -172,13 +172,13 @@ namespace Cars.EventSource.Storage
         /// <summary>
         /// Add the stream to tracking.
         /// </summary>
-        /// <typeparam name="TMutator"></typeparam>
-        /// <param name="stream"></param>
-        public Task AddAsync<TMutator>(TMutator stream) where TMutator : AggregateMutator
+        /// <typeparam name="TAggregate"></typeparam>
+        /// <param name="aggregate"></param>
+        public Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
-            CheckConcurrency(stream);
+            CheckConcurrency(aggregate);
 
-            RegisterForTracking(stream);
+            RegisterForTracking(aggregate);
             
             return Task.CompletedTask;
         }
@@ -234,14 +234,14 @@ namespace Cars.EventSource.Storage
                 _logger.LogInformation("Serializing events.");
 
                 var uncommitedEvents =
-                    _mutators.SelectMany(e => e.UncommitedEvents)
+                    _aggregates.SelectMany(e => e.UncommitedEvents)
                     .OrderBy(o => o.CreatedAt)
                     .Cast<UncommitedEvent>()
                     .ToList();
                 
                 var serializedEvents = uncommitedEvents.Select(uncommitedEvent =>
                 {
-                    var metadatas = _metadataProviders.SelectMany(md => md.Provide(uncommitedEvent.AggregateMutator,
+                    var metadatas = _metadataProviders.SelectMany(md => md.Provide(uncommitedEvent.Aggregate,
                         uncommitedEvent.OriginalEvent,
                         Metadata.Empty)).Concat(new[]
                     {
@@ -249,7 +249,7 @@ namespace Cars.EventSource.Storage
                         new KeyValuePair<string, object>(MetadataKeys.EventVersion, uncommitedEvent.Version)
                     });
 
-                    var serializeEvent = _eventSerializer.Serialize(uncommitedEvent.AggregateMutator,
+                    var serializeEvent = _eventSerializer.Serialize(uncommitedEvent.Aggregate,
                         uncommitedEvent.OriginalEvent,
                         metadatas);
 
@@ -262,7 +262,7 @@ namespace Cars.EventSource.Storage
 
                 _logger.LogInformation("Begin iterate in collection of stream.");
 
-                foreach (var stream in _mutators)
+                foreach (var stream in _aggregates)
                 {
                     _logger.LogInformation($"Checking if should take snapshot for stream: '{stream.AggregateId}'.");
 
@@ -304,7 +304,7 @@ namespace Cars.EventSource.Storage
 
                 _logger.LogInformation("Published events.");
                 
-                _mutators.Clear();
+                _aggregates.Clear();
 
                 await _eventPublisher.CommitAsync().ConfigureAwait(false);
             }
@@ -341,39 +341,39 @@ namespace Cars.EventSource.Storage
 
             _logger.LogDebug("Cleaning tracker.");
 
-            foreach (var stream in _mutators)
+            foreach (var stream in _aggregates)
             {
                 _streamTracker.Remove(stream.GetType(), stream.AggregateId);
             }
 
-            _mutators.Clear();
+            _aggregates.Clear();
         }
 
-        private void RegisterForTracking<TMutator>(TMutator aggregate) where TMutator : AggregateMutator
+        private void RegisterForTracking<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
             _logger.LogDebug($"Adding to track: {aggregate.GetType().FullName}.");
 
-            if (_mutators.All(e => e.AggregateId != aggregate.AggregateId))
+            if (_aggregates.All(e => e.AggregateId != aggregate.AggregateId))
             {
-                _mutators.Add(aggregate);
+                _aggregates.Add(aggregate);
             }
 
             _streamTracker.Add(aggregate);
         }
 
-        private void CheckConcurrency<TMutator>(TMutator mutator) where TMutator : IAggregateMutator
+        private void CheckConcurrency<TAggregate>(TAggregate aggregate) where TAggregate : IAggregate
         {
             _logger.LogDebug("Checking concurrency.");
 
-            var trackedStream = _streamTracker.GetById<TMutator>(mutator.AggregateId);
+            var trackedStream = _streamTracker.GetById<TAggregate>(aggregate.AggregateId);
 
             if (trackedStream == null) return;
 
-            if (trackedStream.Version != mutator.Version)
+            if (trackedStream.Version != aggregate.Version)
             {
-                _logger.LogError($"Mutator's current version is: {mutator.Version} - expected is: {trackedStream.Version}.");
+                _logger.LogError($"Aggregate's current version is: {aggregate.Version} - expected is: {trackedStream.Version}.");
 
-                throw new ExpectedVersionException<TMutator>(mutator, trackedStream.Version);
+                throw new ExpectedVersionException<TAggregate>(aggregate, trackedStream.Version);
             }
         }
 

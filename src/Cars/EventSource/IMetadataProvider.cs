@@ -36,6 +36,6 @@ namespace Cars.EventSource
         /// <param name="metadata"></param>
         /// <returns></returns>
         IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata)
-            where TAggregate : IAggregateMutator;
+            where TAggregate : IAggregate;
     }
 }

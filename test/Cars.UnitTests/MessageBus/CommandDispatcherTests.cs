@@ -101,7 +101,7 @@ namespace Cars.UnitTests.MessageBus
             }
         }
 
-        public class TestCommand : Command
+        public class TestCommand : CommandBase
         {
             public TestCommand(Guid id) : base(id)
             {

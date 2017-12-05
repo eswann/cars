@@ -42,8 +42,8 @@ namespace Cars.EventSource.Storage
         /// Add an instance of <typeparam name="TAggregate"></typeparam>.
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
-        /// <param name="stream"></param>
-        Task AddAsync<TAggregate>(TAggregate stream) where TAggregate : AggregateMutator;
+        /// <param name="aggregate"></param>
+        Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate;
 
         /// <summary>
         /// Begin the transaction.

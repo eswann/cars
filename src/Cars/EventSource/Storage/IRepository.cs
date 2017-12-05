@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 namespace Cars.EventSource.Storage
 {
     /// <summary>
-    /// Represents an abstraction where an instance of <see cref="AggregateMutator"/> will be persisted.
+    /// Represents an abstraction where an instance of <see cref="Aggregate"/> will be persisted.
     /// </summary>
     public interface IRepository
     {
@@ -42,6 +42,6 @@ namespace Cars.EventSource.Storage
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="aggregate"></param>
-        Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : AggregateMutator;
+        Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate;
     }
 }

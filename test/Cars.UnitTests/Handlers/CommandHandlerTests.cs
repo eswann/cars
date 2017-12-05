@@ -35,7 +35,7 @@ namespace Cars.UnitTests.Handlers
             CommandHandler.AggregateId.Should().Be(_id);
         }
 
-        public class CreateStubCommand : Command
+        public class CreateStubCommand : CommandBase
         {
             public CreateStubCommand(Guid aggregateId) : base(aggregateId)
             {

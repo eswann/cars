@@ -36,7 +36,7 @@ namespace Cars.Testing.Shared.MessageBus
     public abstract class CommandTestFixture<TCommand, TResponse, TCommandHandler, TAggregate>
         where TCommand : class, ICommand
         where TCommandHandler : class, ICommandHandler<TCommand, TResponse>
-        where TAggregate : AggregateMutator, new()
+        where TAggregate : Aggregate, new()
     {
         private readonly IDictionary<Type, object> _mocks;
 

@@ -8,6 +8,8 @@ using Cars.Events;
 using Cars.EventSource;
 using Cars.EventSource.Exceptions;
 using Cars.EventSource.Projections;
+using Cars.EventSource.SerializedEvents;
+using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
 using Cars.MessageBus.InProcess;
 using Cars.MetadataProviders;
@@ -169,7 +171,7 @@ namespace Cars.UnitTests.EventUpgrader
         }
 
         private async Task<Session> ArrangeSessionAsync<TAggregate>(Guid aggregateId, IEventUpdateManager eventUpdateManager = null, params IDomainEvent[] arrangeEvents)
-            where TAggregate : Mutator, new()
+            where TAggregate : AggregateMutator, new()
         {
             var metadataProviders = new IMetadataProvider[]
             {

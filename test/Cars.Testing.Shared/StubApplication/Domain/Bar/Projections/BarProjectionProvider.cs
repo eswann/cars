@@ -6,7 +6,7 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Bar.Projections
 {
     public class BarProjectionProvider : IProjectionProvider
     {
-        public object CreateProjection(IMutator mutator)
+        public object CreateProjection(IAggregateMutator mutator)
         {
             var target = (Bar)mutator;
 
@@ -22,7 +22,7 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Bar.Projections
 
     public class BarWithoutMessagesProjectionProvider : IProjectionProvider
     {
-        public object CreateProjection(IMutator mutator)
+        public object CreateProjection(IAggregateMutator mutator)
         {
             var target = (Bar)mutator;
 

@@ -22,19 +22,13 @@
 
 using System.Collections.Generic;
 using Cars.Events;
-using Cars.EventSource.Snapshots;
+using Cars.EventSource.SerializedEvents;
 
 namespace Cars.EventSource
 {
     public interface IEventSerializer
     {
-        ISerializedEvent Serialize(IMutator mutator, IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas);
+        ISerializedEvent Serialize(IAggregateMutator mutator, IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas);
         IDomainEvent Deserialize(ICommitedEvent commitedEvent);
-    }
-
-    public interface ISnapshotSerializer
-    {
-        ISerializedSnapshot Serialize(IMutator mutator, ISnapshot snapshot, IEnumerable<KeyValuePair<string, object>> metadatas);
-        ISnapshotRestore Deserialize(ICommitedSnapshot commitedSnapshot);
     }
 }

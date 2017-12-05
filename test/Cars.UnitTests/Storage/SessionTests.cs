@@ -7,6 +7,7 @@ using Cars.Events;
 using Cars.EventSource;
 using Cars.EventSource.Exceptions;
 using Cars.EventSource.Projections;
+using Cars.EventSource.SerializedEvents;
 using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
 using Cars.MessageBus;
@@ -557,7 +558,7 @@ namespace Cars.UnitTests.Storage
         {
             var snapshotStrategyMock = new Mock<ISnapshotStrategy>();
             snapshotStrategyMock.Setup(e => e.CheckSnapshotSupport(It.IsAny<Type>())).Returns(true);
-            snapshotStrategyMock.Setup(e => e.ShouldMakeSnapshot(It.IsAny<IMutator>())).Returns(makeSnapshot);
+            snapshotStrategyMock.Setup(e => e.ShouldMakeSnapshot(It.IsAny<IAggregateMutator>())).Returns(makeSnapshot);
 
             return snapshotStrategyMock.Object;
         }

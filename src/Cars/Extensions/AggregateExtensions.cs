@@ -31,7 +31,7 @@ namespace Cars.Extensions
 {
     internal static class StreamExtensions
     {
-        public static async Task TakeSnapshot(this Mutator mutator,
+        public static async Task TakeSnapshot(this AggregateMutator mutator,
             IEventStore eventStore,
             ISnapshotSerializer snapshotSerializer)
         {

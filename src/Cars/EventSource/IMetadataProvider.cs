@@ -31,11 +31,11 @@ namespace Cars.EventSource
         /// Provides a collection of key pair value that will be used to generate event metadata on the save moment.
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
-        /// <param name="stream"></param>
+        /// <param name="aggregate"></param>
         /// <param name="event"></param>
         /// <param name="metadata"></param>
         /// <returns></returns>
-        IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate stream, IDomainEvent @event, IMetadata metadata)
-            where TAggregate : IMutator;
+        IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata)
+            where TAggregate : IAggregateMutator;
     }
 }

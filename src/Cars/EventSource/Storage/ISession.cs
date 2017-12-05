@@ -36,14 +36,14 @@ namespace Cars.EventSource.Storage
         /// <typeparam name="TProjection"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<TProjection> GetByIdAsync<TProjection>(Guid id) where TProjection : Projection, new();
+        Task<TProjection> GetByIdAsync<TProjection>(Guid id) where TProjection : AggregateProjection, new();
         
         /// <summary>
         /// Add an instance of <typeparam name="TAggregate"></typeparam>.
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="stream"></param>
-        Task AddAsync<TAggregate>(TAggregate stream) where TAggregate : Mutator;
+        Task AddAsync<TAggregate>(TAggregate stream) where TAggregate : AggregateMutator;
 
         /// <summary>
         /// Begin the transaction.

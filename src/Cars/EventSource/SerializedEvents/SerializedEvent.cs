@@ -20,29 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Cars.EventSource.Snapshots;
+using System;
 
-namespace Cars.EventSource
+namespace Cars.EventSource.SerializedEvents
 {
-    public abstract class SnapshotAggregate<TSnapshot> : Mutator, ISnapshotAggregate
-        where TSnapshot : Snapshot
+    public class SerializedEvent : ISerializedEvent
     {
-        ISnapshot ISnapshotAggregate.CreateSnapshot()
-        {
-            var snapshot = CreateSnapshot();
-            
-            return snapshot;
-        }
+        public Guid AggregateId { get; }
+        public int Version { get; }
+        public string SerializedMetadata { get; }
+        public string SerializedData { get; }
+        public IMetadata Metadata { get; }
 
-        void ISnapshotAggregate.Restore(ISnapshotRestore snapshotRestore)
+        public SerializedEvent(Guid aggregateId, 
+            int version, 
+            string serializedData, 
+            string serializedMetadata, 
+            IMetadata metadata)
         {
-            AggregateId = snapshotRestore.AggregateId;
-            Version = snapshotRestore.Version;
-
-            RestoreFromSnapshot((TSnapshot)snapshotRestore.Snapshot);
+            AggregateId = aggregateId;
+            Version = version;
+            SerializedData = serializedData;
+            SerializedMetadata = serializedMetadata;
+            Metadata = metadata;
         }
-        
-        protected abstract TSnapshot CreateSnapshot();
-        protected abstract void RestoreFromSnapshot(TSnapshot snapshot);
     }
 }

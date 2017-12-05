@@ -2,6 +2,6 @@
 {
     public interface IProjectionProvider
     {
-        object CreateProjection(IMutator mutator);
+        object CreateProjection(IAggregateMutator mutator);
     }
 }

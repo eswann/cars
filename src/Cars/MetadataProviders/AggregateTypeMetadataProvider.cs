@@ -28,11 +28,11 @@ namespace Cars.MetadataProviders
 {
     public class StreamTypeMetadataProvider : IMetadataProvider
     {
-        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate stream, IDomainEvent @event, IMetadata metadata) where TAggregate : IMutator
+        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata) where TAggregate : IAggregateMutator
         {
-            yield return new KeyValuePair<string, object>(MetadataKeys.AggregateId, stream.AggregateId);
-            yield return new KeyValuePair<string, object>(MetadataKeys.StreamSequenceNumber, stream.UncommittedVersion);
-            yield return new KeyValuePair<string, object>(MetadataKeys.StreamTypeFullname, stream.GetType().FullName);
+            yield return new KeyValuePair<string, object>(MetadataKeys.AggregateId, aggregate.AggregateId);
+            yield return new KeyValuePair<string, object>(MetadataKeys.StreamSequenceNumber, aggregate.UncommittedVersion);
+            yield return new KeyValuePair<string, object>(MetadataKeys.StreamTypeFullname, aggregate.GetType().FullName);
         }
     }
 }

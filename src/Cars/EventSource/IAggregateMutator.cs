@@ -22,25 +22,13 @@
 
 using System.Collections.Generic;
 using Cars.Events;
-using Cars.EventSource;
-using Cars.Extensions;
 
-namespace Cars.MetadataProviders
+namespace Cars.EventSource
 {
-    public class EventTypeMetadataProvider : IMetadataProvider
+    public interface IAggregateMutator : IAggregateProjection
     {
-        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata)
-            where TAggregate : IAggregateMutator
-        {
-            string eventName;
-
-            if (!@event.TryGetEventNameAttribute(out eventName))
-            {
-                eventName = @event.GetType().Name;
-            }
-
-            yield return new KeyValuePair<string, object>(MetadataKeys.EventClrType, @event.GetType().AssemblyQualifiedName);
-            yield return new KeyValuePair<string, object>(MetadataKeys.EventName, eventName);
-        }
+        int UncommittedVersion { get; }
+        IReadOnlyCollection<IUncommitedEvent> UncommitedEvents { get; }
+        void ClearUncommitedEvents();
     }
 }

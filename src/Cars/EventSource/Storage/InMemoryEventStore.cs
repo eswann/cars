@@ -27,6 +27,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cars.Events;
 using Cars.EventSource.Projections;
+using Cars.EventSource.SerializedEvents;
 using Cars.EventSource.Snapshots;
 
 namespace Cars.EventSource.Storage

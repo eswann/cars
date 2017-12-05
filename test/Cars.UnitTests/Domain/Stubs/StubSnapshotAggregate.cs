@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cars.EventSource;
+using Cars.EventSource.Snapshots;
 using Cars.UnitTests.Domain.Stubs.Events;
 
 namespace Cars.UnitTests.Domain.Stubs

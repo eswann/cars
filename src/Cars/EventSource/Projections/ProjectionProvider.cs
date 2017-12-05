@@ -23,12 +23,12 @@
 namespace Cars.EventSource.Projections
 {
     public abstract class ProjectionProvider<TAggregate, TProjection> : IProjectionProvider
-        where TAggregate : IMutator
+        where TAggregate : IAggregateMutator
         where TProjection : class, new()
     {
         public abstract TProjection CreateProjection(TAggregate aggregate);
 
-        object IProjectionProvider.CreateProjection(IMutator mutator)
+        object IProjectionProvider.CreateProjection(IAggregateMutator mutator)
         {
             return CreateProjection((TAggregate)mutator);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Cars.EventSource;
+using Cars.EventSource.Snapshots;
 
 namespace Cars.Testing.Shared.StubApplication.Domain.Foo
 {

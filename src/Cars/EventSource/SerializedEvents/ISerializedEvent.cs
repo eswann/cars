@@ -21,14 +21,15 @@
 // SOFTWARE.
 
 using System;
-using Cars.Collections;
 
-namespace Cars.EventSource
+namespace Cars.EventSource.SerializedEvents
 {
-    public interface IProjection
+    public interface ISerializedEvent
     {
         Guid AggregateId { get; }
         int Version { get; }
-        void LoadFromHistory(CommitedDomainEventCollection domainEvents);
+        string SerializedMetadata { get; }
+        string SerializedData { get; }
+        IMetadata Metadata { get; }
     }
 }

@@ -10,8 +10,8 @@ namespace Cars.UnitTests.Handlers
 {
     public class CommandHandlerTests : CommandTestFixture<CommandHandlerTests.CreateStubCommand, DefaultResponse, CommandHandlerTests.CreateStubCommandHandler, StubAggregate>
     {
-        private const string CategoryName = "Unit";
-        private const string CategoryValue = "Handlers";
+        private const string _categoryName = "Unit";
+        private const string _categoryValue = "Handlers";
 
         private Guid _id;
 
@@ -22,14 +22,14 @@ namespace Cars.UnitTests.Handlers
             return new CreateStubCommand(_id);
         }
         
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public void Executed_property_should_be_true()
         {
             CommandHandler.Executed.Should().Be(true);
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public void Should_pass_the_correct_AggregateId()
         {

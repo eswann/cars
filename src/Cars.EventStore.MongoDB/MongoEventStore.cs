@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using Cars.Events;
 using Cars.EventSource;
 using Cars.EventSource.Projections;
+using Cars.EventSource.SerializedEvents;
 using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
 using MongoDB.Bson;

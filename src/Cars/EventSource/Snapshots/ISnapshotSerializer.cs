@@ -20,16 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using System.Collections.Generic;
 
-namespace Cars.EventSource
+namespace Cars.EventSource.Snapshots
 {
-    public interface ISerializedEvent
+    public interface ISnapshotSerializer
     {
-        Guid AggregateId { get; }
-        int Version { get; }
-        string SerializedMetadata { get; }
-        string SerializedData { get; }
-        IMetadata Metadata { get; }
+        ISerializedSnapshot Serialize(IAggregateMutator mutator, ISnapshot snapshot, IEnumerable<KeyValuePair<string, object>> metadatas);
+        ISnapshotRestore Deserialize(ICommitedSnapshot commitedSnapshot);
     }
 }

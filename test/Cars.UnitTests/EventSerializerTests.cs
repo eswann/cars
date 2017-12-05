@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cars.Events;
 using Cars.EventSource;
 using Cars.EventSource.Exceptions;
+using Cars.EventSource.SerializedEvents;
 using Cars.Testing.Shared;
 using Cars.Testing.Shared.StubApplication.Domain.Bar;
 using FluentAssertions;

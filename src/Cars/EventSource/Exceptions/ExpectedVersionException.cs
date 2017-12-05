@@ -25,7 +25,7 @@ using System;
 namespace Cars.EventSource.Exceptions
 {
     public class ExpectedVersionException<TMutator> : Exception
-        where TMutator : IMutator
+        where TMutator : IAggregateMutator
     {
         public TMutator Mutator { get; }
         public int ExpectedVersion { get; }

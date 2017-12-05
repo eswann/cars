@@ -29,7 +29,7 @@ using Cars.EventSource;
 
 namespace Cars.Testing.Shared.MessageBus
 {
-    public abstract class StreamTestFixture<TAggregate> where TAggregate : Mutator, new()
+    public abstract class StreamTestFixture<TAggregate> where TAggregate : AggregateMutator, new()
     {
         protected TAggregate AggregateRoot;
         protected Exception CaughtException;

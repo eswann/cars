@@ -31,7 +31,7 @@ namespace Cars.EventSource.Snapshots
             SnapshotInterval = snapshotInterval;
         }
         
-        public override bool ShouldMakeSnapshot(IMutator mutator)
+        public override bool ShouldMakeSnapshot(IAggregateMutator mutator)
         {
             if (!CheckSnapshotSupport(mutator.GetType())) return false;
 

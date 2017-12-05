@@ -37,6 +37,6 @@ namespace Cars.EventSource.Snapshots
         /// </summary>
         /// <param name="mutator"></param>
         /// <returns></returns>
-        bool ShouldMakeSnapshot(IMutator mutator);
+        bool ShouldMakeSnapshot(IAggregateMutator mutator);
     }
 }

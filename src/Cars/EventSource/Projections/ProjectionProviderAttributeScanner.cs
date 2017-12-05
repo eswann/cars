@@ -14,7 +14,7 @@ namespace Cars.EventSource.Projections
 
         public Task<ScannerResult> ScanAsync(Type type)
         {
-            if (!typeof(IMutator).IsAssignableFrom(type)) throw new TargetException($"The target should be {nameof(IMutator)}.");
+            if (!typeof(IAggregateMutator).IsAssignableFrom(type)) throw new TargetException($"The target should be {nameof(IAggregateMutator)}.");
 
             var providers = _cachedProviders.GetOrAdd(type.FullName, key =>
             {
@@ -34,7 +34,7 @@ namespace Cars.EventSource.Projections
             return Task.FromResult(result);
         }
 
-        public async Task<ScannerResult> ScanAsync<TAggregate>() where TAggregate : IMutator
+        public async Task<ScannerResult> ScanAsync<TAggregate>() where TAggregate : IAggregateMutator
         {
             return await ScanAsync(typeof(TAggregate));
         }

@@ -20,15 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using Cars.Events;
-
-namespace Cars.EventSource
+namespace Cars.EventSource.Snapshots
 {
-    public interface IMutator : IProjection
+    public abstract class SnapshotAggregate<TSnapshot> : AggregateMutator, ISnapshotAggregate
+        where TSnapshot : Snapshot
     {
-        int UncommittedVersion { get; }
-        IReadOnlyCollection<IUncommitedEvent> UncommitedEvents { get; }
-        void ClearUncommitedEvents();
+        ISnapshot ISnapshotAggregate.CreateSnapshot()
+        {
+            var snapshot = CreateSnapshot();
+            
+            return snapshot;
+        }
+
+        void ISnapshotAggregate.Restore(ISnapshotRestore snapshotRestore)
+        {
+            AggregateId = snapshotRestore.AggregateId;
+            Version = snapshotRestore.Version;
+
+            RestoreFromSnapshot((TSnapshot)snapshotRestore.Snapshot);
+        }
+        
+        protected abstract TSnapshot CreateSnapshot();
+        protected abstract void RestoreFromSnapshot(TSnapshot snapshot);
     }
 }

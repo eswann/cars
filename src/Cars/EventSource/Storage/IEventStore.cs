@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cars.Events;
 using Cars.EventSource.Projections;
+using Cars.EventSource.SerializedEvents;
 
 namespace Cars.EventSource.Storage
 {

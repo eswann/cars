@@ -23,9 +23,8 @@
 using System;
 using System.Collections.Generic;
 using Cars.Core;
-using Cars.EventSource.Snapshots;
 
-namespace Cars.EventSource
+namespace Cars.EventSource.Snapshots
 {
     public class SnapshotSerializer : ISnapshotSerializer
     {
@@ -36,7 +35,7 @@ namespace Cars.EventSource
             _textSerializer = textSerializer;
         }
 
-        public ISerializedSnapshot Serialize(IMutator mutator, ISnapshot snapshot, IEnumerable<KeyValuePair<string, object>> metadatas)
+        public ISerializedSnapshot Serialize(IAggregateMutator mutator, ISnapshot snapshot, IEnumerable<KeyValuePair<string, object>> metadatas)
         {
             var metadata = new Metadata(metadatas);
 

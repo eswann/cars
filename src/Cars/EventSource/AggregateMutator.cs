@@ -26,7 +26,7 @@ using Cars.Events;
 
 namespace Cars.EventSource
 {
-    public abstract class Mutator : Projection, IMutator
+    public abstract class AggregateMutator : AggregateProjection, IAggregateMutator
     {
         private readonly List<UncommitedEvent> _uncommitedEvents = new List<UncommitedEvent>();
 
@@ -55,9 +55,10 @@ namespace Cars.EventSource
         /// The last event applied is the current state of the Mutator.
         /// </summary>
         /// <param name="event"></param>
+        /// <param name="isNew"></param>
         private void ApplyEvent(IDomainEvent @event, bool isNew = false)
         {
-            ApplyEvent(@event);
+            RouteEvents.Handle(@event);
 
             if (isNew)
             {
@@ -65,16 +66,6 @@ namespace Cars.EventSource
 
                 _uncommitedEvents.Add(new UncommitedEvent(this, @event, UncommittedVersion + 1));
             }
-        }
-
-        /// <summary>
-        /// Apply the event in Mutator.
-        /// The last event applied is the current state of the Mutator.
-        /// </summary>
-        /// <param name="event"></param>
-        private void ApplyEvent(IDomainEvent @event)
-        {
-            RouteEvents.Handle(@event);
         }
 
         /// <summary>

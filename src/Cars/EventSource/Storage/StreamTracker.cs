@@ -30,7 +30,7 @@ namespace Cars.EventSource.Storage
     {
         private readonly ConcurrentDictionary<Type, Dictionary<Guid, object>> _track = new ConcurrentDictionary<Type, Dictionary<Guid, object>>();
 
-        public TProjection GetById<TProjection>(Guid id) where TProjection : IProjection
+        public TProjection GetById<TProjection>(Guid id) where TProjection : IAggregateProjection
         {
             if (!_track.TryGetValue(typeof(TProjection), out var streams))
                 return default(TProjection);
@@ -41,7 +41,7 @@ namespace Cars.EventSource.Storage
             return (TProjection)stream;
         }
         
-        public void Add<TProjection>(TProjection projection) where TProjection : IProjection
+        public void Add<TProjection>(TProjection projection) where TProjection : IAggregateProjection
         {
             if (!_track.TryGetValue(typeof(TProjection), out var streams))
             {

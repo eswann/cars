@@ -26,14 +26,14 @@ using Cars.Events;
 
 namespace Cars.EventSource
 {
-    public abstract class Projection : IProjection
+    public abstract class AggregateProjection : IAggregateProjection
     {
         protected readonly Route<IDomainEvent> RouteEvents = new Route<IDomainEvent>();
 
         /// <summary>
         /// Aggregate default constructor.
         /// </summary>
-        protected Projection()
+        protected AggregateProjection()
         {
             RegisterEvents();
         }

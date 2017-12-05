@@ -22,7 +22,7 @@
 
 namespace Cars.EventSource.Snapshots
 {
-    public interface ISnapshotAggregate : IMutator
+    public interface ISnapshotAggregate : IAggregateMutator
     {
         ISnapshot CreateSnapshot();
         void Restore(ISnapshotRestore snapshotRestore);

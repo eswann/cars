@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using Cars.Core;
 using Cars.Events;
 
-namespace Cars.EventSource
+namespace Cars.EventSource.SerializedEvents
 {
     public class EventSerializer : IEventSerializer
     {
@@ -36,7 +36,7 @@ namespace Cars.EventSource
             _textSerializer = textSerializer;
         }
 
-        public ISerializedEvent Serialize(IMutator mutator, IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas)
+        public ISerializedEvent Serialize(IAggregateMutator mutator, IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas)
         {
             var metadata = new Metadata(metadatas);
             

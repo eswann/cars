@@ -40,7 +40,7 @@ namespace Cars.EventSource.Snapshots
             return CheckSnapshotSupport(baseType);
         }
 
-        public virtual bool ShouldMakeSnapshot(IMutator mutator)
+        public virtual bool ShouldMakeSnapshot(IAggregateMutator mutator)
         {
             return CheckSnapshotSupport(mutator.GetType());
         }

@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
-using Cars.Commands;
 using Cars.EventSource.Storage;
 
 namespace Cars.Demo.Services.Carts.Commands.CreateCart
 {
-    public class CreateCartHandler : ICommandHandler<CreateCartCommand, CreateCartResponse>
+    public class CreateCartHandler : ICreateCartHandler
     {
         private readonly IRepository _repository;
 

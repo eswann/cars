@@ -3,6 +3,7 @@ using Cars.Core;
 using Cars.EventSource.Projections;
 using Cars.EventSource.Storage;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 
 namespace Cars.EventStore.MongoDB.Configuration
 {
@@ -12,6 +13,7 @@ namespace Cars.EventStore.MongoDB.Configuration
         {
 	        services.AddCars();
 
+            services.AddSingleton<IMongoClient>(provider => new MongoClient(provider.GetService<IMongoEventStoreSettings>().ConnectionString));
             services.AddSingleton<ITextSerializer, BsonTextSerializer>();
             services.AddSingleton<IEventStore, MongoEventStore>();
 			services.AddSingleton<IProjectionRepository, MongoProjectionRepository>();

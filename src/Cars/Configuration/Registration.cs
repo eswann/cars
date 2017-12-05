@@ -84,8 +84,7 @@ namespace Cars.Configuration
 			});
 			foreach (var implementationType in implementationTypes)
 			{
-				var interfaceTypes = implementationType.GetTypeInfo().GetInterfaces()
-					.Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == handlerType);
+			    var interfaceTypes = implementationType.GetTypeInfo().GetInterfaces();
 				foreach (var interfaceType in interfaceTypes)
 				{
 					serviceCollection.AddScoped(interfaceType, implementationType);

@@ -1,7 +1,4 @@
-﻿using System;
-using Cars.Commands;
-
-namespace Cars.Demo.Services.Carts.Commands.CreateCart
+﻿namespace Cars.Demo.Services.Carts.Commands.CreateCart
 {
     public class CreateCartCommand
     {

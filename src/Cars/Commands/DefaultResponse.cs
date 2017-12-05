@@ -2,7 +2,7 @@ using System;
 
 namespace Cars.Commands
 {
-	public class DefaultResponse : IResponse
+	public class DefaultResponse
 	{
 		public DefaultResponse(Guid aggregateId)
 		{

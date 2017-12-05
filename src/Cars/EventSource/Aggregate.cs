@@ -65,7 +65,9 @@ namespace Cars.EventSource
         /// <summary>
         /// This method is called internaly and you can put all handlers here.
         /// </summary>
-        protected abstract void RegisterEvents();
+        protected virtual void RegisterEvents()
+        {
+        }
 
         protected void SubscribeTo<T>(Action<T> action)
             where T : class, IDomainEvent

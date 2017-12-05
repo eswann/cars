@@ -57,7 +57,7 @@ namespace Cars.EventSource
 
             var snapshot = (ISnapshot) _textSerializer.Deserialize(commitedSnapshot.SerializedData, snapshotClrType);
 
-            return new SnapshotRestore(commitedSnapshot.AggregateId, commitedSnapshot.StreamVersion, snapshot, metadata);
+            return new SnapshotRestore(commitedSnapshot.AggregateId, commitedSnapshot.Version, snapshot, metadata);
         }
     }
 }

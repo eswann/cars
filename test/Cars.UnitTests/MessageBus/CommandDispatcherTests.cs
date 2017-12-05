@@ -35,7 +35,7 @@ namespace Cars.UnitTests.MessageBus
                 {
                     action((TestCommand) command);
                 });
-            }).Returns(Task.FromResult(new DefaultResponse(testCommand.AggregateId) as IResponse));
+            }).Returns(Task.FromResult(new DefaultResponse(testCommand.AggregateId)));
 
 
             ICommandDispatcher commandDispatcher = commandDispatcherMock.Object;
@@ -65,7 +65,7 @@ namespace Cars.UnitTests.MessageBus
                 {
                     action((TestCommand)command);
                 });
-            }).Returns(Task.FromResult(new DefaultResponse(Guid.NewGuid())as IResponse));
+            }).Returns(Task.FromResult(new DefaultResponse(Guid.NewGuid())));
 
             var testCommand = new TestCommand(Guid.NewGuid());
 

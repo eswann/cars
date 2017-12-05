@@ -3,7 +3,7 @@ using Cars.Commands;
 
 namespace Cars.Testing.Shared.StubApplication.Commands.Bar
 {
-	public class CreateBarResponse : IResponse
+	public class CreateBarResponse
 	{
 		public CreateBarResponse(Guid barId)
 		{
@@ -11,7 +11,5 @@ namespace Cars.Testing.Shared.StubApplication.Commands.Bar
 		}
 
 		public Guid BarId { get; }
-
-		public Guid AggregateId => BarId;
 	}
 }

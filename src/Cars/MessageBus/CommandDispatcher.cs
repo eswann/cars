@@ -36,16 +36,15 @@ namespace Cars.MessageBus
 		    _serviceProvider = serviceProvider;
 	    }
 
-		public Task<TResponse> DispatchAsync<TCommand, TResponse>(TCommand command) where TCommand : ICommand where TResponse : IResponse
+		public Task<TResponse> DispatchAsync<TCommand, TResponse>(TCommand command) where TCommand : ICommand
         {
 		        var handler = _serviceProvider.GetService<ICommandHandler<TCommand, TResponse>>();
 		        return handler.ExecuteAsync(command);
         }
 
-	    public Task<IResponse> DispatchAsync<TCommand>(TCommand command) where TCommand : ICommand
-	    {
-			var handler = _serviceProvider.GetService<IDefaultCommandHandler<TCommand>>();
-		    return handler.ExecuteAsync(command);
-		}
+        public Task<DefaultResponse> DispatchAsync<TCommand>(TCommand command) where TCommand : ICommand
+        {
+            return DispatchAsync<TCommand, DefaultResponse>(command);
+        }
     }
 }

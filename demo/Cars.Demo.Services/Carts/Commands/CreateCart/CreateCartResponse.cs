@@ -1,9 +1,9 @@
 ﻿using System;
 using Cars.Commands;
 
-namespace Cars.Demo.Services.Commands.CreateCart
+namespace Cars.Demo.Services.Carts.Commands.CreateCart
 {
-	public class CreateCartResponse : IResponse
+	public class CreateCartResponse
 	{
 		public CreateCartResponse(Guid cartId)
 		{
@@ -11,6 +11,5 @@ namespace Cars.Demo.Services.Commands.CreateCart
 		}
 
 		public Guid CartId { get; }
-		public Guid AggregateId => CartId;
 	}
 }

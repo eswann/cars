@@ -32,12 +32,10 @@ namespace Cars.EventSource.Storage
 
         public TAggregate GetById<TAggregate>(Guid id) where TAggregate : Aggregate
         {
-            Dictionary<Guid, object> streams;
-            if (!_track.TryGetValue(typeof(TAggregate), out streams))
+            if (!_track.TryGetValue(typeof(TAggregate), out var streams))
                 return null;
 
-            object stream;
-            if (!streams.TryGetValue(id, out stream))
+            if (!streams.TryGetValue(id, out var stream))
                 return null;
 
             return (TAggregate)stream;
@@ -45,8 +43,7 @@ namespace Cars.EventSource.Storage
         
         public void Add<TAggregate>(TAggregate streamRoot) where TAggregate : Aggregate
         {
-            Dictionary<Guid, object> streams;
-            if (!_track.TryGetValue(typeof(TAggregate), out streams))
+            if (!_track.TryGetValue(typeof(TAggregate), out var streams))
             {
                 streams = new Dictionary<Guid, object>();
                 _track.TryAdd(typeof(TAggregate), streams);

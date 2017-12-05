@@ -37,7 +37,6 @@ namespace Cars.Testing.Shared.MessageBus
         where TCommand : class, ICommand
         where TCommandHandler : class, ICommandHandler<TCommand, TResponse>
         where TAggregate : Aggregate, new()
-		where TResponse : IResponse
     {
         private readonly IDictionary<Type, object> _mocks;
 

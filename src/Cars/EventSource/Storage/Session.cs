@@ -128,7 +128,7 @@ namespace Cars.EventSource.Storage
 
                     if (snapshot != null)
                     {
-                        version = snapshot.StreamVersion;
+                        version = snapshot.Version;
 
                         _logger.LogDebug("Restoring snapshot.");
 

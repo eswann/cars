@@ -29,7 +29,7 @@ namespace Cars.UnitTests.Domain
 
         protected override void When()
         {
-            AggregateRoot.DisableEntity(_event2.entityId);
+            AggregateRoot.DisableEntity(_event2.EntityId);
         }
 
         [Trait(_categoryName, _categoryValue)]
@@ -53,7 +53,7 @@ namespace Cars.UnitTests.Domain
             var childDisabledEvent = PublishedEvents.Last().As<ChildDisabledEvent>();
 
             childDisabledEvent.AggregateId.Should().Be(_event2.AggregateId);
-	        childDisabledEvent.EntityId.Should().Be(_event2.entityId);
+	        childDisabledEvent.EntityId.Should().Be(_event2.EntityId);
 		}
 
         [Trait(_categoryName, _categoryValue)]

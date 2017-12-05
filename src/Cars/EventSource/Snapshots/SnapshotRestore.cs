@@ -27,14 +27,14 @@ namespace Cars.EventSource.Snapshots
     public class SnapshotRestore : ISnapshotRestore
     {
         public Guid AggregateId { get; }
-        public int StreamVersion { get; }
+        public int Version { get; }
         public ISnapshot Snapshot { get; }
         public IMetadata Metadata { get; }
 
         public SnapshotRestore(Guid aggregateId, int version, ISnapshot snapshot, IMetadata metadata)
         {
             AggregateId = aggregateId;
-            StreamVersion = version;
+            Version = version;
             Snapshot = snapshot;
             Metadata = metadata;
         }

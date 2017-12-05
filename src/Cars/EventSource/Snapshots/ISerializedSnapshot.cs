@@ -27,7 +27,7 @@ namespace Cars.EventSource.Snapshots
     public interface ISerializedSnapshot
     {
         Guid AggregateId { get; }
-        int StreamVersion { get; }
+        int Version { get; }
         string SerializedData { get; }
         string SerializedMetadata { get; }
         IMetadata Metadata { get; }

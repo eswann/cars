@@ -37,7 +37,7 @@ namespace Cars.EventSource
         void ISnapshotAggregate.Restore(ISnapshotRestore snapshotRestore)
         {
             AggregateId = snapshotRestore.AggregateId;
-            Version = snapshotRestore.StreamVersion;
+            Version = snapshotRestore.Version;
 
             RestoreFromSnapshot((TSnapshot)snapshotRestore.Snapshot);
         }

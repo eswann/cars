@@ -1,14 +1,12 @@
-﻿using Cars.Commands;
-using System;
+﻿using System;
+using Cars.Commands;
 
-namespace Cars.Demo.Services.Commands.CreateCart
+namespace Cars.Demo.Services.Carts.Commands.CreateCart
 {
     public class CreateCartCommand : Command
     {
 	    public CreateCartCommand() : base(new Guid()){}
 
-	    public string Name { get; set; }
-
-		public Guid UserId { get; set; }
+		public string UserId { get; set; }
     }
 }

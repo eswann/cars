@@ -223,7 +223,7 @@ namespace Cars.EventStore.MongoDB
                 Id = id,
                 Timestamp = DateTime.UtcNow,
                 AggregateId = serializedSnapshot.AggregateId,
-                Version = serializedSnapshot.StreamVersion,
+                Version = serializedSnapshot.Version,
                 Data = eventData,
                 Metadata = metadata,
             };

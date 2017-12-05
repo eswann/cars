@@ -3,7 +3,7 @@ using Cars.Commands;
 
 namespace Cars.Testing.Shared.StubApplication.Commands.Foo
 {
-	public class CreateFooResponse : IResponse
+	public class CreateFooResponse
 	{
 		public CreateFooResponse(Guid aggregateId)
 		{

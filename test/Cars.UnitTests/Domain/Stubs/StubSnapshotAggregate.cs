@@ -60,7 +60,7 @@ namespace Cars.UnitTests.Domain.Stubs
                 Name = x.Name;
             });
 
-            SubscribeTo<ChildCreatedEvent>(x => _entities.Add(new SimpleEntity(x.entityId, x.Name)));
+            SubscribeTo<ChildCreatedEvent>(x => _entities.Add(new SimpleEntity(x.EntityId, x.Name)));
 
             SubscribeTo<ChildDisabledEvent>(x =>
             {

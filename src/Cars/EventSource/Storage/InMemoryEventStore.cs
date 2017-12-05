@@ -56,7 +56,7 @@ namespace Cars.EventSource.Storage
 
         public virtual Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
-            var snapshot = Snapshots.Where(e => e.AggregateId == aggregateId).OrderByDescending(e => e.StreamVersion).Take(1).FirstOrDefault();
+            var snapshot = Snapshots.Where(e => e.AggregateId == aggregateId).OrderByDescending(e => e.Version).Take(1).FirstOrDefault();
 
             return Task.FromResult(snapshot);
         }
@@ -90,7 +90,7 @@ namespace Cars.EventSource.Storage
 
             _uncommitedEvents.Clear();
 
-            var commitedSnapshots = _uncommitedSnapshots.Select(e => new InMemoryCommitedSnapshot(e.AggregateId, e.StreamVersion, e.SerializedData, e.SerializedMetadata));
+            var commitedSnapshots = _uncommitedSnapshots.Select(e => new InMemoryCommitedSnapshot(e.AggregateId, e.Version, e.SerializedData, e.SerializedMetadata));
             
             _snapshots.AddRange(commitedSnapshots);
             
@@ -180,13 +180,13 @@ namespace Cars.EventSource.Storage
             public InMemoryCommitedSnapshot(Guid aggregateId, int version, string serializedData, string serializedMetadata)
             {
                 AggregateId = aggregateId;
-                StreamVersion = version;
+                Version = version;
                 SerializedData = serializedData;
                 SerializedMetadata = serializedMetadata;
             }
 
             public Guid AggregateId { get; }
-            public int StreamVersion { get; }
+            public int Version { get; }
             public string SerializedData { get; }
             public string SerializedMetadata { get; }
         }

@@ -5,13 +5,13 @@ namespace Cars.UnitTests.Domain.Stubs.Events
 {
     public class ChildCreatedEvent : DomainEvent
     {
-        public Guid entityId { get; }
+        public Guid EntityId { get; }
 
         public string Name { get; }
 
         public ChildCreatedEvent(Guid aggregateId, Guid entityId, string name) : base(aggregateId)
         {
-            entityId = entityId;
+            EntityId = entityId;
             Name = name;
         }
     }

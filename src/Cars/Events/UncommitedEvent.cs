@@ -30,12 +30,12 @@ namespace Cars.Events
         private readonly long _ticks;
         public DateTime CreatedAt => new DateTime(_ticks);
         public IDomainEvent OriginalEvent { get; }
-        public Aggregate Aggregate { get; }
+        public Mutator Mutator { get; }
         public int Version { get; }
 
-        public UncommitedEvent(Aggregate aggregate, IDomainEvent @event, int version)
+        public UncommitedEvent(Mutator mutator, IDomainEvent @event, int version)
         {
-            Aggregate = aggregate;
+            Mutator = mutator;
             OriginalEvent = @event;
             Version = version;
 

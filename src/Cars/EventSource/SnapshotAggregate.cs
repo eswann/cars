@@ -24,7 +24,7 @@ using Cars.EventSource.Snapshots;
 
 namespace Cars.EventSource
 {
-    public abstract class SnapshotAggregate<TSnapshot> : Aggregate, ISnapshotAggregate
+    public abstract class SnapshotAggregate<TSnapshot> : Mutator, ISnapshotAggregate
         where TSnapshot : Snapshot
     {
         ISnapshot ISnapshotAggregate.CreateSnapshot()

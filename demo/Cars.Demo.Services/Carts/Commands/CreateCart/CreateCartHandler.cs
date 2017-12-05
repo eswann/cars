@@ -5,7 +5,7 @@ using Cars.EventSource;
 
 namespace Cars.Demo.Services.Carts.Commands.CreateCart
 {
-    public class CreateCartHandler : Aggregate, ICommandHandler<CreateCartCommand, CreateCartResponse>
+    public class CreateCartHandler : Mutator, ICommandHandler<CreateCartCommand, CreateCartResponse>
     {
 	    public Task<CreateCartResponse> ExecuteAsync(CreateCartCommand command)
 	    {

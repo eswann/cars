@@ -29,20 +29,20 @@ namespace Cars.EventSource.Snapshots
     {
         private static readonly Type _snapshotType = typeof (ISnapshotAggregate);
         
-        public bool CheckSnapshotSupport(Type streamType)
+        public bool CheckSnapshotSupport(Type aggregateType)
         {
-            var baseType = streamType.GetTypeInfo().BaseType;
+            var baseType = aggregateType.GetTypeInfo().BaseType;
 
             if (baseType == null) return false;
 
-            if (_snapshotType.IsAssignableFrom(streamType)) return true;
+            if (_snapshotType.IsAssignableFrom(aggregateType)) return true;
 
             return CheckSnapshotSupport(baseType);
         }
 
-        public virtual bool ShouldMakeSnapshot(IAggregate aggregate)
+        public virtual bool ShouldMakeSnapshot(IMutator mutator)
         {
-            return CheckSnapshotSupport(aggregate.GetType());
+            return CheckSnapshotSupport(mutator.GetType());
         }
     }
 }

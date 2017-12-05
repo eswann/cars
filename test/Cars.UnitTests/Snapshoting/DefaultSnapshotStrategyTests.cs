@@ -55,7 +55,7 @@ namespace Cars.UnitTests.Snapshoting
         {
             var defaultSnapshotStrategy = new DefaultSnapshotStrategy();
 
-            var stream = Mock.Of<IAggregate>();
+            var stream = Mock.Of<IMutator>();
           
             var makeSnapshot = defaultSnapshotStrategy.ShouldMakeSnapshot(stream);
 

@@ -30,13 +30,13 @@ namespace Cars.EventSource.Snapshots
         /// <summary>
         /// Verify if stream type have support to snapshot.
         /// </summary>
-        bool CheckSnapshotSupport(Type streamType);
+        bool CheckSnapshotSupport(Type aggregateType);
 
         /// <summary>
         /// Determines when it should be performed snapshot.
         /// </summary>
-        /// <param name="aggregate"></param>
+        /// <param name="mutator"></param>
         /// <returns></returns>
-        bool ShouldMakeSnapshot(IAggregate aggregate);
+        bool ShouldMakeSnapshot(IMutator mutator);
     }
 }

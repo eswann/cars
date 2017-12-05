@@ -31,19 +31,19 @@ namespace Cars.EventSource.Storage
     public interface ISession
     {
         /// <summary>
-        /// Retrieves an <typeparam name="TAggregate"></typeparam> based on your unique identifier property.
+        /// Retrieves an <typeparam name="TProjection"></typeparam> based on your unique identifier property.
         /// </summary>
-        /// <typeparam name="TAggregate"></typeparam>
+        /// <typeparam name="TProjection"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new();
+        Task<TProjection> GetByIdAsync<TProjection>(Guid id) where TProjection : Projection, new();
         
         /// <summary>
         /// Add an instance of <typeparam name="TAggregate"></typeparam>.
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="stream"></param>
-        Task AddAsync<TAggregate>(TAggregate stream) where TAggregate : Aggregate;
+        Task AddAsync<TAggregate>(TAggregate stream) where TAggregate : Mutator;
 
         /// <summary>
         /// Begin the transaction.

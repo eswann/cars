@@ -49,7 +49,7 @@ namespace Cars.UnitTests.Snapshoting
             var itervalSnapshotStrategy = new IntervalSnapshotStrategy(snapshotInterval);
 
             var snapshotStreamMock = new Mock<ISnapshotAggregate>();
-            snapshotStreamMock.Setup(e => e.Sequence).Returns(streamEventVersion);
+            snapshotStreamMock.Setup(e => e.UncommittedVersion).Returns(streamEventVersion);
 
             var snapshotStream = snapshotStreamMock.Object;
             
@@ -64,7 +64,7 @@ namespace Cars.UnitTests.Snapshoting
         {
             var itervalSnapshotStrategy = new IntervalSnapshotStrategy();
 
-            var streamMock = new Mock<IAggregate>();
+            var streamMock = new Mock<IMutator>();
             var stream = streamMock.Object;
           
             var makeSnapshot = itervalSnapshotStrategy.ShouldMakeSnapshot(stream);

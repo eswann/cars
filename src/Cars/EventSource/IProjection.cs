@@ -20,21 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using Cars.Events;
-using Cars.EventSource.Snapshots;
+using System;
+using Cars.Collections;
 
 namespace Cars.EventSource
 {
-    public interface IEventSerializer
+    public interface IProjection
     {
-        ISerializedEvent Serialize(IMutator mutator, IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas);
-        IDomainEvent Deserialize(ICommitedEvent commitedEvent);
-    }
-
-    public interface ISnapshotSerializer
-    {
-        ISerializedSnapshot Serialize(IMutator mutator, ISnapshot snapshot, IEnumerable<KeyValuePair<string, object>> metadatas);
-        ISnapshotRestore Deserialize(ICommitedSnapshot commitedSnapshot);
+        Guid AggregateId { get; }
+        int Version { get; }
+        void LoadFromHistory(CommitedDomainEventCollection domainEvents);
     }
 }

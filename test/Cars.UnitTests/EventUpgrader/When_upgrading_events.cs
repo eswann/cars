@@ -169,7 +169,7 @@ namespace Cars.UnitTests.EventUpgrader
         }
 
         private async Task<Session> ArrangeSessionAsync<TAggregate>(Guid aggregateId, IEventUpdateManager eventUpdateManager = null, params IDomainEvent[] arrangeEvents)
-            where TAggregate : Aggregate, new()
+            where TAggregate : Mutator, new()
         {
             var metadataProviders = new IMetadataProvider[]
             {
@@ -190,7 +190,7 @@ namespace Cars.UnitTests.EventUpgrader
             
             var stream = (TAggregate) Activator.CreateInstance(typeof(TAggregate), args: aggregateId);
             
-            stream.UpdateVersion(arrangeEvents.Length - 1);
+            stream.SetVersion(arrangeEvents.Length - 1);
 
             var serializedEvents = arrangeEvents.Select((e, index) =>
             {

@@ -14,7 +14,7 @@ namespace Cars.MetadataProviders
             _correlationId = Guid.NewGuid();
         }
 
-        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate stream, IDomainEvent @event, IMetadata metadata) where TAggregate : IAggregate
+        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate stream, IDomainEvent @event, IMetadata metadata) where TAggregate : IMutator
         {
             yield return new KeyValuePair<string, object>(MetadataKeys.CorrelationId, _correlationId);
         }

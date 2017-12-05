@@ -30,7 +30,7 @@ namespace Cars.MetadataProviders
     public class EventTypeMetadataProvider : IMetadataProvider
     {
         public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate stream, IDomainEvent @event, IMetadata metadata)
-            where TAggregate : IAggregate
+            where TAggregate : IMutator
         {
             string eventName;
 

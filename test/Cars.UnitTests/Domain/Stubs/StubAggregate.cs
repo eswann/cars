@@ -7,7 +7,7 @@ using Cars.UnitTests.Domain.Stubs.Events;
 namespace Cars.UnitTests.Domain.Stubs
 {
     [ProjectionProvider(typeof(StubStreamProjectionProvider))]
-    public class StubAggregate : Aggregate
+    public class StubAggregate : Mutator
     {
         public string Name { get; private set; }
         public Guid RelatedId { get; private set; }
@@ -60,9 +60,9 @@ namespace Cars.UnitTests.Domain.Stubs
 
     public class StubStreamProjectionProvider : IProjectionProvider
     {
-        public object CreateProjection(IAggregate aggregate)
+        public object CreateProjection(IMutator mutator)
         {
-            var target = aggregate as StubAggregate;
+            var target = mutator as StubAggregate;
 
             return new StubStreamProjection
             {

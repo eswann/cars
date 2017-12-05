@@ -10,7 +10,7 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Bar
     [ProjectionProvider(typeof(BarWithoutMessagesProjectionProvider))]
     [ProjectionProvider(typeof(BarProjectionProvider))]
     [ProjectionProvider(typeof(BarProjectionProvider))]
-    public class Bar : Aggregate
+    public class Bar : Mutator
     {
         private List<string> _messages = new List<string>();
 

@@ -6,9 +6,9 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Bar.Projections
 {
     public class BarProjectionProvider : IProjectionProvider
     {
-        public object CreateProjection(IAggregate aggregate)
+        public object CreateProjection(IMutator mutator)
         {
-            var target = (Bar)aggregate;
+            var target = (Bar)mutator;
 
             return new BarProjection
             {
@@ -22,9 +22,9 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Bar.Projections
 
     public class BarWithoutMessagesProjectionProvider : IProjectionProvider
     {
-        public object CreateProjection(IAggregate aggregate)
+        public object CreateProjection(IMutator mutator)
         {
-            var target = (Bar)aggregate;
+            var target = (Bar)mutator;
 
             return new BarWithoutMessagesProjection
             {
@@ -37,11 +37,11 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Bar.Projections
 
     public class BarOnlyIdProjectionProvider : ProjectionProvider<Bar, BarWithIdOnlyProjection>
     {
-        public override BarWithIdOnlyProjection CreateProjection(Bar stream)
+        public override BarWithIdOnlyProjection CreateProjection(Bar aggregate)
         {
             return new BarWithIdOnlyProjection
             {
-                Id = stream.AggregateId
+                Id = aggregate.AggregateId
             };
         }
     }

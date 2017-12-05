@@ -20,20 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using Cars.Collections;
 using Cars.Events;
 
 namespace Cars.EventSource
 {
-    public interface IAggregate
+    public interface IMutator : IProjection
     {
-        Guid AggregateId { get; }
-        int Sequence { get; }
+        int UncommittedVersion { get; }
         IReadOnlyCollection<IUncommitedEvent> UncommitedEvents { get; }
-        int Version { get; }
         void ClearUncommitedEvents();
-        void LoadFromHistory(CommitedDomainEventCollection domainEvents);
     }
 }

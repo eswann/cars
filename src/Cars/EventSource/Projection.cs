@@ -21,23 +21,22 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Cars.Collections;
 using Cars.Events;
 
 namespace Cars.EventSource
 {
-    public abstract class Aggregate : IAggregate
+    public abstract class Projection : IProjection
     {
-        private readonly List<UncommitedEvent> _uncommitedEvents = new List<UncommitedEvent>();
-        private readonly Route<IDomainEvent> _routeEvents = new Route<IDomainEvent>();
-        
+        protected readonly Route<IDomainEvent> RouteEvents = new Route<IDomainEvent>();
+
         /// <summary>
-        /// Collection of <see cref="IDomainEvent"/> that contains uncommited events.
-        /// All events that not persisted yet should be here.
+        /// Aggregate default constructor.
         /// </summary>
-        public IReadOnlyCollection<IUncommitedEvent> UncommitedEvents => _uncommitedEvents.AsReadOnly();
+        protected Projection()
+        {
+            RegisterEvents();
+        }
         
         /// <summary>
         /// Unique identifier.
@@ -45,22 +44,9 @@ namespace Cars.EventSource
         public Guid AggregateId { get; protected set; }
 
         /// <summary>
-        /// Current version of the Stream.
+        /// Current version of the Aggregate.
         /// </summary>
         public int Version { get; protected set; }
-
-        /// <summary>
-        /// This version is calculated based on Version + Uncommited events count.
-        /// </summary>
-        public int Sequence => Version + _uncommitedEvents.Count;
-
-        /// <summary>
-        /// Stream default constructor.
-        /// </summary>
-        protected Aggregate()
-        {
-            RegisterEvents();
-        }
 
         /// <summary>
         /// This method is called internaly and you can put all handlers here.
@@ -72,55 +58,21 @@ namespace Cars.EventSource
         protected void SubscribeTo<T>(Action<T> action)
             where T : class, IDomainEvent
         {
-            _routeEvents.Add(typeof(T), o => action(o as T));
+            RouteEvents.Add(typeof(T), o => action(o as T));
         }
 
         /// <summary>
-        /// Event emitter.
-        /// </summary>
-        /// <param name="event"></param>
-        protected void Emit(IDomainEvent @event)
-        {
-            ApplyEvent(@event, true);
-        }
-
-        /// <summary>
-        /// Apply the event in Stream and store the event in Uncommited list.
-        /// The last event applied is the current state of the Stream.
-        /// </summary>
-        /// <param name="event"></param>
-        private void ApplyEvent(IDomainEvent @event, bool isNew = false)
-        {
-            ApplyEvent(@event);
-
-            if (isNew)
-            {
-                Task.WaitAll(Task.Delay(1));
-
-                _uncommitedEvents.Add(new UncommitedEvent(this, @event, Sequence + 1));
-            }
-        }
-
-        /// <summary>
-        /// Apply the event in Stream.
-        /// The last event applied is the current state of the Stream.
+        /// Apply the event in Mutator.
+        /// The last event applied is the current state of the Mutator.
         /// </summary>
         /// <param name="event"></param>
         private void ApplyEvent(IDomainEvent @event)
         {
-            _routeEvents.Handle(@event);
+            RouteEvents.Handle(@event);
         }
 
         /// <summary>
-        /// Clear the collection of events that uncommited.
-        /// </summary>
-        public void ClearUncommitedEvents()
-        {
-            _uncommitedEvents.Clear();
-        }
-
-        /// <summary>
-        /// Load the events in the Stream.
+        /// Load the events in the Mutator.
         /// </summary>
         /// <param name="domainEvents"></param>
         public void LoadFromHistory(CommitedDomainEventCollection domainEvents)
@@ -135,7 +87,7 @@ namespace Cars.EventSource
         /// Update stream's version.
         /// </summary>
         /// <param name="version"></param>
-        internal void UpdateVersion(int version)
+        internal void SetVersion(int version)
         {
             Version = version;
         }

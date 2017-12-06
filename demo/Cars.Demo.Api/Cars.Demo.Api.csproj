@@ -3,11 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Configuration\" />
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.*" />
@@ -21,8 +16,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Cars.EventStore.MongoDB\Cars.EventStore.MongoDB.csproj" />
     <ProjectReference Include="..\..\src\Cars\Cars.csproj" />
-    <ProjectReference Include="..\Cars.Demo.Domain\Cars.Demo.Domain.csproj" />
-    <ProjectReference Include="..\Cars.Demo.Services\Cars.Demo.Services.csproj" />
+    <ProjectReference Include="..\Cars.Demo.Command.Services\Cars.Demo.Command.Services.csproj" />
+    <ProjectReference Include="..\Cars.Demo.Query.Services\Cars.Demo.Query.Services.csproj" />
   </ItemGroup>
 
 </Project>

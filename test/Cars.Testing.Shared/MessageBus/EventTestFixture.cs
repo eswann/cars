@@ -33,7 +33,7 @@ namespace Cars.Testing.Shared.MessageBus
         where TEvent : class, IDomainEvent
         where TEventHandler : class, IEventHandler<TEvent>
     {
-        private IDictionary<Type, object> mocks;
+        private readonly IDictionary<Type, object> _mocks;
 
         protected Exception CaughtException;
         protected TEventHandler EventHandler;
@@ -43,7 +43,7 @@ namespace Cars.Testing.Shared.MessageBus
 
         protected EventTestFixture()
         {
-            mocks = new Dictionary<Type, object>();
+            _mocks = new Dictionary<Type, object>();
             CaughtException = new ThereWasNoExceptionButOneWasExpectedException();
             EventHandler = BuildHandler();
             SetupDependencies();
@@ -64,10 +64,10 @@ namespace Cars.Testing.Shared.MessageBus
 
         public Mock<TType> OnDependency<TType>() where TType : class
         {
-            if (!mocks.ContainsKey(typeof(TType)))
+            if (!_mocks.ContainsKey(typeof(TType)))
                 throw new Exception($"The event handler '{typeof(TEventHandler).FullName}' does not have a dependency upon '{typeof(TType).FullName}'");
 
-            return (Mock<TType>)mocks[typeof(TType)];
+            return (Mock<TType>)_mocks[typeof(TType)];
         }
 
         private TEventHandler BuildHandler()
@@ -81,14 +81,14 @@ namespace Cars.Testing.Shared.MessageBus
                     var mockType = typeof(Mock<>).MakeGenericType(parameter.ParameterType);
 
                     var repositoryMock = (Mock)Activator.CreateInstance(mockType);
-                    mocks.Add(parameter.ParameterType, repositoryMock);
+                    _mocks.Add(parameter.ParameterType, repositoryMock);
                     continue;
                 }
 
-                mocks.Add(parameter.ParameterType, CreateMock(parameter.ParameterType));
+                _mocks.Add(parameter.ParameterType, CreateMock(parameter.ParameterType));
             }
 
-            return (TEventHandler)constructorInfo.Invoke(mocks.Values.Select(x => ((Mock)x).Object).ToArray());
+            return (TEventHandler)constructorInfo.Invoke(_mocks.Values.Select(x => ((Mock)x).Object).ToArray());
         }
 
         private static object CreateMock(Type type)

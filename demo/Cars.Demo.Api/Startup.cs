@@ -1,4 +1,5 @@
-﻿using Cars.Demo.Services.Configuration;
+﻿using Cars.Demo.Command.Services.Configuration;
+using Cars.Demo.Query.Services.Configuration;
 using Cars.EventStore.MongoDB;
 using Cars.EventStore.MongoDB.Configuration;
 using Microsoft.AspNetCore.Builder;
@@ -7,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MongoDB.Driver;
 
 namespace Cars.Demo.Api
 {
@@ -35,7 +35,8 @@ namespace Cars.Demo.Api
 
             services.AddCarsMongo();
 
-            services.RegisterDemoServices();
+            services.RegisterCommandServices();
+            services.RegisterQueryServices();
 
             // Add framework services.
             services.AddMvc();

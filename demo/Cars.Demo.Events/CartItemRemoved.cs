@@ -12,7 +12,7 @@ namespace Cars.Demo.Events
             Sku = sku;
         }
 
-        public string Sku { get; }
+        public string Sku { get; protected set; }
 
     }
 }

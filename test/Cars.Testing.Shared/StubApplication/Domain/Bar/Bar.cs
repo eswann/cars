@@ -1,15 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Cars.Attributes;
 using Cars.EventSource;
-using Cars.Testing.Shared.StubApplication.Domain.Bar.Projections;
 
 namespace Cars.Testing.Shared.StubApplication.Domain.Bar
 {
-    [ProjectionProvider(typeof(BarOnlyIdProjectionProvider))]
-    [ProjectionProvider(typeof(BarWithoutMessagesProjectionProvider))]
-    [ProjectionProvider(typeof(BarProjectionProvider))]
-    [ProjectionProvider(typeof(BarProjectionProvider))]
     public class Bar : Aggregate
     {
         private List<string> _messages = new List<string>();

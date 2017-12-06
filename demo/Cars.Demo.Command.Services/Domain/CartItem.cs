@@ -2,6 +2,8 @@
 {
     public class CartItem
     {
+        public CartItem() { }
+
         public CartItem(string sku, string name, decimal price, int quantity)
         {
             Sku = sku;

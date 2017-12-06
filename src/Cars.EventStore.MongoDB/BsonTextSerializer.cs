@@ -10,7 +10,9 @@ namespace Cars.EventStore.MongoDB
     {
         public string Serialize(object @object)
         {
-            var ser = BsonDocumentWrapper.Create(@object).ToJson(new JsonWriterSettings
+            var bsonDoc = BsonDocumentWrapper.Create(@object);
+
+            var ser = bsonDoc.ToJson(new JsonWriterSettings
             {
                 OutputMode = JsonOutputMode.Strict
             });
@@ -31,7 +33,7 @@ namespace Cars.EventStore.MongoDB
         {
             var doc = BsonDocument.Parse(textSerialized);
 
-            var obj = BsonSerializer.Deserialize<T>(doc);
+            var obj = BsonSerializer.Deserialize<T>(doc.GetValue("_v").AsBsonDocument);
 
             return obj;
         }

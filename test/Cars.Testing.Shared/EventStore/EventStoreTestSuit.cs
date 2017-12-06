@@ -1,7 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Cars.EventSource;
-using Cars.EventSource.Projections;
 using Cars.EventSource.SerializedEvents;
 using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
@@ -15,13 +13,10 @@ namespace Cars.Testing.Shared.EventStore
 {
     public class EventStoreTestSuit
     {
-        private readonly IProjectionSerializer _projectionSerializer = new ProjectionSerializer(new JsonTextSerializer());
         private readonly EventStoreWrapper _eventStore;
         
-        public EventStoreTestSuit(IEventStore eventStore, IProjectionSerializer projectionSerializer = null)
+        public EventStoreTestSuit(IEventStore eventStore)
         {
-            _projectionSerializer = projectionSerializer;
-
             _eventStore = new EventStoreWrapper(eventStore);
         }
 
@@ -41,7 +36,6 @@ namespace Cars.Testing.Shared.EventStore
             var result = _eventStore.CalledMethods.HasFlag(EventStoreMethods.Ctor
                 | EventStoreMethods.BeginTransaction
                 | EventStoreMethods.SaveAsync
-                | EventStoreMethods.SaveStreamProjection
                 | EventStoreMethods.CommitAsync
                 | EventStoreMethods.GetAllEventsAsync);
 
@@ -102,14 +96,14 @@ namespace Cars.Testing.Shared.EventStore
 
         private ISession CreateSession()
         {
-            var session = new Session(new LoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Ok()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), _projectionSerializer, null, null, null, new IntervalSnapshotStrategy(10));
+            var session = new Session(new LoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Ok()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), null, null, new IntervalSnapshotStrategy(10));
 
             return session;
         }
 
         private ISession CreateFaultSession()
         {
-            var faultSession = new Session(new LoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Fault()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), _projectionSerializer, null, null, null, new IntervalSnapshotStrategy(10));
+            var faultSession = new Session(new LoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Fault()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), null, null, new IntervalSnapshotStrategy(10));
 
             return faultSession;
         }

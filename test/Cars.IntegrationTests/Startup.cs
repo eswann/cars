@@ -1,5 +1,6 @@
 ﻿using Cars.Configuration;
 using Cars.Core;
+using Cars.EventSource.SerializedEvents;
 using Cars.Testing.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

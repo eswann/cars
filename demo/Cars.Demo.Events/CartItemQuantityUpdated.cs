@@ -13,8 +13,8 @@ namespace Cars.Demo.Events
             Quantity = quantity;
         }
 
-        public string Sku { get; }
-        public int Quantity { get; }
+        public string Sku { get; protected set; }
+        public int Quantity { get; protected set; }
 
     }
 }

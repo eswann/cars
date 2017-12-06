@@ -24,7 +24,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cars.Events;
-using Cars.EventSource.Projections;
 using Cars.EventSource.SerializedEvents;
 
 namespace Cars.EventSource.Storage
@@ -32,7 +31,7 @@ namespace Cars.EventSource.Storage
     /// <summary>
     /// Event Store repository abstraction.
     /// </summary>
-    public interface IEventStore : ISnapshotStore, IProjectionStore, IDisposable
+    public interface IEventStore : ISnapshotStore, IDisposable
     {
         /// <summary>∑
         /// Start the transaction.

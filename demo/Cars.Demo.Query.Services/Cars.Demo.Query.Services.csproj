@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="Fiver.Api.HttpClient" Version="1.0.0-*" />
+    <PackageReference Include="Mapster" Version="3.1.*" />
   </ItemGroup>
 
 </Project>

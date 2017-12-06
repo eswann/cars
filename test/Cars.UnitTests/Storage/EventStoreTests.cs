@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cars.Events;
 using Cars.EventSource;
-using Cars.EventSource.Projections;
 using Cars.EventSource.SerializedEvents;
 using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
@@ -19,8 +18,8 @@ namespace Cars.UnitTests.Storage
 {
     public class EventStoreTests
     {
-        private const string CategoryName = "Unit";
-        private const string CategoryValue = "Event store";
+        private const string _categoryName = "Unit";
+        private const string _categoryValue = "Event store";
 
         private readonly InMemoryEventStore _inMemoryDomainEventStore;
         private readonly IUnitOfWork _unitOfWork;
@@ -31,7 +30,6 @@ namespace Cars.UnitTests.Storage
         {
             var eventSerializer = new EventSerializer(new JsonTextSerializer());
             var snapshotSerializer = new SnapshotSerializer(new JsonTextSerializer());
-            var projectionSerializer = new ProjectionSerializer(new JsonTextSerializer());
 
             _inMemoryDomainEventStore = new InMemoryEventStore();
             
@@ -40,7 +38,7 @@ namespace Cars.UnitTests.Storage
             _mockEventPublisher.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Returns(Task.CompletedTask);
             
             var loggerFactory = new LoggerFactory();
-            var session = new Session(loggerFactory, _inMemoryDomainEventStore, _mockEventPublisher.Object, eventSerializer, snapshotSerializer, projectionSerializer);
+            var session = new Session(loggerFactory, _inMemoryDomainEventStore, _mockEventPublisher.Object, eventSerializer, snapshotSerializer);
             _repository = new Repository(loggerFactory, session);
 
             var unitOfWorkMock = new Mock<IUnitOfWork>();
@@ -54,7 +52,7 @@ namespace Cars.UnitTests.Storage
             _unitOfWork = unitOfWorkMock.Object;
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task When_calling_Save_it_will_add_the_domain_events_to_the_domain_event_storage()
         {
@@ -70,7 +68,7 @@ namespace Cars.UnitTests.Storage
             events.Count().Should().Be(2);
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task When_Save_Then_the_uncommited_events_should_be_published()
         {
@@ -83,7 +81,7 @@ namespace Cars.UnitTests.Storage
             _mockEventPublisher.Verify(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>()));
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task When_load_stream_should_be_correct_version()
         {

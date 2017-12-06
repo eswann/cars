@@ -6,7 +6,6 @@ using Cars.Core;
 using Cars.Events;
 using Cars.EventSource;
 using Cars.EventSource.Exceptions;
-using Cars.EventSource.Projections;
 using Cars.EventSource.SerializedEvents;
 using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
@@ -23,16 +22,15 @@ namespace Cars.UnitTests.Storage
 {
     public class SessionTests
     {
-        private const string CategoryName = "Unit";
-        private const string CategoryValue = "Session";
+        private const string _categoryName = "Unit";
+        private const string _categoryValue = "Session";
 
         private readonly Func<IEventStore, IEventPublisher, ISnapshotStrategy, Session> _sessionFactory = (eventStore, eventPublisher, snapshotStrategy) =>
         {
             var eventSerializer = CreateEventSerializer();
             var snapshotSerializer = CreateSnapshotSerializer();
-            var projectionSerializer = CreateProjectionSerializer();
 
-            var session = new Session(new TestLoggerFactory(), eventStore, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, null, null, null, snapshotStrategy);
+            var session = new Session(new TestLoggerFactory(), eventStore, eventPublisher, eventSerializer, snapshotSerializer, null, null, snapshotStrategy);
 
             return session;
         };
@@ -47,7 +45,7 @@ namespace Cars.UnitTests.Storage
             _textSerializer = new JsonTextSerializer();
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public void Cannot_pass_null_instance_of_LoggerFactory()
         {
@@ -55,51 +53,45 @@ namespace Cars.UnitTests.Storage
             var eventStore = Mock.Of<IEventStore>();
             var eventSerializer = Mock.Of<IEventSerializer>();
             var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
-            var projectionSerializer = Mock.Of<IProjectionSerializer>();
-            var projectionProviderScanner = Mock.Of<IProjectionProviderScanner>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(null, eventStore, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, projectionProviderScanner, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(null, eventStore, eventPublisher, eventSerializer, snapshotSerializer, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public void Cannot_pass_null_instance_of_EventStore()
         {
             var eventSerializer = Mock.Of<IEventSerializer>();
             var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
-            var projectionSerializer = Mock.Of<IProjectionSerializer>();
-            var projectionProviderScanner = Mock.Of<IProjectionProviderScanner>();
             var eventPublisher = Mock.Of<IEventPublisher>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(new TestLoggerFactory(), null, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, projectionProviderScanner, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(new TestLoggerFactory(), null, eventPublisher, eventSerializer, snapshotSerializer, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public void Cannot_pass_null_instance_of_EventPublisher()
         {
             var eventStore = Mock.Of<IEventStore>();
             var eventSerializer = Mock.Of<IEventSerializer>();
             var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
-            var projectionSerializer = Mock.Of<IProjectionSerializer>();
-            var projectionProviderScanner = Mock.Of<IProjectionProviderScanner>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(new TestLoggerFactory(), eventStore, null, eventSerializer, snapshotSerializer, projectionSerializer, projectionProviderScanner, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(new TestLoggerFactory(), eventStore, null, eventSerializer, snapshotSerializer, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task Should_throws_exception_When_stream_version_is_wrong()
         {
@@ -131,7 +123,7 @@ namespace Cars.UnitTests.Storage
             wrongVersion.ShouldThrowExactly<ExpectedVersionException<StubAggregate>>().And.Aggregate.Should().Be(stubStream1);
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task Should_retrieve_the_stream_from_tracking()
         {
@@ -154,7 +146,7 @@ namespace Cars.UnitTests.Storage
             stubStream1.Should().BeSameAs(stubStream2);
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task Should_publish_in_correct_order()
         {
@@ -198,7 +190,7 @@ namespace Cars.UnitTests.Storage
             events[4].Should().BeOfType<NameChangedEvent>().Which.Name.Should().Be("Jesse Pinkman");
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task When_call_SaveChanges_Should_store_the_snapshot()
         {
@@ -240,7 +232,7 @@ namespace Cars.UnitTests.Storage
             snapshot.SimpleEntities.Count.Should().Be(stubStream.Entities.Count);
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task Should_restore_stream_using_snapshot()
         {
@@ -268,7 +260,7 @@ namespace Cars.UnitTests.Storage
             stream.AggregateId.Should().Be(stubStream.AggregateId);
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task When_not_exists_snapshot_yet_Then_stream_should_be_constructed_using_your_events()
         {
@@ -294,7 +286,7 @@ namespace Cars.UnitTests.Storage
             stream.Entities.Count.Should().Be(stubStream.Entities.Count);
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task Getting_snapshot_and_forward_events()
         {
@@ -325,7 +317,7 @@ namespace Cars.UnitTests.Storage
             stubStreamFromSnapshot.Version.Should().Be(3);
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public Task Should_throws_exception_When_stream_was_not_found()
         {
@@ -350,7 +342,7 @@ namespace Cars.UnitTests.Storage
             return Task.CompletedTask;
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task Should_internal_rollback_When_exception_was_throw_on_saving()
         {
@@ -378,7 +370,7 @@ namespace Cars.UnitTests.Storage
             }
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task Should_manual_rollback_When_exception_was_throw_on_saving()
         {
@@ -416,7 +408,7 @@ namespace Cars.UnitTests.Storage
             _eventPublisherMock.Verify(e => e.Rollback(), Times.Once);
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public void Cannot_BeginTransaction_twice()
         {
@@ -434,7 +426,7 @@ namespace Cars.UnitTests.Storage
             act.ShouldThrowExactly<InvalidOperationException>();
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task When_occur_error_on_publishing_Then_rollback_should_be_called()
         {
@@ -466,7 +458,7 @@ namespace Cars.UnitTests.Storage
             }
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task When_occur_error_on_Save_in_EventStore_Then_rollback_should_be_called()
         {
@@ -493,67 +485,6 @@ namespace Cars.UnitTests.Storage
             }
         }
 
-        [Trait(CategoryName, CategoryValue)]
-        [Fact]
-        public async Task When_Save_events_Then_stream_projection_should_be_created()
-        {
-            var snapshotStrategy = CreateSnapshotStrategy(false);
-
-            var eventStore = new StubEventStore();
-
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
-
-            var stubStream1 = StubAggregate.Create("Walter White");
-
-            stubStream1.ChangeName("Saul Goodman");
-            stubStream1.ChangeName("Jesse Pinkman");
-
-            await session.AddAsync(stubStream1).ConfigureAwait(false);
-
-            await session.SaveChangesAsync().ConfigureAwait(false);
-
-            var projectionKey = new InMemoryEventStore.ProjectionKey(stubStream1.AggregateId, typeof(StubStreamProjection).Name);
-
-            eventStore.Projections.ContainsKey(projectionKey).Should().BeTrue();
-
-            var projection = _textSerializer.Deserialize<StubStreamProjection>(eventStore.Projections[projectionKey].ToString());
-            
-            projection.Id.Should().Be(stubStream1.AggregateId);
-            projection.Name.Should().Be(stubStream1.Name);
-        }
-
-        [Trait(CategoryName, CategoryValue)]
-        [Fact]
-        public async Task When_Save_events_Then_stream_projection_should_be_updated()
-        {
-            var snapshotStrategy = CreateSnapshotStrategy(false);
-
-            var eventStore = new StubEventStore();
-
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
-
-            var stubStream1 = StubAggregate.Create("Walter White");
-
-            await session.AddAsync(stubStream1).ConfigureAwait(false);
-            await session.SaveChangesAsync().ConfigureAwait(false);
-
-            stubStream1 = await session.GetByIdAsync<StubAggregate>(stubStream1.AggregateId).ConfigureAwait(false);
-
-            stubStream1.ChangeName("Jesse Pinkman");
-
-            await session.SaveChangesAsync().ConfigureAwait(false);
-
-            eventStore.Projections.Count.Should().Be(1);
-
-            var projectionKey = new InMemoryEventStore.ProjectionKey(stubStream1.AggregateId, typeof(StubStreamProjection).Name);
-            eventStore.Projections.ContainsKey(projectionKey).Should().BeTrue();
-
-            var projection = _textSerializer.Deserialize<StubStreamProjection>(eventStore.Projections[projectionKey].ToString());
-
-            projection.Id.Should().Be(stubStream1.AggregateId);
-            projection.Name.Should().Be(stubStream1.Name);
-        }
-
         private static ISnapshotStrategy CreateSnapshotStrategy(bool makeSnapshot = true)
         {
             var snapshotStrategyMock = new Mock<ISnapshotStrategy>();
@@ -571,11 +502,6 @@ namespace Cars.UnitTests.Storage
         private static ISnapshotSerializer CreateSnapshotSerializer()
         {
             return new SnapshotSerializer(new JsonTextSerializer());
-        }
-
-        private static IProjectionSerializer CreateProjectionSerializer()
-        {
-            return new ProjectionSerializer(new JsonTextSerializer());
         }
 
         private static void DoThrowExcetion()

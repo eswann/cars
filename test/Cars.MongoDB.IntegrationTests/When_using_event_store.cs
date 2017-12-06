@@ -1,11 +1,7 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Cars.Core;
-using Cars.EventSource.Projections;
 using Cars.EventStore.MongoDB;
 using Cars.Testing.Shared.EventStore;
-using Cars.Testing.Shared.StubApplication.Domain.Bar.Projections;
 using FluentAssertions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -18,8 +14,6 @@ namespace Cars.MongoDB.IntegrationTests
 {
     public class When_using_event_store : IDisposable
     {
-        private static readonly ITextSerializer _bsonSerializer = new BsonTextSerializer();
-
         public const string CategoryName = "Integration";
         public const string CategoryValue = "MongoDB";
         public const string DatabaseName = "EventStore";
@@ -71,26 +65,9 @@ namespace Cars.MongoDB.IntegrationTests
         {
             using (var eventStore = new MongoEventStore(_mongoClient, _defaultSettings))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(_bsonSerializer));
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
 
-                var stream = await eventStoreTestSuit.EventTestsAsync();
-
-                using (var projectionRepository = new MongoProjectionRepository(_mongoClient, _defaultSettings))
-                {
-                    var projection = await projectionRepository.GetAsync<BarProjection>(nameof(BarProjection), stream.AggregateId);
-
-                    projection.Id.Should().Be(stream.AggregateId);
-                    projection.LastText.Should().Be(stream.LastText);
-                    projection.UpdatedAt.ToString("G").Should().Be(stream.UpdatedAt.ToString("G"));
-                    projection.Messages.Count.Should().Be(stream.Messages.Count);
-                }
-
-                using (var projectionRepository = new MongoProjectionRepository<BarProjection>(_mongoClient, _defaultSettings))
-                {
-                    var projections = await projectionRepository.FindAsync(p => p.Id == stream.AggregateId);
-
-                    projections.Count().Should().BeGreaterOrEqualTo(1);
-                }
+                await eventStoreTestSuit.EventTestsAsync();
             }
         }
         
@@ -100,7 +77,7 @@ namespace Cars.MongoDB.IntegrationTests
         {
             using (var eventStore = new MongoEventStore(_mongoClient, _defaultSettings))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(_bsonSerializer));
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
 
                 await eventStoreTestSuit.SnapshotTestsAsync();
             }
@@ -112,7 +89,7 @@ namespace Cars.MongoDB.IntegrationTests
         {
             using (var eventStore = new MongoEventStore(_mongoClient, _defaultSettings))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(_bsonSerializer));
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
 
                 await eventStoreTestSuit.DoSomeProblemAsync();
             }

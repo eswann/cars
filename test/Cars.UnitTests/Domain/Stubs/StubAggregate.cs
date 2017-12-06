@@ -1,12 +1,9 @@
 ﻿using System;
-using Cars.Attributes;
 using Cars.EventSource;
-using Cars.EventSource.Projections;
 using Cars.UnitTests.Domain.Stubs.Events;
 
 namespace Cars.UnitTests.Domain.Stubs
 {
-    [ProjectionProvider(typeof(StubStreamProjectionProvider))]
     public class StubAggregate : Aggregate
     {
         public string Name { get; private set; }
@@ -56,27 +53,5 @@ namespace Cars.UnitTests.Domain.Stubs
             });
         }
 
-    }
-
-    public class StubStreamProjectionProvider : IProjectionProvider
-    {
-        public object CreateProjection(IAggregate aggregate)
-        {
-            var target = aggregate as StubAggregate;
-
-            return new StubStreamProjection
-            {
-                Id = target.AggregateId,
-                Name = target.Name,
-                RelatedId = target.RelatedId
-            };
-        }
-    }
-
-    public class StubStreamProjection
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public Guid RelatedId { get; set; }
     }
 }

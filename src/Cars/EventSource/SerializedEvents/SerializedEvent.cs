@@ -26,16 +26,10 @@ namespace Cars.EventSource.SerializedEvents
 {
     public class SerializedEvent : ISerializedEvent
     {
-        public Guid AggregateId { get; }
-        public int Version { get; }
-        public string SerializedMetadata { get; }
-        public string SerializedData { get; }
-        public IMetadata Metadata { get; }
-
-        public SerializedEvent(Guid aggregateId, 
-            int version, 
-            string serializedData, 
-            string serializedMetadata, 
+        public SerializedEvent(Guid aggregateId,
+            int version,
+            string serializedData,
+            string serializedMetadata,
             IMetadata metadata)
         {
             AggregateId = aggregateId;
@@ -44,5 +38,11 @@ namespace Cars.EventSource.SerializedEvents
             SerializedMetadata = serializedMetadata;
             Metadata = metadata;
         }
+
+        public Guid AggregateId { get; }
+        public int Version { get; }
+        public string SerializedMetadata { get; }
+        public string SerializedData { get; }
+        public IMetadata Metadata { get; }
     }
 }

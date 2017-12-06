@@ -36,7 +36,7 @@ namespace Cars.EventSource.SerializedEvents
             _textSerializer = textSerializer;
         }
 
-        public ISerializedEvent Serialize(IAggregate aggregate, IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas)
+        public ISerializedEvent Serialize(IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas)
         {
             var metadata = new Metadata(metadatas);
             

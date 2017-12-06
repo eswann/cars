@@ -28,7 +28,7 @@ using Cars.Collections;
 using Cars.Core;
 using Cars.Events;
 using Cars.EventSource.Exceptions;
-using Cars.EventSource.Projections;
+using Cars.EventSource.SerializedEvents;
 using Cars.EventSource.Snapshots;
 using Cars.Extensions;
 using Cars.MessageBus;
@@ -45,8 +45,6 @@ namespace Cars.EventSource.Storage
         private readonly IEventPublisher _eventPublisher;
         private readonly IEventSerializer _eventSerializer;
         private readonly ISnapshotSerializer _snapshotSerializer;
-        private readonly IProjectionSerializer _projectionSerializer;
-        private readonly IProjectionProviderScanner _projectionProviderScanner;
         private readonly IEventUpdateManager _eventUpdateManager;
         private readonly ISnapshotStrategy _snapshotStrategy;
         private readonly IEnumerable<IMetadataProvider> _metadataProviders;
@@ -62,8 +60,6 @@ namespace Cars.EventSource.Storage
             IEventPublisher eventPublisher,
             IEventSerializer eventSerializer,
             ISnapshotSerializer snapshotSerializer,
-            IProjectionSerializer projectionSerializer,
-            IProjectionProviderScanner projectionProviderScanner = null,
             IEventUpdateManager eventUpdateManager = null,
             IEnumerable<IMetadataProvider> metadataProviders = null,
             ISnapshotStrategy snapshotStrategy = null)
@@ -77,7 +73,6 @@ namespace Cars.EventSource.Storage
             _eventStore = eventStore ?? throw new ArgumentNullException(nameof(eventStore));
             _eventSerializer = eventSerializer ?? throw new ArgumentNullException(nameof(eventSerializer));
             _snapshotSerializer = snapshotSerializer ?? throw new ArgumentNullException(nameof(snapshotSerializer));
-            _projectionSerializer = projectionSerializer ?? throw new ArgumentNullException(nameof(projectionSerializer));
             _eventUpdateManager = eventUpdateManager;
             _metadataProviders = metadataProviders.Concat(new IMetadataProvider[]
             {
@@ -86,8 +81,6 @@ namespace Cars.EventSource.Storage
                 new CorrelationIdMetadataProvider()
             });
             _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
-            _projectionProviderScanner = projectionProviderScanner ?? new ProjectionProviderAttributeScanner();
-
         }
 
         /// <summary>
@@ -234,11 +227,9 @@ namespace Cars.EventSource.Storage
                         new KeyValuePair<string, object>(MetadataKeys.EventVersion, uncommitedEvent.Version)
                     });
 
-                    var serializedEvent = _eventSerializer.Serialize(uncommitedEvent.Aggregate,
-                        uncommitedEvent.OriginalEvent, metadata);
-
+                    var serializedEvent = _eventSerializer.Serialize(uncommitedEvent.OriginalEvent, metadata);
                     return serializedEvent;
-                });
+                }).ToList();
 
                 _logger.LogInformation("Saving events on Event Store.");
 
@@ -264,20 +255,6 @@ namespace Cars.EventSource.Storage
                     stream.ClearUncommitedEvents();
 
                     _logger.LogInformation($"Scanning projection providers for {stream.GetType().Name}.");
-
-                    var scanResult = await _projectionProviderScanner.ScanAsync(stream.GetType()).ConfigureAwait(false);
-
-                    _logger.LogInformation($"Projection providers found: {scanResult.Providers.Count()}.");
-
-                    foreach (var provider in scanResult.Providers)
-                    {
-                        var projection = provider.CreateProjection(stream);
-
-                        var projectionSerialized = _projectionSerializer.Serialize(stream.AggregateId, projection);
-
-                        await _eventStore.SaveProjectionAsync(projectionSerialized).ConfigureAwait(false);
-                    }
-
                 }
 
                 _logger.LogDebug("End iterate.");
@@ -360,7 +337,7 @@ namespace Cars.EventSource.Storage
             }
         }
 
-        private void LoadStream(Aggregate projection, IEnumerable<ICommitedEvent> commitedEvents)
+        private void LoadStream(Aggregate aggregate, IEnumerable<ICommitedEvent> commitedEvents)
         {
             var flatten = commitedEvents as ICommitedEvent[] ?? commitedEvents.ToArray();
 
@@ -375,8 +352,8 @@ namespace Cars.EventSource.Storage
                     events = _eventUpdateManager.Update(events);
                 }
 
-                projection.LoadFromHistory(new CommitedDomainEventCollection(events));
-                projection.SetVersion(flatten.Select(e => e.Version).Max());
+                aggregate.LoadFromHistory(new CommitedDomainEventCollection(events));
+                aggregate.SetVersion(flatten.Select(e => e.Version).Max());
             }
         }
     }

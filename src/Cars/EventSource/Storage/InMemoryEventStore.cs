@@ -26,7 +26,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Cars.Events;
-using Cars.EventSource.Projections;
 using Cars.EventSource.SerializedEvents;
 using Cars.EventSource.Snapshots;
 
@@ -136,20 +135,6 @@ namespace Cars.EventSource.Storage
         public virtual Task SaveAsync(IEnumerable<ISerializedEvent> collection)
         {
             _uncommitedEvents.AddRange(collection);
-
-            return Task.CompletedTask;
-        }
-
-        public Task SaveProjectionAsync(ISerializedProjection projection)
-        {
-            var key = new ProjectionKey(projection.ProjectionId, projection.Category);
-
-            if (!_uncommitedProjections.ContainsKey(key))
-            {
-                _uncommitedProjections.Add(key, null);
-            }
-
-            _uncommitedProjections[key] = projection.Projection;
 
             return Task.CompletedTask;
         }

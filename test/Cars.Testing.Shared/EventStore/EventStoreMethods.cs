@@ -14,7 +14,6 @@ namespace Cars.Testing.Shared.EventStore
         SaveSnapshotAsync = 32,
         GetAllEventsAsync = 64,
         GetLatestSnapshotByIdAsync = 128,
-        GetEventsForwardAsync = 256,
-        SaveStreamProjection = 512
+        GetEventsForwardAsync = 256
     }
 }

@@ -34,7 +34,7 @@ namespace Cars.EventSource
         {
         }
 
-        private Metadata()
+        public Metadata()
         {   
         }
 

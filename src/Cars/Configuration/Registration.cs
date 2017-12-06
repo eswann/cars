@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Cars.Commands;
 using Cars.Events;
 using Cars.EventSource;
-using Cars.EventSource.Projections;
 using Cars.EventSource.SerializedEvents;
 using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
@@ -26,8 +25,6 @@ namespace Cars.Configuration
 		{
 			services.AddSingleton<IEventSerializer, EventSerializer>();
 			services.AddSingleton<ISnapshotSerializer, SnapshotSerializer>();
-			services.AddSingleton<IProjectionSerializer, ProjectionSerializer>();
-			services.AddSingleton<IProjectionProviderScanner, ProjectionProviderAttributeScanner>();
 
 			services.AddSingleton<ILoggerFactory, LoggerFactory>();
 			services.AddSingleton<ISnapshotStrategy, IntervalSnapshotStrategy>();

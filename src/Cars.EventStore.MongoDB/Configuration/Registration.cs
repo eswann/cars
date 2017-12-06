@@ -1,8 +1,8 @@
 ﻿using System;
 using Cars.Configuration;
 using Cars.Core;
-using Cars.EventSource.Projections;
 using Cars.EventSource.Storage;
+using Cars.Projections;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -31,7 +31,6 @@ namespace Cars.EventStore.MongoDB.Configuration
             services.AddSingleton<IMongoClient>(provider => new MongoClient(provider.GetService<IMongoEventStoreSettings>().ConnectionString));
             services.AddSingleton<IEventStore, MongoEventStore>();
 			services.AddSingleton<IProjectionRepository, MongoProjectionRepository>();
-	        services.AddSingleton(typeof(IProjectionRepository<>), typeof(MongoProjectionRepository<>));
 
             return services;
 		}

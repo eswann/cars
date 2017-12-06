@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cars.Events;
-using Cars.EventSource;
-using Cars.EventSource.Projections;
 using Cars.EventSource.SerializedEvents;
 using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
@@ -92,11 +90,5 @@ namespace Cars.Testing.Shared.EventStore
             CalledMethods |= EventStoreMethods.SaveAsync;
         }
 
-        public async Task SaveProjectionAsync(ISerializedProjection projection)
-        {
-            await _eventStore.SaveProjectionAsync(projection);
-
-            CalledMethods |= EventStoreMethods.SaveStreamProjection;
-        }
     }
 }

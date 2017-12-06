@@ -15,10 +15,10 @@ namespace Cars.Demo.Events
             Quantity = quantity;
         }
 
-        public string Sku { get; }
-        public string Name { get; }
-        public decimal Price { get; }
-        public int Quantity { get; }
+        public string Sku { get; protected set; }
+        public string Name { get; protected set; }
+        public decimal Price { get; protected set; }
+        public int Quantity { get; protected set; }
 
     }
 }

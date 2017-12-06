@@ -26,7 +26,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cars.Events;
 using Cars.EventSource;
-using Cars.EventSource.Projections;
 using Cars.EventSource.SerializedEvents;
 using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
@@ -35,13 +34,11 @@ using MongoDB.Driver;
 
 namespace Cars.EventStore.MongoDB
 {
-    public delegate Task AddOrUpdateProjectionsDelegate(IEnumerable<ISerializedProjection> projections);
 
     public class MongoEventStore : IEventStore
     {
         protected readonly List<Event> UncommitedEvents = new List<Event>();
         protected readonly List<SnapshotData> UncommitedSnapshots = new List<SnapshotData>();
-        protected readonly List<ISerializedProjection> UncommitedProjections = new List<ISerializedProjection>();
         
 
         public MongoEventStore(IMongoClient client, IMongoEventStoreSettings settings)
@@ -126,11 +123,6 @@ namespace Cars.EventStore.MongoDB
                 await eventCollection.InsertManyAsync(UncommitedEvents);
             }
 
-            if (UncommitedProjections.Count > 0)
-            {
-                await AddOrUpdateProjectionsAsync(UncommitedProjections);
-            }
-
             Cleanup();
         }
 
@@ -167,13 +159,6 @@ namespace Cars.EventStore.MongoDB
             return Task.CompletedTask;
         }
 
-        public Task SaveProjectionAsync(ISerializedProjection projection)
-        {
-            UncommitedProjections.Add(projection);
-
-            return Task.CompletedTask;
-        }
-
         private Event Serialize(ISerializedEvent serializedEvent)
         {
             var eventData = BsonDocument.Parse(serializedEvent.SerializedData);
@@ -199,7 +184,6 @@ namespace Cars.EventStore.MongoDB
         {
             UncommitedEvents.Clear();
             UncommitedSnapshots.Clear();
-            UncommitedProjections.Clear();
         }
 
         private ICommitedEvent Deserialize(Event e)
@@ -232,26 +216,5 @@ namespace Cars.EventStore.MongoDB
             return snapshot;
         }
 
-        protected virtual async Task AddOrUpdateProjectionsAsync(IEnumerable<ISerializedProjection> serializedProjections)
-        {
-            var db = Client.GetDatabase(Settings.Database);
-            var projectionCollection = db.GetCollection<MongoProjection>(Settings.ProjectionsCollectionName);
-
-            var filterBuilder = Builders<MongoProjection>.Filter;
-
-            foreach (var uncommitedProjection in serializedProjections)
-            {
-                var filter = FilterDefinition<MongoProjection>.Empty
-                             & filterBuilder.Eq(e => e.ProjectionId, uncommitedProjection.ProjectionId)
-                             & filterBuilder.Eq(e => e.Category, uncommitedProjection.Category);
-                
-                var mongoProjection = MongoProjection.Create(uncommitedProjection);
-                
-                await projectionCollection.FindOneAndReplaceAsync(filter, mongoProjection, new FindOneAndReplaceOptions<MongoProjection>
-                {
-                    IsUpsert = true
-                });
-            }
-        }
     }
 }

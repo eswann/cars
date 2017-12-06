@@ -34,7 +34,7 @@ namespace Cars.Events
         /// <summary>
         /// Aggregate Unique identifier.
         /// </summary>
-        public Guid AggregateId { get; }
+        public Guid AggregateId { get; protected set; }
         
         /// <summary>
         /// Empty constructor is needed for serialization

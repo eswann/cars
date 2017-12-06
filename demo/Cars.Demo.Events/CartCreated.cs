@@ -12,6 +12,6 @@ namespace Cars.Demo.Events
             UserId = userId;
         }
 
-        public string UserId { get; }
+        public string UserId { get; protected set; }
     }
 }

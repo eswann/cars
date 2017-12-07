@@ -5,7 +5,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Cars.Demo.Query.Services.Carts
 {
-    public class CartView : IProjection
+    public class CartProjection : IProjection
     {
         [BsonId]
         public string ProjectionId => CartId.ToString();

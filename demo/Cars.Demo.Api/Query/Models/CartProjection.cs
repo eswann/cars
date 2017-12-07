@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 namespace Cars.Demo.Api.Query.Models
 {
-    public class CartView
+    public class CartProjection
     {
-
         public Guid CartId { get; set; }
 
         public string UserId { get; set; }

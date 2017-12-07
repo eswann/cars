@@ -1,6 +1,7 @@
 ﻿using Cars.Configuration;
 using Cars.Demo.Query.Services.Carts;
 using Cars.Demo.Query.Services.Products;
+using Cars.Demo.Query.Services.RemovedProducts;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Cars.Demo.Query.Services.Configuration
@@ -11,6 +12,7 @@ namespace Cars.Demo.Query.Services.Configuration
         {
             services.AddSingleton<IProductRepository, ProductRepository>();
             services.AddSingleton<ICartRepository, CartRepository>();
+            services.AddSingleton<IRemovedProductsRepository, RemovedProductsRepository>();
             services.RegisterEventHandlersInAssemblyOf<ProductCatalogSettings>();
 
             return services;

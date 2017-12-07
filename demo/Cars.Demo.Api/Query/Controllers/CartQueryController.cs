@@ -19,8 +19,8 @@ namespace Cars.Demo.Api.Query.Controllers
         [HttpGet("{cartId}")]
         public async Task<IActionResult> GetCartAsync([FromRoute]Guid cartId)
         {
-            var projection = await _cartRepository.GetCartProjectionAsync(cartId);
-            return Ok(projection.Adapt<Models.CartView>());
+            var projection = await _cartRepository.GetProjectionAsync(cartId);
+            return Ok(projection.Adapt<Models.CartProjection>());
         }
 
     }

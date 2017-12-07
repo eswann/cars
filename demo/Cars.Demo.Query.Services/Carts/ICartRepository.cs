@@ -5,6 +5,6 @@ namespace Cars.Demo.Query.Services.Carts
 {
     public interface ICartRepository
     {
-        Task<CartView> GetCartProjectionAsync(Guid cartId);
+        Task<CartProjection> GetProjectionAsync(Guid cartId);
     }
 }

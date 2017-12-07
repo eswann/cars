@@ -13,9 +13,9 @@ namespace Cars.Demo.Query.Services.Carts
             _repository = repository;
         }
 
-        public Task<CartView> GetCartProjectionAsync(Guid cartId)
+        public Task<CartProjection> GetProjectionAsync(Guid cartId)
         {
-            return _repository.RetrieveAsync<CartView>(cartId);
+            return _repository.RetrieveAsync<CartProjection>(cartId);
         }
     }
 }

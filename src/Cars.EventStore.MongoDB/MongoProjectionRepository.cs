@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Cars.Projections;
 using MongoDB.Driver;
 
@@ -26,6 +25,14 @@ namespace Cars.EventStore.MongoDB
         {
             var collection = _mongoDatabase.GetCollection<TProjection>(typeof(TProjection).Name);
             collection.ReplaceOneAsync(x => x.ProjectionId == projection.ProjectionId, projection);
+
+            return Task.CompletedTask;
+        }
+
+        public Task UpsertAsync<TProjection>(TProjection projection) where TProjection : IProjection
+        {
+            var collection = _mongoDatabase.GetCollection<TProjection>(typeof(TProjection).Name);
+            collection.ReplaceOneAsync(x => x.ProjectionId == projection.ProjectionId, projection, new UpdateOptions{IsUpsert = true});
 
             return Task.CompletedTask;
         }

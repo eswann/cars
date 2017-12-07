@@ -107,7 +107,6 @@ Task ("Run-Unit-Tests")
                     tool.DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings {
                         Configuration = configuration,
                         NoBuild = true,
-                        Verbose = false,
 						ArgumentCustomization = args => 
 							args.Append("--logger \"trx;LogFileName=" + testResultsDirAbs.CombineWithFilePath(project.GetFilenameWithoutExtension() + ".xml").FullPath + "\"")
                     });
@@ -176,8 +175,7 @@ Task ("Create-NuGet-Packages")
         var dotNetCorePackSettings = new DotNetCorePackSettings {
             Configuration = configuration,
             OutputDirectory = outputNugets,
-            NoBuild = true,
-            Verbose = false
+            NoBuild = true
         };
 		//dotNetCorePackSettings.VersionSuffix = versionSuffix.ToString();
 

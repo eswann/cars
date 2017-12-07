@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Cars.Projections;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Cars.Demo.Query.Services.Projections
+namespace Cars.Demo.Query.Services.Carts
 {
     public class CartView : IProjection
     {
@@ -30,7 +30,7 @@ namespace Cars.Demo.Query.Services.Projections
 
             public decimal SalePrice { get; set; }
 
-            public bool? CustomerTopRated { get; set; }
+            public bool CustomerTopRated { get; set; }
         }
     }
 

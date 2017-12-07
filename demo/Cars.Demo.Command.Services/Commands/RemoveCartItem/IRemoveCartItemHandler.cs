@@ -1,6 +1,6 @@
 ﻿using Cars.Commands;
 
-namespace Cars.Demo.Command.Services.Carts.Commands.RemoveCartItem
+namespace Cars.Demo.Command.Services.Commands.RemoveCartItem
 {
     public interface IRemoveCartItemHandler : ICommandHandler<RemoveCartItemCommand>
     {

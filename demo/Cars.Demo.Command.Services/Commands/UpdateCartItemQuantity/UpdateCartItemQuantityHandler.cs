@@ -4,7 +4,7 @@ using Cars.Demo.Command.Services.Domain;
 using Cars.EventSource;
 using Cars.EventSource.Storage;
 
-namespace Cars.Demo.Command.Services.Carts.Commands.UpdateCartItemQuantity
+namespace Cars.Demo.Command.Services.Commands.UpdateCartItemQuantity
 {
     public class UpdateCartItemQuantityHandler : IUpdateCartItemQuantityHandler
     {

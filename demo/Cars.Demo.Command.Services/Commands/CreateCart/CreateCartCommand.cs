@@ -1,4 +1,4 @@
-﻿namespace Cars.Demo.Command.Services.Carts.Commands.CreateCart
+﻿namespace Cars.Demo.Command.Services.Commands.CreateCart
 {
     public class CreateCartCommand
     {

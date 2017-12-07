@@ -1,14 +1,13 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Cars.Projections
 {
     public interface IProjectionRepository
     {
-        Task Insert<TProjection>(TProjection projection) where TProjection : IProjection;
+        Task InsertAsync<TProjection>(TProjection projection) where TProjection : IProjection;
 
-        Task Update<TProjection>(TProjection projection) where TProjection : IProjection;
+        Task UpdateAsync<TProjection>(TProjection projection) where TProjection : IProjection;
 
-        Task<TProjection> Retrieve<TProjection>(string projectionId) where TProjection : IProjection;
+        Task<TProjection> RetrieveAsync<TProjection>(object projectionId) where TProjection : IProjection;
     }
 }

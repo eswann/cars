@@ -4,7 +4,7 @@ using Cars.Demo.Command.Services.Domain;
 using Cars.EventSource;
 using Cars.EventSource.Storage;
 
-namespace Cars.Demo.Command.Services.Carts.Commands.RemoveCartItem
+namespace Cars.Demo.Command.Services.Commands.RemoveCartItem
 {
     public class RemoveCartItemHandler : IRemoveCartItemHandler
     {

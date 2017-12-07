@@ -1,14 +1,14 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Cars.Demo.Events;
-using Cars.Demo.Query.Services.Projections;
+using Cars.Demo.Query.Services.Carts;
 using Cars.Events;
 using Cars.Projections;
 using Mapster;
 
 namespace Cars.Demo.Query.Services.Denormalizers
 {
-    public class CartDenormalizer : 
+    public class CartViewDenormalizer : 
         IEventHandler<CartCreated>,
         IEventHandler<CartItemAdded>,
         IEventHandler<CartItemQuantityUpdated>,
@@ -16,7 +16,7 @@ namespace Cars.Demo.Query.Services.Denormalizers
     {
         private readonly IProjectionRepository _projectionRepository;
 
-        public CartDenormalizer(IProjectionRepository projectionRepository)
+        public CartViewDenormalizer(IProjectionRepository projectionRepository)
         {
             _projectionRepository = projectionRepository;
         }
@@ -29,30 +29,30 @@ namespace Cars.Demo.Query.Services.Denormalizers
                 UserId = evt.UserId
             };
 
-            await _projectionRepository.Insert(cartView);
+            await _projectionRepository.InsertAsync(cartView);
         }
 
         public async Task ExecuteAsync(CartItemAdded evt)
         {
-            var cartView = await _projectionRepository.Retrieve<CartView>(evt.AggregateId.ToString());
+            var cartView = await _projectionRepository.RetrieveAsync<CartView>(evt.AggregateId.ToString());
             cartView.Products.Add(evt.Adapt<CartView.CartProduct>());
-            await _projectionRepository.Update(cartView);
+            await _projectionRepository.UpdateAsync(cartView);
         }
 
         public async Task ExecuteAsync(CartItemQuantityUpdated evt)
         {
-            var cartView = await _projectionRepository.Retrieve<CartView>(evt.AggregateId.ToString());
+            var cartView = await _projectionRepository.RetrieveAsync<CartView>(evt.AggregateId.ToString());
             var cartItem = cartView.Products.First(x => x.Sku == evt.Sku);
             cartItem.Quantity = evt.Quantity;
-            await _projectionRepository.Update(cartView);
+            await _projectionRepository.UpdateAsync(cartView);
         }
 
         public async Task ExecuteAsync(CartItemRemoved evt)
         {
-            var cartView = await _projectionRepository.Retrieve<CartView>(evt.AggregateId.ToString());
+            var cartView = await _projectionRepository.RetrieveAsync<CartView>(evt.AggregateId.ToString());
             var cartItem = cartView.Products.First(x => x.Sku == evt.Sku);
             cartView.Products.Remove(cartItem);
-            await _projectionRepository.Update(cartView);
+            await _projectionRepository.UpdateAsync(cartView);
         }
     }
 }

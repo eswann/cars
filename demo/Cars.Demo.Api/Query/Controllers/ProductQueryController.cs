@@ -5,17 +5,17 @@ using Microsoft.AspNetCore.Mvc;
 namespace Cars.Demo.Api.Query.Controllers
 {
     [Route("query/products")]
-    public class ProductReadController : Controller
+    public class ProductQueryController : Controller
     {
         private readonly IProductRepository _productRepository;
 
-        public ProductReadController(IProductRepository productRepository)
+        public ProductQueryController(IProductRepository productRepository)
         {
             _productRepository = productRepository;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProductList()
+        public async Task<IActionResult> GetProductListAsync()
         {
             return Ok(await _productRepository.GetProductListAsync());
         }

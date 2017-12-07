@@ -17,15 +17,16 @@ namespace Cars.Demo.Command.Services.Domain
             Emit(new CartCreated(Guid.NewGuid(), userId));
         }
 
-        public void AddCartItem(string sku, string name, decimal price, int quantity)
+        public void AddCartItem(string sku, string name, decimal price, int quantity, bool customerTopRated, string image)
         {
-            if (_cartItems.Any(x => x.Sku == sku))
+            var existingCartItem = _cartItems.FirstOrDefault(x => x.Sku == sku);
+            if (existingCartItem != null)
             {
-                UpdatedCartItemQuantity(sku, quantity);
+                UpdatedCartItemQuantity(sku, existingCartItem.Quantity + quantity);
             }
             else
             {
-                Emit(new CartItemAdded(AggregateId, sku, name, price, quantity));
+                Emit(new CartItemAdded(AggregateId, sku, name, price, quantity, customerTopRated, image));
             }
         }
 
@@ -76,7 +77,7 @@ namespace Cars.Demo.Command.Services.Domain
 
         private void OnCartItemAdded(CartItemAdded evt)
         {
-            _cartItems.Add(new CartItem(evt.Sku, evt.Name, evt.Price, evt.Quantity));
+            _cartItems.Add(new CartItem(evt.Sku, evt.Name, evt.SalePrice, evt.Quantity));
         }
 
         private void OnCartQuantityUpdated(CartItemQuantityUpdated evt)

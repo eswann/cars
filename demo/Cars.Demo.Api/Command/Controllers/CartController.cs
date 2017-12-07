@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Cars.Demo.Api.Command.Models;
-using Cars.Demo.Command.Services.Carts.Commands.CreateCart;
+using Cars.Demo.Command.Services.Commands.CreateCart;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cars.Demo.Api.Command.Controllers
@@ -16,7 +16,7 @@ namespace Cars.Demo.Api.Command.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCart([FromBody]CreateCartRequest request)
+        public async Task<IActionResult> CreateCartAsync([FromBody]CreateCartRequest request)
         {
             var response = await _createCartHandler.ExecuteAsync(new CreateCartCommand(request.UserId));
             return Ok(new CreateCartResponse { CartId = response.AggregateId });

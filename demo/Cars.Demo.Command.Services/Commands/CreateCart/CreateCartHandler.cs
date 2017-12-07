@@ -4,7 +4,7 @@ using Cars.Demo.Command.Services.Domain;
 using Cars.EventSource;
 using Cars.EventSource.Storage;
 
-namespace Cars.Demo.Command.Services.Carts.Commands.CreateCart
+namespace Cars.Demo.Command.Services.Commands.CreateCart
 {
     public class CreateCartHandler : ICreateCartHandler
     {

@@ -14,7 +14,7 @@ namespace Cars.EventStore.MongoDB
             _mongoDatabase = mongoClient.GetDatabase(mongoEventStoreSettings.Database);
         }
 
-        public Task Insert<TProjection>(TProjection projection) where TProjection : IProjection
+        public Task InsertAsync<TProjection>(TProjection projection) where TProjection : IProjection
         {
             var collection = _mongoDatabase.GetCollection<TProjection>(typeof(TProjection).Name);
             collection.InsertOneAsync(projection);
@@ -22,7 +22,7 @@ namespace Cars.EventStore.MongoDB
             return Task.CompletedTask;
         }
 
-        public Task Update<TProjection>(TProjection projection) where TProjection: IProjection
+        public Task UpdateAsync<TProjection>(TProjection projection) where TProjection: IProjection
         {
             var collection = _mongoDatabase.GetCollection<TProjection>(typeof(TProjection).Name);
             collection.ReplaceOneAsync(x => x.ProjectionId == projection.ProjectionId, projection);
@@ -30,10 +30,10 @@ namespace Cars.EventStore.MongoDB
             return Task.CompletedTask;
         }
 
-        public async Task<TProjection> Retrieve<TProjection>(string projectionId) where TProjection : IProjection
+        public async Task<TProjection> RetrieveAsync<TProjection>(object projectionId) where TProjection : IProjection
         {
             var collection = _mongoDatabase.GetCollection<TProjection>(typeof(TProjection).Name);
-            return (await collection.FindAsync(x => x.ProjectionId == projectionId)).FirstOrDefault();
+            return (await collection.FindAsync(x => x.ProjectionId == projectionId.ToString())).FirstOrDefault();
         }
     }
 

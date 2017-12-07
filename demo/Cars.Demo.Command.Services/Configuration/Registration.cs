@@ -1,5 +1,5 @@
 ﻿using Cars.Configuration;
-using Cars.Demo.Command.Services.Carts.Commands.CreateCart;
+using Cars.Demo.Command.Services.Commands.CreateCart;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Cars.Demo.Command.Services.Configuration

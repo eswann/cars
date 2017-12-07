@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cars.Demo.Command.Services.Carts.Commands.RemoveCartItem
+namespace Cars.Demo.Command.Services.Commands.RemoveCartItem
 {
     public class RemoveCartItemCommand
     {

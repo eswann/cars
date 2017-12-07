@@ -4,7 +4,7 @@ using Cars.Demo.Command.Services.Domain;
 using Cars.EventSource;
 using Cars.EventSource.Storage;
 
-namespace Cars.Demo.Command.Services.Carts.Commands.AddCartItem
+namespace Cars.Demo.Command.Services.Commands.AddCartItem
 {
     public class CreateCartHandler : IAddCartItemHandler
     {
@@ -20,7 +20,7 @@ namespace Cars.Demo.Command.Services.Carts.Commands.AddCartItem
         public async Task<DefaultResponse> ExecuteAsync(AddCartItemCommand command)
         {
             var cart = await _repository.GetByIdAsync<Cart>(command.CartId);
-            cart.AddCartItem(command.Sku, command.Name, command.Price, command.Quantity);
+            cart.AddCartItem(command.Sku, command.Name, command.SalePrice, command.Quantity, command.CustomerTopRated, command.Image);
 
             await _repository.AddAsync(cart);
             await _unitOfWork.CommitAsync();

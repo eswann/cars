@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Cars.Demo.Api.Command.Models;
-using Cars.Demo.Command.Services.Carts.Commands.AddCartItem;
-using Cars.Demo.Command.Services.Carts.Commands.RemoveCartItem;
-using Cars.Demo.Command.Services.Carts.Commands.UpdateCartItemQuantity;
+using Cars.Demo.Command.Services.Commands.AddCartItem;
+using Cars.Demo.Command.Services.Commands.RemoveCartItem;
+using Cars.Demo.Command.Services.Commands.UpdateCartItemQuantity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cars.Demo.Api.Command.Controllers
@@ -23,22 +23,25 @@ namespace Cars.Demo.Api.Command.Controllers
             _removeCartItemHandler = removeCartItemHandler;
         }
 
-        [HttpPost("{sku}")]
-        public async Task<IActionResult> AddCartItem([FromRoute]Guid cartId, [FromRoute]string sku, [FromBody]AddCartItemRequest request)
+        [HttpPut("{sku}")]
+        public async Task<IActionResult> AddCartItemAsync([FromRoute]Guid cartId, [FromRoute]string sku, [FromBody]AddCartItemRequest request)
         {
-            await _addCartItemHandler.ExecuteAsync(new AddCartItemCommand(cartId, sku, request.Name, request.Price, request.Quantity));
+            await _addCartItemHandler.ExecuteAsync(
+                new AddCartItemCommand(cartId, sku, request.Name, 
+                request.SalePrice, request.Quantity, 
+                request.CustomerTopRated, request.Image));
             return Ok();
         }
 
-        [HttpPut("{sku}")]
-        public async Task<IActionResult> UpdateCartItemQuantity([FromRoute]Guid cartId, [FromRoute]string sku, [FromBody]UpdateCartQuantityRequest request)
+        [HttpPut("{sku}/quantity")]
+        public async Task<IActionResult> UpdateCartItemQuantityAsync([FromRoute]Guid cartId, [FromRoute]string sku, [FromBody]UpdateCartQuantityRequest request)
         {
             await _updateItemQuantityHandler.ExecuteAsync(new UpdateCartItemQuantityCommand(cartId, sku, request.Quantity));
             return Ok();
         }
 
         [HttpDelete("{sku}")]
-        public async Task<IActionResult> RemoveCartItem([FromRoute]Guid cartId, [FromRoute]string sku)
+        public async Task<IActionResult> RemoveCartItemAsync([FromRoute]Guid cartId, [FromRoute]string sku)
         {
             await _removeCartItemHandler.ExecuteAsync(new RemoveCartItemCommand(cartId, sku));
             return NoContent();

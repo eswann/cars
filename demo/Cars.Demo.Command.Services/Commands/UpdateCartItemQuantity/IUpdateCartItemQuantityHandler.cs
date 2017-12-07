@@ -1,6 +1,6 @@
 ﻿using Cars.Commands;
 
-namespace Cars.Demo.Command.Services.Carts.Commands.UpdateCartItemQuantity
+namespace Cars.Demo.Command.Services.Commands.UpdateCartItemQuantity
 {
     public interface IUpdateCartItemQuantityHandler : ICommandHandler<UpdateCartItemQuantityCommand>
     {

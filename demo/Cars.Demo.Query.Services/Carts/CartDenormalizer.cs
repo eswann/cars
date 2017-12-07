@@ -35,6 +35,7 @@ namespace Cars.Demo.Query.Services.Carts
         {
             var cartProjection = await _projectionRepository.RetrieveAsync<CartProjection>(evt.AggregateId.ToString());
             cartProjection.Products.Add(evt.Adapt<CartProjection.CartProduct>());
+            cartProjection.CartTotal = CalculateCartTotal(cartProjection);
             await _projectionRepository.UpdateAsync(cartProjection);
         }
 
@@ -43,6 +44,7 @@ namespace Cars.Demo.Query.Services.Carts
             var cartProjection = await _projectionRepository.RetrieveAsync<CartProjection>(evt.AggregateId.ToString());
             var cartItem = cartProjection.Products.First(x => x.Sku == evt.Sku);
             cartItem.Quantity = evt.Quantity;
+            cartProjection.CartTotal = CalculateCartTotal(cartProjection);
             await _projectionRepository.UpdateAsync(cartProjection);
         }
 
@@ -51,7 +53,18 @@ namespace Cars.Demo.Query.Services.Carts
             var cartProjection = await _projectionRepository.RetrieveAsync<CartProjection>(evt.AggregateId.ToString());
             var cartItem = cartProjection.Products.First(x => x.Sku == evt.Sku);
             cartProjection.Products.Remove(cartItem);
+            cartProjection.CartTotal = CalculateCartTotal(cartProjection);
             await _projectionRepository.UpdateAsync(cartProjection);
+        }
+
+        private decimal CalculateCartTotal(CartProjection projection)
+        {
+            decimal total = 0;
+            foreach (var product in projection.Products)
+            {
+                total += product.Quantity * product.SalePrice;
+            }
+            return total;
         }
     }
 }

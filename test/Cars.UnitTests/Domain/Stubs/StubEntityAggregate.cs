@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cars.EventSource;
-using Cars.EventSource.Snapshots;
 using Cars.UnitTests.Domain.Stubs.Events;
 
 namespace Cars.UnitTests.Domain.Stubs
 {
-    public class StubSnapshotAggregate : SnapshotAggregate<StubSnapshotStreamSnapshot>
+    public class StubEntityAggregate : Aggregate
     {
         private readonly List<SimpleEntity> _entities = new List<SimpleEntity>();
 
@@ -15,18 +14,18 @@ namespace Cars.UnitTests.Domain.Stubs
 
         public IReadOnlyList<SimpleEntity> Entities => _entities.AsReadOnly();
 
-        private StubSnapshotAggregate(Guid newGuid, string name)
+        private StubEntityAggregate(Guid newGuid, string name)
         {
-            Emit(new StubStreamCreatedEvent(newGuid, name));
+            Emit(new StubAggregateCreatedEvent(newGuid, name));
         }
 
-        public StubSnapshotAggregate()
+        public StubEntityAggregate()
         {
         }
         
-        public static StubSnapshotAggregate Create(string name)
+        public static StubEntityAggregate Create(string name)
         {
-            return new StubSnapshotAggregate(Guid.NewGuid(), name);
+            return new StubEntityAggregate(Guid.NewGuid(), name);
         }
 
         public void ChangeName(string name)
@@ -50,7 +49,7 @@ namespace Cars.UnitTests.Domain.Stubs
         
         protected override void RegisterEvents()
         {
-            SubscribeTo<StubStreamCreatedEvent>(x =>
+            SubscribeTo<StubAggregateCreatedEvent>(x =>
             {
                 AggregateId = x.AggregateId;
                 Name = x.Name;
@@ -68,23 +67,6 @@ namespace Cars.UnitTests.Domain.Stubs
                 var entity = _entities.FirstOrDefault(e => e.Id == x.EntityId);
                 entity?.Disable();
             });
-        }
-
-        protected override StubSnapshotStreamSnapshot CreateSnapshot()
-        {
-            return new StubSnapshotStreamSnapshot
-            {
-                Name = Name,
-                SimpleEntities = _entities
-            };
-        }
-
-        protected override void RestoreFromSnapshot(StubSnapshotStreamSnapshot snapshot)
-        {
-            Name = snapshot.Name;
-
-            _entities.Clear();
-            _entities.AddRange(snapshot.SimpleEntities);
         }
 
     }

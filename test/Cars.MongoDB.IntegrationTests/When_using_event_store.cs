@@ -70,16 +70,16 @@ namespace Cars.MongoDB.IntegrationTests
                 await eventStoreTestSuit.EventTestsAsync();
             }
         }
-        
+
         [Trait(CategoryName, CategoryValue)]
         [Fact]
-        public async Task Snapshot_is_stored()
+        public async Task SubAggregate_events_are_stored_with_primary_aggregate()
         {
             using (var eventStore = new MongoEventStore(_mongoClient, _defaultSettings))
             {
                 var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
 
-                await eventStoreTestSuit.SnapshotTestsAsync();
+                await eventStoreTestSuit.SubAggregateEventTestsAsync();
             }
         }
 

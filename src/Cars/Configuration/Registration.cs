@@ -9,7 +9,6 @@ using Cars.Commands;
 using Cars.Events;
 using Cars.EventSource;
 using Cars.EventSource.SerializedEvents;
-using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
 using Cars.MessageBus;
 using Cars.MessageBus.InProcess;
@@ -24,12 +23,9 @@ namespace Cars.Configuration
 		public static IServiceCollection AddCars(this IServiceCollection services)
 		{
 			services.AddSingleton<IEventSerializer, EventSerializer>();
-			services.AddSingleton<ISnapshotSerializer, SnapshotSerializer>();
 
 			services.AddSingleton<ILoggerFactory, LoggerFactory>();
-			services.AddSingleton<ISnapshotStrategy, IntervalSnapshotStrategy>();
 
-			services.AddScoped<IUnitOfWork, UnitOfWork>();
 			services.AddScoped<ISession, Session>();
 			services.AddScoped<IRepository, Repository>();
 			services.AddScoped<ICommandDispatcher, CommandDispatcher>();

@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Cars.UnitTests.Domain
 {
-    public class When_aggregate_has_entities : StreamTestFixture<StubSnapshotAggregate>
+    public class When_aggregate_has_entities : StreamTestFixture<StubEntityAggregate>
     {
         private const string _categoryName = "Unit";
         private const string _categoryValue = "Snapshot";
@@ -21,7 +21,7 @@ namespace Cars.UnitTests.Domain
         {
             var aggregateId = Guid.NewGuid();
             
-            yield return new StubStreamCreatedEvent(aggregateId, "Mother");
+            yield return new StubAggregateCreatedEvent(aggregateId, "Mother");
             yield return new ChildCreatedEvent(aggregateId, Guid.NewGuid(), "Child 1");
             yield return new ChildCreatedEvent(aggregateId, Guid.NewGuid(), "Child 2");
         }

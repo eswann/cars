@@ -21,7 +21,7 @@ namespace Cars.Testing.Shared.StubApplication.Commands.Bar
             _stringService = stringService;
         }
 
-        public async Task<DefaultResponse> ExecuteAsync(ManyDependenciesCommand command)
+        public Task<DefaultResponse> ExecuteAsync(ManyDependenciesCommand command)
         {
             if (string.IsNullOrWhiteSpace(command.Text))
                 throw new ArgumentNullException(nameof(command.Text));
@@ -31,9 +31,9 @@ namespace Cars.Testing.Shared.StubApplication.Commands.Bar
                 Output = _stringService.PrintWithFormat(command.Text);
             }
 
-            await _repository.AddAsync(Domain.Bar.Bar.Create(Guid.NewGuid())).ConfigureAwait(false);
+            _repository.Add(Domain.Bar.Bar.Create(Guid.NewGuid()));
 
-	        return new DefaultResponse(command.AggregateId);
+	        return Task.FromResult(new DefaultResponse(command.AggregateId));
         }
     }
 }

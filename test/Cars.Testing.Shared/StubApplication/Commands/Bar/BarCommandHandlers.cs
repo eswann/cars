@@ -13,13 +13,13 @@ namespace Cars.Testing.Shared.StubApplication.Commands.Bar
             _repository = repository;
         }
 
-        public async Task<CreateBarResponse> ExecuteAsync(CreateBarCommand command)
+        public Task<CreateBarResponse> ExecuteAsync(CreateBarCommand command)
         {
             var bar = Domain.Bar.Bar.Create(command.AggregateId);
 
-            await _repository.AddAsync(bar).ConfigureAwait(false);
+            _repository.Add(bar);
 
-	        return new CreateBarResponse(bar.AggregateId);
+	        return Task.FromResult(new CreateBarResponse(bar.AggregateId));
         }
 
         public async Task<DefaultResponse> ExecuteAsync(SpeakCommand command)

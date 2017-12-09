@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Cars.EventSource.SerializedEvents;
-using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
 using Cars.MessageBus.InProcess;
 using Cars.Testing.Shared.StubApplication.Domain.Bar;
@@ -26,8 +25,8 @@ namespace Cars.Testing.Shared.EventStore
 
             var session = CreateSession();
 
-            await session.AddAsync(bar).ConfigureAwait(false);
-            await session.SaveChangesAsync().ConfigureAwait(false);
+            session.Add(bar);
+            await session.CommitAsync().ConfigureAwait(false);
 
             session = CreateSession();
 
@@ -46,30 +45,24 @@ namespace Cars.Testing.Shared.EventStore
             return bar;
         }
 
-        public async Task SnapshotTestsAsync()
+        public async Task<SubBar> SubAggregateEventTestsAsync()
         {
-            var foo = GenerateFoo(9);
+            var subBar = GenerateSubBar();
 
             var session = CreateSession();
 
-            await session.AddAsync(foo).ConfigureAwait(false);
-            await session.SaveChangesAsync().ConfigureAwait(false);
+            session.Add(subBar);
+            await session.CommitAsync().ConfigureAwait(false);
 
             session = CreateSession();
 
-            var foo2 = await session.GetByIdAsync<Foo>(foo.AggregateId).ConfigureAwait(false);
-            
-            var result = _eventStore.CalledMethods.HasFlag(
-                EventStoreMethods.Ctor 
-                | EventStoreMethods.SaveAsync
-                | EventStoreMethods.SaveSnapshotAsync 
-                | EventStoreMethods.CommitAsync 
-                | EventStoreMethods.GetLatestSnapshotByIdAsync 
-                | EventStoreMethods.GetEventsForwardAsync);
+            var bar = await session.GetByIdAsync<Bar>(subBar.AggregateId).ConfigureAwait(false);
 
-            foo.AggregateId.Should().Be(foo2.AggregateId);
+            bar.AggregateId.Should().Be(subBar.AggregateId);
+            bar.LastText.Should().Be(subBar.LastText);
+            bar.Messages.Count.Should().Be(subBar.Messages.Count);
 
-            result.Should().BeTrue();
+            return subBar;
         }
 
         public async Task DoSomeProblemAsync()
@@ -78,10 +71,10 @@ namespace Cars.Testing.Shared.EventStore
 
             var session = CreateFaultSession();
 
-            await session.AddAsync(foo).ConfigureAwait(false);
+            session.Add(foo);
             try
             {
-                await session.SaveChangesAsync().ConfigureAwait(false);
+                await session.CommitAsync().ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -96,14 +89,14 @@ namespace Cars.Testing.Shared.EventStore
 
         private ISession CreateSession()
         {
-            var session = new Session(new LoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Ok()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), null, null, new IntervalSnapshotStrategy(10));
+            var session = new Session(new LoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Ok()), new EventSerializer(new JsonTextSerializer()));
 
             return session;
         }
 
         private ISession CreateFaultSession()
         {
-            var faultSession = new Session(new LoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Fault()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), null, null, new IntervalSnapshotStrategy(10));
+            var faultSession = new Session(new LoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Fault()), new EventSerializer(new JsonTextSerializer()));
 
             return faultSession;
         }
@@ -130,6 +123,18 @@ namespace Cars.Testing.Shared.EventStore
             }
 
             return bar;
+        }
+
+        private static SubBar GenerateSubBar(int quantity = 10)
+        {
+            var subBar = SubBar.Create(Guid.NewGuid());
+
+            for (var i = 0; i < quantity; i++)
+            {
+                subBar.Speak($"Hello number {i}.");
+            }
+
+            return subBar;
         }
     }
 }

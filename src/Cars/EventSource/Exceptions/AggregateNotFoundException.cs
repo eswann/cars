@@ -24,14 +24,14 @@ using System;
 
 namespace Cars.EventSource.Exceptions
 {
-    public class StreamNotFoundException : Exception
+    public class AggregateNotFoundException : Exception
     {
-        public string StreamName { get; }
+        public string AggregateName { get; }
         public Guid AggregateId { get; }
 
-        public StreamNotFoundException(string streamName, Guid aggregateId) : base($"The stream '{streamName}' with identifier '{aggregateId}' was not found.")
+        public AggregateNotFoundException(string aggregateName, Guid aggregateId) : base($"The stream '{aggregateName}' with identifier '{aggregateId}' was not found.")
         {
-            StreamName = streamName;
+            AggregateName = aggregateName;
             AggregateId = aggregateId;
         }
     }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cars.Events;
 using Cars.EventSource.SerializedEvents;
-using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
 
 namespace Cars.Testing.Shared.EventStore
@@ -19,31 +18,6 @@ namespace Cars.Testing.Shared.EventStore
             _eventStore = eventStore;
 
             CalledMethods &= EventStoreMethods.Ctor;
-        }
-
-        public async Task SaveSnapshotAsync(ISerializedSnapshot snapshot)
-        {
-            await _eventStore.SaveSnapshotAsync(snapshot).ConfigureAwait(false);
-
-            CalledMethods |= EventStoreMethods.SaveSnapshotAsync;
-        }
-
-        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
-        {
-            var result = await _eventStore.GetLatestSnapshotByIdAsync(aggregateId).ConfigureAwait(false);
-
-            CalledMethods |= EventStoreMethods.GetLatestSnapshotByIdAsync;
-
-            return result;
-        }
-
-        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
-        {
-            var result = await _eventStore.GetEventsForwardAsync(aggregateId, version).ConfigureAwait(false);
-
-            CalledMethods |= EventStoreMethods.GetEventsForwardAsync;
-
-            return result;
         }
 
         public void Dispose()

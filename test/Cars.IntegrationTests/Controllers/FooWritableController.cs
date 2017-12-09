@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Cars.EventSource;
 using Cars.EventSource.Storage;
 using Cars.MessageBus;
 using Cars.Testing.Shared.StubApplication.Commands.Foo;
@@ -12,13 +11,13 @@ namespace Cars.IntegrationTests.Controllers
     [Route("command/foo")]
     public class FooWritableController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ISession _session;
         private readonly ICommandDispatcher _dispatcher;
         private readonly IRepository _repository;
 
-        public FooWritableController(IUnitOfWork unitOfWork, ICommandDispatcher dispatcher, IRepository repository)
+        public FooWritableController(ISession session, ICommandDispatcher dispatcher, IRepository repository)
         {
-            _unitOfWork = unitOfWork;
+            _session = session;
             _dispatcher = dispatcher;
             _repository = repository;
         }
@@ -30,7 +29,7 @@ namespace Cars.IntegrationTests.Controllers
 
             var response = await _dispatcher.DispatchAsync<CreateFooCommand, CreateFooResponse>(cmd);
 
-            await _unitOfWork.CommitAsync();
+            await _session.CommitAsync();
 
             return Ok(cmd);
         }
@@ -42,7 +41,7 @@ namespace Cars.IntegrationTests.Controllers
 
 			var response = await _dispatcher.DispatchAsync<DoSomethingCommand, DoSomethingResponse>(cmd);
 
-			await _unitOfWork.CommitAsync();
+			await _session.CommitAsync();
 
             return Ok(response);
         }
@@ -61,7 +60,7 @@ namespace Cars.IntegrationTests.Controllers
                 stream.DoSomething();
             }
 
-            await _unitOfWork.CommitAsync();
+            await _session.CommitAsync();
 
             return Ok(create);
         }

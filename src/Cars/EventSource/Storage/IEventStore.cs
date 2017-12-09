@@ -31,7 +31,7 @@ namespace Cars.EventSource.Storage
     /// <summary>
     /// Event Store repository abstraction.
     /// </summary>
-    public interface IEventStore : ISnapshotStore, IDisposable
+    public interface IEventStore : IDisposable
     {
         /// <summary>∑
         /// Start the transaction.

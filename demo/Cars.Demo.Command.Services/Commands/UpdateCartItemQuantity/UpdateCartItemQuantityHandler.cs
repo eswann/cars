@@ -8,12 +8,12 @@ namespace Cars.Demo.Command.Services.Commands.UpdateCartItemQuantity
 {
     public class UpdateCartItemQuantityHandler : IUpdateCartItemQuantityHandler
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ISession _session;
         private readonly IRepository _repository;
 
-        public UpdateCartItemQuantityHandler(IUnitOfWork unitOfWork, IRepository repository)
+        public UpdateCartItemQuantityHandler(ISession unitOfWork, IRepository repository)
         {
-            _unitOfWork = unitOfWork;
+            _session = unitOfWork;
             _repository = repository;
         }
 
@@ -22,8 +22,8 @@ namespace Cars.Demo.Command.Services.Commands.UpdateCartItemQuantity
             var cart = await _repository.GetByIdAsync<Cart>(command.CartId);
             cart.UpdatedCartItemQuantity(command.Sku, command.Quantity);
             
-	        await _repository.AddAsync(cart);
-	        await _unitOfWork.CommitAsync();
+	        _repository.Add(cart);
+	        await _session.CommitAsync();
 
             return new DefaultResponse(cart.AggregateId);
 	    }

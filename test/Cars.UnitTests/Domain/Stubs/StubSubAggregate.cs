@@ -4,23 +4,23 @@ using Cars.UnitTests.Domain.Stubs.Events;
 
 namespace Cars.UnitTests.Domain.Stubs
 {
-    public class StubAggregate : Aggregate
+    public class StubSubAggregate : Aggregate
     {
         public string Name { get; private set; }
         public Guid RelatedId { get; private set; }
 
-        private StubAggregate(Guid newGuid, string name)
+        private StubSubAggregate(Guid newGuid, string name)
         {
             Emit(new StubAggregateCreatedEvent(newGuid, name));
         }
 
-        public StubAggregate()
+        public StubSubAggregate()
         {
         }
 
-        public static StubAggregate Create(string name)
+        public static StubSubAggregate Create(string name)
         {
-            return new StubAggregate(Guid.NewGuid(), name);
+            return new StubSubAggregate(Guid.NewGuid(), name);
         }
 
         public void ChangeName(string name)

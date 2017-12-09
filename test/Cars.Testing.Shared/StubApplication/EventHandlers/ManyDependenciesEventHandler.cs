@@ -22,7 +22,7 @@ namespace Cars.Testing.Shared.StubApplication.EventHandlers
             _stringService = stringService;
         }
 
-        public async Task ExecuteAsync(ManyDependenciesEvent @event)
+        public Task ExecuteAsync(ManyDependenciesEvent @event)
         {
             if (string.IsNullOrWhiteSpace(@event.Text))
                 throw new ArgumentNullException(nameof(@event.Text));
@@ -31,8 +31,9 @@ namespace Cars.Testing.Shared.StubApplication.EventHandlers
             {
                 Output = _stringService.PrintWithFormat(@event.Text);
             }
+            _repository.Add(Bar.Create(Guid.NewGuid()));
 
-            await _repository.AddAsync(Bar.Create(Guid.NewGuid())).ConfigureAwait(false);
+            return Task.CompletedTask;
         }
     }
 }

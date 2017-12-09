@@ -27,7 +27,6 @@ using System.Threading.Tasks;
 using Cars.Events;
 using Cars.EventSource;
 using Cars.EventSource.SerializedEvents;
-using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -38,7 +37,6 @@ namespace Cars.EventStore.MongoDB
     public class MongoEventStore : IEventStore
     {
         protected readonly List<Event> UncommitedEvents = new List<Event>();
-        protected readonly List<SnapshotData> UncommitedSnapshots = new List<SnapshotData>();
         
 
         public MongoEventStore(IMongoClient client, IMongoEventStoreSettings settings)
@@ -53,52 +51,6 @@ namespace Cars.EventStore.MongoDB
 
         public IMongoEventStoreSettings Settings { get; }
 
-        public Task SaveSnapshotAsync(ISerializedSnapshot snapshot)
-        {
-            var snapshotData = Serialize(snapshot);
-            UncommitedSnapshots.Add(snapshotData);
-
-            return Task.CompletedTask;
-        }
-
-        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
-        {
-            var db = Client.GetDatabase(Settings.Database);
-            var snapshotCollection = db.GetCollection<SnapshotData>(Settings.SnapshotsCollectionName);
-
-            var filter = Builders<SnapshotData>.Filter;
-            var sort = Builders<SnapshotData>.Sort;
-
-            var snapshots = await snapshotCollection
-                .Find(filter.Eq(x => x.AggregateId, aggregateId))
-                .Sort(sort.Descending(x => x.Version))
-                .Limit(1)
-                .ToListAsync();
-
-            return snapshots.Select(Deserialize).FirstOrDefault();
-        }
-
-        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
-        {
-            var db = Client.GetDatabase(Settings.Database);
-            var collection = db.GetCollection<Event>(Settings.EventsCollectionName);
-
-            var sort = Builders<Event>.Sort;
-            var filterBuilder = Builders<Event>.Filter;
-
-            var filter = filterBuilder.Empty
-                & filterBuilder.Eq(x => x.AggregateId, aggregateId)
-                & filterBuilder.Gt(x => x.Version, version)
-                & filterBuilder.Or(filterBuilder.Exists(x => x.Metadata[MetadataKeys.EventIgnore], exists: false), filterBuilder.Eq(x => x.Metadata[MetadataKeys.EventIgnore], false));
-            
-            var events = await collection
-                .Find(filter)
-                .Sort(sort.Ascending(x => x.Metadata[MetadataKeys.EventVersion]))
-                .ToListAsync();
-
-            return events.Select(Deserialize).ToList();
-        }
-
         public void Dispose()
         {
         }
@@ -110,12 +62,6 @@ namespace Cars.EventStore.MongoDB
         public async Task CommitAsync()
         {
             var db = Client.GetDatabase(Settings.Database);
-
-            if (UncommitedSnapshots.Count > 0)
-            {
-                var snapshotCollection = db.GetCollection<SnapshotData>(Settings.SnapshotsCollectionName);
-                await snapshotCollection.InsertManyAsync(UncommitedSnapshots);
-            }
 
             if (UncommitedEvents.Count > 0)
             {
@@ -183,37 +129,11 @@ namespace Cars.EventStore.MongoDB
         private void Cleanup()
         {
             UncommitedEvents.Clear();
-            UncommitedSnapshots.Clear();
         }
 
         private ICommitedEvent Deserialize(Event e)
         {
             return MongoCommitedEvent.Create(e);
-        }
-
-        private ICommitedSnapshot Deserialize(SnapshotData snapshotData)
-        {
-            return MongoCommitedSnapshot.Create(snapshotData);
-        }
-
-        private SnapshotData Serialize(ISerializedSnapshot serializedSnapshot)
-        {
-            var eventData = BsonDocument.Parse(serializedSnapshot.SerializedData);
-            var metadata = BsonDocument.Parse(serializedSnapshot.SerializedMetadata);
-            var id = serializedSnapshot.Metadata.GetValue(MetadataKeys.SnapshotId,
-                value => Guid.Parse(value.ToString()));
-
-            var snapshot = new SnapshotData
-            {
-                Id = id,
-                Timestamp = DateTime.UtcNow,
-                AggregateId = serializedSnapshot.AggregateId,
-                Version = serializedSnapshot.Version,
-                Data = eventData,
-                Metadata = metadata,
-            };
-
-            return snapshot;
         }
 
     }

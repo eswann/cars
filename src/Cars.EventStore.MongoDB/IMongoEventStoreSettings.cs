@@ -6,6 +6,5 @@
         string Database { get; }
         string EventsCollectionName { get; }
         string ProjectionsCollectionName { get; }
-        string SnapshotsCollectionName { get; }
     }
 }

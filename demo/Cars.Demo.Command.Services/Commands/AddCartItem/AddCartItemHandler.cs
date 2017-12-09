@@ -1,19 +1,18 @@
 ﻿using System.Threading.Tasks;
 using Cars.Commands;
 using Cars.Demo.Command.Services.Domain;
-using Cars.EventSource;
 using Cars.EventSource.Storage;
 
 namespace Cars.Demo.Command.Services.Commands.AddCartItem
 {
     public class CreateCartHandler : IAddCartItemHandler
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ISession _session;
         private readonly IRepository _repository;
 
-        public CreateCartHandler(IUnitOfWork unitOfWork, IRepository repository)
+        public CreateCartHandler(ISession session, IRepository repository)
         {
-            _unitOfWork = unitOfWork;
+            _session = session;
             _repository = repository;
         }
 
@@ -22,8 +21,8 @@ namespace Cars.Demo.Command.Services.Commands.AddCartItem
             var cart = await _repository.GetByIdAsync<Cart>(command.CartId);
             cart.AddCartItem(command.Sku, command.Name, command.SalePrice, command.Quantity, command.CustomerTopRated, command.Image);
 
-            await _repository.AddAsync(cart);
-            await _unitOfWork.CommitAsync();
+            _repository.Add(cart);
+            await _session.CommitAsync();
 
             return new DefaultResponse(cart.AggregateId);
 	    }

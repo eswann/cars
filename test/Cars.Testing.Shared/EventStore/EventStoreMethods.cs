@@ -11,9 +11,7 @@ namespace Cars.Testing.Shared.EventStore
         Rollback = 4,
         CommitAsync = 8,
         SaveAsync = 16,
-        SaveSnapshotAsync = 32,
-        GetAllEventsAsync = 64,
-        GetLatestSnapshotByIdAsync = 128,
-        GetEventsForwardAsync = 256
+        GetAllEventsAsync = 32,
+        GetEventsForwardAsync = 64
     }
 }

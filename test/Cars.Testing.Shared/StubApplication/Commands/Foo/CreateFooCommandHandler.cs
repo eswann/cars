@@ -13,12 +13,12 @@ namespace Cars.Testing.Shared.StubApplication.Commands.Foo
             _repository = repository;
         }
 
-        public async Task<CreateFooResponse> ExecuteAsync(CreateFooCommand command)
+        public Task<CreateFooResponse> ExecuteAsync(CreateFooCommand command)
         {
             var foo = new Domain.Foo.Foo(command.AggregateId);
-            await _repository.AddAsync(foo);
+            _repository.Add(foo);
 
-			return new CreateFooResponse(command.AggregateId);
+			return Task.FromResult(new CreateFooResponse(command.AggregateId));
         }
     }
 }

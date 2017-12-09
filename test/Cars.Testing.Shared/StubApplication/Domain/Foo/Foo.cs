@@ -1,10 +1,9 @@
 ﻿using System;
 using Cars.EventSource;
-using Cars.EventSource.Snapshots;
 
 namespace Cars.Testing.Shared.StubApplication.Domain.Foo
 {
-    public class Foo : SnapshotAggregate<FooSnapshot>
+    public class Foo : Aggregate
     {
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
@@ -46,19 +45,6 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Foo
                 FirstName = e.FirstName;
                 LastName = e.LastName;
             });
-        }
-
-        protected override FooSnapshot CreateSnapshot()
-        {
-            return new FooSnapshot
-            {
-                DidSomethingCounter = DidSomethingCounter
-            };
-        }
-
-        protected override void RestoreFromSnapshot(FooSnapshot snapshot)
-        {
-            DidSomethingCounter = snapshot.DidSomethingCounter;
         }
     }
 }

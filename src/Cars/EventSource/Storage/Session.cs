@@ -29,8 +29,6 @@ using Cars.Core;
 using Cars.Events;
 using Cars.EventSource.Exceptions;
 using Cars.EventSource.SerializedEvents;
-using Cars.EventSource.Snapshots;
-using Cars.Extensions;
 using Cars.MessageBus;
 using Cars.MetadataProviders;
 using Microsoft.Extensions.Logging;
@@ -40,39 +38,32 @@ namespace Cars.EventSource.Storage
     public class Session : ISession
     {
         private readonly AggregateTracker _aggregateTracker = new AggregateTracker();
-        private readonly List<Aggregate> _aggregates = new List<Aggregate>();
         private readonly IEventStore _eventStore;
         private readonly IEventPublisher _eventPublisher;
         private readonly IEventSerializer _eventSerializer;
-        private readonly ISnapshotSerializer _snapshotSerializer;
         private readonly IEventUpdateManager _eventUpdateManager;
-        private readonly ISnapshotStrategy _snapshotStrategy;
         private readonly IEnumerable<IMetadataProvider> _metadataProviders;
         private readonly ILogger _logger;
 
-        private bool _externalTransaction;
+        private bool _transactionStarted;
 
-        public IReadOnlyList<IAggregate> Aggregates => _aggregates;
+        public IEnumerable<IAggregate> Aggregates => _aggregateTracker.Aggregates;
 
         public Session(
             ILoggerFactory loggerFactory,
             IEventStore eventStore,
             IEventPublisher eventPublisher,
             IEventSerializer eventSerializer,
-            ISnapshotSerializer snapshotSerializer,
             IEventUpdateManager eventUpdateManager = null,
-            IEnumerable<IMetadataProvider> metadataProviders = null,
-            ISnapshotStrategy snapshotStrategy = null)
+            IEnumerable<IMetadataProvider> metadataProviders = null)
         {
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
             if (metadataProviders == null) metadataProviders = Enumerable.Empty<IMetadataProvider>();
 
             _logger = loggerFactory.CreateLogger<Session>();
 
-            _snapshotStrategy = snapshotStrategy ?? new IntervalSnapshotStrategy();
             _eventStore = eventStore ?? throw new ArgumentNullException(nameof(eventStore));
             _eventSerializer = eventSerializer ?? throw new ArgumentNullException(nameof(eventSerializer));
-            _snapshotSerializer = snapshotSerializer ?? throw new ArgumentNullException(nameof(snapshotSerializer));
             _eventUpdateManager = eventUpdateManager;
             _metadataProviders = metadataProviders.Concat(new IMetadataProvider[]
             {
@@ -86,79 +77,42 @@ namespace Cars.EventSource.Storage
         /// <summary>
         /// Retrieves an stream, load your historical events and add to tracking.
         /// </summary>
-        /// <typeparam name="TAggregate"></typeparam>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        /// <exception cref="StreamNotFoundException"></exception>
+        /// <exception cref="AggregateNotFoundException"></exception>
         public async Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new()
         {
             _logger.LogDebug($"Getting stream '{typeof(TAggregate).FullName}' with identifier: '{id}'.");
-
-            _logger.LogDebug("Returning an stream tracked.");
+            _logger.LogDebug("Returning an aggregate tracked.");
 
             TAggregate aggregate = _aggregateTracker.GetById<TAggregate>(id);
             if (aggregate != null)
             {
-                RegisterForTracking(aggregate);
                 return aggregate;
             }
 
             aggregate = new TAggregate();
-            IEnumerable<ICommitedEvent> events;
 
-            _logger.LogDebug("Checking if stream has snapshot support.");
-
-            if (_snapshotStrategy.CheckSnapshotSupport(aggregate.GetType()))
-            {
-                if (aggregate is ISnapshotAggregate snapshotStream)
-                {
-                    int version = 0;
-                    var snapshot = await _eventStore.GetLatestSnapshotByIdAsync(id).ConfigureAwait(false);
-
-                    if (snapshot != null)
-                    {
-                        version = snapshot.Version;
-
-                        _logger.LogDebug("Restoring snapshot.");
-                        var snapshotRestore = _snapshotSerializer.Deserialize(snapshot);
-                        snapshotStream.Restore(snapshotRestore);
-                        _logger.LogDebug("Snapshot restored.");
-                    }
-
-                    events = await _eventStore.GetEventsForwardAsync(id, version).ConfigureAwait(false);
-                    LoadStream(aggregate, events);
-                }
-            }
-            else
-            {
-                events = await _eventStore.GetAllEventsAsync(id).ConfigureAwait(false);
-                LoadStream(aggregate, events);
-            }
-
+            var events = await _eventStore.GetAllEventsAsync(id).ConfigureAwait(false);
+            LoadStream(aggregate, events);
+            
             if (aggregate.AggregateId.Equals(Guid.Empty))
             {
                 _logger.LogError($"The stream ({typeof(TAggregate).FullName} {id}) was not found.");
-
-                throw new StreamNotFoundException(typeof(TAggregate).Name, id);
+                throw new AggregateNotFoundException(typeof(TAggregate).Name, id);
             }
 
-            RegisterForTracking(aggregate as Aggregate);
-
+            RegisterForTracking(aggregate);
             return aggregate;
         }
 
         /// <summary>
         /// Add the stream to tracking.
         /// </summary>
-        /// <typeparam name="TAggregate"></typeparam>
-        /// <param name="aggregate"></param>
-        public Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
+        public void Add<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
-            CheckConcurrency(aggregate);
-
-            RegisterForTracking(aggregate);
-
-            return Task.CompletedTask;
+            if (aggregate.Version == 0)
+            {
+                RegisterForTracking(aggregate);
+            }
         }
 
         /// <summary>
@@ -168,51 +122,53 @@ namespace Cars.EventSource.Storage
         {
             _logger.LogInformation($"Called method: {nameof(Session)}.{nameof(BeginTransaction)}.");
 
-            if (_externalTransaction)
+            if (_transactionStarted)
             {
                 _logger.LogError("Transaction already was open.");
 
                 throw new InvalidOperationException("The transaction already was open.");
             }
-
-            _externalTransaction = true;
+            _transactionStarted = true;
             _eventStore.BeginTransaction();
         }
 
+
         /// <summary>
-        /// Confirm changes.
+        /// Rollback <see cref="IEventPublisher"/>, <see cref="IEventStore"/> and remove stream tracking.
         /// </summary>
-        /// <returns></returns>
-        public async Task CommitAsync()
+        public void Rollback()
         {
-            _logger.LogInformation($"Called method: {nameof(Session)}.{nameof(CommitAsync)}.");
+            _logger.LogDebug("Calling Event Publisher Rollback.");
 
-            _logger.LogInformation($"Calling method: {_eventStore.GetType().Name}.{nameof(CommitAsync)}.");
+            _eventPublisher.Rollback();
 
-            await _eventStore.CommitAsync().ConfigureAwait(false);
-            _externalTransaction = false;
+            _logger.LogDebug("Calling Event Store Rollback.");
+
+            _eventStore.Rollback();
+            _aggregateTracker.Clear();
+            _transactionStarted = false;
         }
 
         /// <summary>
         /// Call <see cref="IEventStore.SaveAsync"/> in <see cref="IEventStore"/> passing serialized events.
         /// </summary>
-        public virtual async Task SaveChangesAsync()
+        public virtual async Task CommitAsync()
         {
-            _logger.LogInformation($"Called method: {nameof(Session)}.{nameof(SaveChangesAsync)}.");
+            _logger.LogInformation($"Called method: {nameof(Session)}.{nameof(CommitAsync)}.");
 
-            if (!_externalTransaction)
+            var aggregatesWithCommits = Aggregates.Where(x => x.UncommitedEvents.Count > 0).ToList();
+            AssertNoDuplicateCommits(aggregatesWithCommits);
+
+            if (!_transactionStarted)
             {
                 _eventStore.BeginTransaction();
             }
 
-            // If transaction called externally, the client should care with transaction.
-
             try
             {
-                _logger.LogInformation("Serializing events.");
-
+                _logger.LogDebug("Serializing events.");
                 var uncommitedEvents =
-                    _aggregates.SelectMany(e => e.UncommitedEvents)
+                    aggregatesWithCommits.SelectMany(e => e.UncommitedEvents)
                     .OrderBy(o => o.CreatedAt)
                     .Cast<UncommitedEvent>()
                     .ToList();
@@ -231,110 +187,49 @@ namespace Cars.EventSource.Storage
                     return serializedEvent;
                 }).ToList();
 
-                _logger.LogInformation("Saving events on Event Store.");
-
+                _logger.LogDebug("Saving events on Event Store.");
                 await _eventStore.SaveAsync(serializedEvents).ConfigureAwait(false);
 
-                _logger.LogInformation("Begin iterate in collection of stream.");
-
-                foreach (var stream in _aggregates)
+                _logger.LogDebug("Begin iterate in collection of stream.");
+                foreach (var aggregate in _aggregateTracker.Aggregates)
                 {
-                    _logger.LogInformation($"Checking if should take snapshot for stream: '{stream.AggregateId}'.");
-
-                    if (_snapshotStrategy.ShouldMakeSnapshot(stream))
-                    {
-                        _logger.LogInformation("Taking stream's snapshot.");
-
-                        await stream.TakeSnapshot(_eventStore, _snapshotSerializer).ConfigureAwait(false);
-                    }
-
-                    _logger.LogInformation($"Update stream's version from {stream.Version} to {stream.UncommittedVersion}.");
-
-                    stream.SetVersion(stream.UncommittedVersion);
-
-                    stream.ClearUncommitedEvents();
-
-                    _logger.LogInformation($"Scanning projection providers for {stream.GetType().Name}.");
+                    _logger.LogDebug($"Update stream's version from {aggregate.Version} to {aggregate.UncommittedVersion}.");
+                    aggregate.SetVersion(aggregate.UncommittedVersion);
+                    aggregate.ClearUncommitedEvents();
+                    _logger.LogDebug($"Scanning projection providers for {aggregate.GetType().Name}.");
                 }
-
-                _logger.LogDebug("End iterate.");
-
                 _logger.LogInformation($"Publishing events. [Qty: {uncommitedEvents.Count}]");
 
                 await _eventPublisher.PublishAsync(uncommitedEvents.Select(e => e.OriginalEvent)).ConfigureAwait(false);
+                _logger.LogDebug("Published events.");
 
-                _logger.LogInformation("Published events.");
+                _aggregateTracker.Clear();
 
-                _aggregates.Clear();
-
-                await _eventPublisher.CommitAsync().ConfigureAwait(false);
+                _logger.LogDebug($"Calling method: {_eventStore.GetType().Name}.{nameof(CommitAsync)}.");
+                await _eventStore.CommitAsync().ConfigureAwait(false);
+                _transactionStarted = false;
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-
-                if (!_externalTransaction)
-                {
-                    Rollback();
-                }
-
+                Rollback();
                 throw;
-            }
-
-            if (!_externalTransaction)
-            {
-                await _eventStore.CommitAsync().ConfigureAwait(false);
             }
         }
 
-        /// <summary>
-        /// Rollback <see cref="IEventPublisher"/>, <see cref="IEventStore"/> and remove stream tracking.
-        /// </summary>
-        public void Rollback()
+        private static void AssertNoDuplicateCommits(List<IAggregate> aggregatesWithCommits)
         {
-            _logger.LogDebug("Calling Event Publisher Rollback.");
-
-            _eventPublisher.Rollback();
-
-            _logger.LogDebug("Calling Event Store Rollback.");
-
-            _eventStore.Rollback();
-
-            _logger.LogDebug("Cleaning tracker.");
-
-            foreach (var stream in _aggregates)
+            var groupeDups = aggregatesWithCommits.GroupBy(c => c.AggregateId).Where(g => g.Skip(1).Any()).ToList();
+            if (groupeDups.Count > 0)
             {
-                _aggregateTracker.Remove(stream.GetType(), stream.AggregateId);
+                throw new AggregateConcurrencyException(groupeDups, "Saving multiple representations of the same aggregate is not permitted.");
             }
-
-            _aggregates.Clear();
         }
 
         private void RegisterForTracking<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
             _logger.LogDebug($"Adding to track: {aggregate.GetType().FullName}.");
-
-            if (_aggregates.All(e => e.AggregateId != aggregate.AggregateId))
-            {
-                _aggregates.Add(aggregate);
-            }
-
             _aggregateTracker.Add(aggregate);
-        }
-
-        private void CheckConcurrency<TAggregate>(TAggregate aggregate) where TAggregate : IAggregate
-        {
-            _logger.LogDebug("Checking concurrency.");
-
-            var trackedStream = _aggregateTracker.GetById<TAggregate>(aggregate.AggregateId);
-
-            if (trackedStream == null) return;
-
-            if (trackedStream.Version != aggregate.Version)
-            {
-                _logger.LogError($"Aggregate's current version is: {aggregate.Version} - expected is: {trackedStream.Version}.");
-                throw new ExpectedVersionException<TAggregate>(aggregate, trackedStream.Version);
-            }
         }
 
         private void LoadStream(Aggregate aggregate, IEnumerable<ICommitedEvent> commitedEvents)
@@ -356,5 +251,6 @@ namespace Cars.EventSource.Storage
                 aggregate.SetVersion(flatten.Select(e => e.Version).Max());
             }
         }
+
     }
 }

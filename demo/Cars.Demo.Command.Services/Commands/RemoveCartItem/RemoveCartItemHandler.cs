@@ -8,12 +8,12 @@ namespace Cars.Demo.Command.Services.Commands.RemoveCartItem
 {
     public class RemoveCartItemHandler : IRemoveCartItemHandler
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ISession _session;
         private readonly IRepository _repository;
 
-        public RemoveCartItemHandler(IUnitOfWork unitOfWork, IRepository repository)
+        public RemoveCartItemHandler(ISession unitOfWork, IRepository repository)
         {
-            _unitOfWork = unitOfWork;
+            _session = unitOfWork;
             _repository = repository;
         }
 
@@ -22,8 +22,8 @@ namespace Cars.Demo.Command.Services.Commands.RemoveCartItem
             var cart = await _repository.GetByIdAsync<Cart>(command.CartId);
             cart.RemoveCartItem(command.Sku);
             
-	        await _repository.AddAsync(cart);
-	        await _unitOfWork.CommitAsync();
+	        _repository.Add(cart);
+	        await _session.CommitAsync();
 
             return new DefaultResponse(cart.AggregateId);
 	    }

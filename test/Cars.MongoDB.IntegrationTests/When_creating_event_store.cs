@@ -46,21 +46,17 @@ namespace Cars.MongoDB.IntegrationTests
             using (var eventStore = new MongoEventStore(_mongoClient, new MongoEventStoreSettings()))
             {
                 eventStore.Settings.EventsCollectionName.Should().Be(_defaultSettings.EventsCollectionName);
-                eventStore.Settings.SnapshotsCollectionName.Should().Be(_defaultSettings.SnapshotsCollectionName);
 	            eventStore.Settings.Database.Should().Be(_defaultSettings.Database);
             }
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Theory]
-        [InlineData("events", null)]
-        [InlineData(null, "snapshots")]
-        public void Should_validate_settings(string eventCollectionName, string snapshotCollectionName)
+        [Fact]
+        public void Should_validate_settings()
         {
             var defaultSettings = new MongoEventStoreSettings
             {
-                EventsCollectionName = eventCollectionName,
-                SnapshotsCollectionName = snapshotCollectionName,
+                EventsCollectionName = null,
 				Database = DatabaseName
             };
             
@@ -76,14 +72,12 @@ namespace Cars.MongoDB.IntegrationTests
             var customSettings = new MongoEventStoreSettings
             {
                 EventsCollectionName = "MyEvents",
-                SnapshotsCollectionName = "MySnapshots",
 				Database = DatabaseName
             };
 
             using (var eventStore = new MongoEventStore(_mongoClient, customSettings))
             {
                 eventStore.Settings.EventsCollectionName.Should().Be(customSettings.EventsCollectionName);
-                eventStore.Settings.SnapshotsCollectionName.Should().Be(customSettings.SnapshotsCollectionName);
             }
         }
 

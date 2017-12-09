@@ -9,10 +9,10 @@ namespace Cars.UnitTests.Storage
 {
     public class RepositoryTests
     {
-        private const string CategoryName = "Unit";
-        private const string CategoryValue = "Repository";
+        private const string _categoryName = "Unit";
+        private const string _categoryValue = "Repository";
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public void Cannot_pass_null_instance_of_LoggerFactory()
         {
@@ -23,9 +23,9 @@ namespace Cars.UnitTests.Storage
             act.ShouldThrowExactly<ArgumentNullException>();
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
-        public void Cannot_pass_null_instance_of_Session()
+        public void Cannot_pass_null_instance_of_aggregate()
         {
             Action act = () => new Repository(new LoggerFactory(), null);
 

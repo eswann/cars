@@ -93,7 +93,7 @@ namespace Cars.Testing.Shared.MessageBus
                 {
                     var repositoryMock = new Mock<IRepository>();
                     repositoryMock.Setup(x => x.GetByIdAsync<TAggregate>(It.IsAny<Guid>())).Returns(Task.FromResult(AggregateRoot));
-                    repositoryMock.Setup(x => x.AddAsync(It.IsAny<TAggregate>())).Callback<TAggregate>(x => AggregateRoot = x).Returns(Task.CompletedTask);
+                    repositoryMock.Setup(x => x.Add(It.IsAny<TAggregate>())).Callback<TAggregate>(x => AggregateRoot = x);
                     _mocks.Add(parameter.ParameterType, repositoryMock);
                     continue;
                 }

@@ -22,44 +22,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Cars.Events;
 using Cars.EventSource.SerializedEvents;
-using Cars.EventSource.Snapshots;
 
 namespace Cars.EventSource.Storage
 {
     public class InMemoryEventStore : IEventStore
     {
-        public IReadOnlyList<ICommitedEvent> Events => _events.AsReadOnly();
-        public IReadOnlyList<ICommitedSnapshot> Snapshots => _snapshots.AsReadOnly();
-        public IReadOnlyDictionary<ProjectionKey, object> Projections => new ReadOnlyDictionary<ProjectionKey, object>(_projections);
-
         private readonly List<ICommitedEvent> _events = new List<ICommitedEvent>();
-        private readonly List<ICommitedSnapshot> _snapshots = new List<ICommitedSnapshot>();
-        private readonly Dictionary<ProjectionKey, object> _projections = new Dictionary<ProjectionKey, object>();
-
         private readonly List<ISerializedEvent> _uncommitedEvents = new List<ISerializedEvent>();
-        private readonly List<ISerializedSnapshot> _uncommitedSnapshots = new List<ISerializedSnapshot>();
-        private readonly Dictionary<ProjectionKey, object> _uncommitedProjections = new Dictionary<ProjectionKey, object>();
+
+        public IReadOnlyList<ICommitedEvent> Events => _events.AsReadOnly();
 
         public bool InTransaction;
-        
-        public virtual Task SaveSnapshotAsync(ISerializedSnapshot snapshot)
-        {
-            _uncommitedSnapshots.Add(snapshot);
-
-            return Task.CompletedTask;
-        }
-
-        public virtual Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
-        {
-            var snapshot = Snapshots.Where(e => e.AggregateId == aggregateId).OrderByDescending(e => e.Version).Take(1).FirstOrDefault();
-
-            return Task.FromResult(snapshot);
-        }
 
         public virtual Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
         {
@@ -90,34 +67,12 @@ namespace Cars.EventSource.Storage
 
             _uncommitedEvents.Clear();
 
-            var commitedSnapshots = _uncommitedSnapshots.Select(e => new InMemoryCommitedSnapshot(e.AggregateId, e.Version, e.SerializedData, e.SerializedMetadata));
-            
-            _snapshots.AddRange(commitedSnapshots);
-            
-            _uncommitedSnapshots.Clear();
-
-            foreach (var uncommitedProjection in _uncommitedProjections.ToList())
-            {
-                if (!_projections.ContainsKey(uncommitedProjection.Key))
-                {
-                    _projections.Add(uncommitedProjection.Key, uncommitedProjection.Value);
-                }
-                else
-                {
-                    _projections[uncommitedProjection.Key] = uncommitedProjection.Value;
-                }
-            }
-
-            _uncommitedProjections.Clear();
-
             return Task.CompletedTask;
         }
 
         public virtual void Rollback()
         {
             _uncommitedEvents.Clear();
-            _uncommitedSnapshots.Clear();
-            _uncommitedProjections.Clear();
 
             InTransaction = false;
         }
@@ -161,32 +116,5 @@ namespace Cars.EventSource.Storage
 
         }
 
-        internal class InMemoryCommitedSnapshot : ICommitedSnapshot
-        {
-            public InMemoryCommitedSnapshot(Guid aggregateId, int version, string serializedData, string serializedMetadata)
-            {
-                AggregateId = aggregateId;
-                Version = version;
-                SerializedData = serializedData;
-                SerializedMetadata = serializedMetadata;
-            }
-
-            public Guid AggregateId { get; }
-            public int Version { get; }
-            public string SerializedData { get; }
-            public string SerializedMetadata { get; }
-        }
-
-        public struct ProjectionKey
-        {
-            public Guid AggregateId { get; }
-            public string Category { get;}
-
-            public ProjectionKey(Guid aggregateId, string category)
-            {
-                AggregateId = aggregateId;
-                Category = category;
-            }
-        }
     }
 }

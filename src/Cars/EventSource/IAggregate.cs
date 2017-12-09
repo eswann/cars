@@ -36,6 +36,6 @@ namespace Cars.EventSource
         IReadOnlyCollection<IUncommitedEvent> UncommitedEvents { get; }
         void ClearUncommitedEvents();
 
-        void LoadFromHistory(CommitedDomainEventCollection domainEvents);
+        void LoadFromHistory(CommitedDomainEventCollection events);
     }
 }

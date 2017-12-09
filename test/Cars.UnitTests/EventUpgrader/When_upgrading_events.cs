@@ -8,7 +8,6 @@ using Cars.Events;
 using Cars.EventSource;
 using Cars.EventSource.Exceptions;
 using Cars.EventSource.SerializedEvents;
-using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
 using Cars.MessageBus.InProcess;
 using Cars.MetadataProviders;
@@ -184,9 +183,8 @@ namespace Cars.UnitTests.EventUpgrader
 
             var eventStore = new InMemoryEventStore();
             var eventSerializer = new EventSerializer(new JsonTextSerializer());
-            var snapshotSerializer = new SnapshotSerializer(new JsonTextSerializer());
 
-            var session = new Session(loggerFactory, eventStore, eventPublisher, eventSerializer, snapshotSerializer, eventUpdateManager);
+            var session = new Session(loggerFactory, eventStore, eventPublisher, eventSerializer, eventUpdateManager);
             
             var aggregate = (TAggregate) Activator.CreateInstance(typeof(TAggregate), args: aggregateId);
             

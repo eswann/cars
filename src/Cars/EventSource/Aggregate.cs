@@ -97,7 +97,6 @@ namespace Cars.EventSource
             if (isNew)
             {
                 Task.WaitAll(Task.Delay(1));
-
                 _uncommitedEvents.Add(new UncommitedEvent(this, @event, UncommittedVersion + 1));
             }
         }
@@ -113,10 +112,9 @@ namespace Cars.EventSource
         /// <summary>
         /// Load the events in the Aggregate.
         /// </summary>
-        /// <param name="domainEvents"></param>
-        public void LoadFromHistory(CommitedDomainEventCollection domainEvents)
+        public void LoadFromHistory(CommitedDomainEventCollection events)
         {
-            foreach (var @event in domainEvents)
+            foreach (var @event in events)
             {
                 ApplyEvent(@event);
             }

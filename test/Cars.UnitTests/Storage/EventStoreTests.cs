@@ -2,9 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Cars.Events;
-using Cars.EventSource;
 using Cars.EventSource.SerializedEvents;
-using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
 using Cars.MessageBus;
 using Cars.Testing.Shared;
@@ -22,14 +20,13 @@ namespace Cars.UnitTests.Storage
         private const string _categoryValue = "Event store";
 
         private readonly InMemoryEventStore _inMemoryDomainEventStore;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ISession _session;
         private readonly IRepository _repository;
         private readonly Mock<IEventPublisher> _mockEventPublisher;
 
         public EventStoreTests()
         {
             var eventSerializer = new EventSerializer(new JsonTextSerializer());
-            var snapshotSerializer = new SnapshotSerializer(new JsonTextSerializer());
 
             _inMemoryDomainEventStore = new InMemoryEventStore();
             
@@ -38,32 +35,32 @@ namespace Cars.UnitTests.Storage
             _mockEventPublisher.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Returns(Task.CompletedTask);
             
             var loggerFactory = new LoggerFactory();
-            var session = new Session(loggerFactory, _inMemoryDomainEventStore, _mockEventPublisher.Object, eventSerializer, snapshotSerializer);
+            var session = new Session(loggerFactory, _inMemoryDomainEventStore, _mockEventPublisher.Object, eventSerializer);
             _repository = new Repository(loggerFactory, session);
 
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
+            var unitOfWorkMock = new Mock<ISession>();
             unitOfWorkMock.Setup(e => e.CommitAsync())
                 .Callback(async () =>
                 {
-                    await session.SaveChangesAsync().ConfigureAwait(false);
+                    await session.CommitAsync();
                 })
                 .Returns(Task.CompletedTask);
 
-            _unitOfWork = unitOfWorkMock.Object;
+            _session = unitOfWorkMock.Object;
         }
 
         [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task When_calling_Save_it_will_add_the_domain_events_to_the_domain_event_storage()
         {
-            var testStream = StubAggregate.Create("Walter White");
-            testStream.ChangeName("Heinsenberg");
+            var testAggregate = StubAggregate.Create("Walter White");
+            testAggregate.ChangeName("Heinsenberg");
 
-            await _repository.AddAsync(testStream).ConfigureAwait(false);
+            _repository.Add(testAggregate);
 
-            await _unitOfWork.CommitAsync().ConfigureAwait(false);
+            await _session.CommitAsync();
 
-            var events = await _inMemoryDomainEventStore.GetAllEventsAsync(testStream.AggregateId);
+            var events = await _inMemoryDomainEventStore.GetAllEventsAsync(testAggregate.AggregateId);
             
             events.Count().Should().Be(2);
         }
@@ -72,11 +69,11 @@ namespace Cars.UnitTests.Storage
         [Fact]
         public async Task When_Save_Then_the_uncommited_events_should_be_published()
         {
-            var testStream = StubAggregate.Create("Walter White");
-            testStream.ChangeName("Heinsenberg");
+            var testAggregate = StubAggregate.Create("Walter White");
+            testAggregate.ChangeName("Heinsenberg");
 
-            await _repository.AddAsync(testStream).ConfigureAwait(false);
-            await _unitOfWork.CommitAsync().ConfigureAwait(false);
+            _repository.Add(testAggregate);
+            await _session.CommitAsync();
 
             _mockEventPublisher.Verify(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>()));
         }
@@ -85,15 +82,52 @@ namespace Cars.UnitTests.Storage
         [Fact]
         public async Task When_load_stream_should_be_correct_version()
         {
-            var testStream = StubAggregate.Create("Walter White");
-            testStream.ChangeName("Heinsenberg");
+            var testAggregate = StubAggregate.Create("Walter White");
+            testAggregate.ChangeName("Heinsenberg");
 
-            await _repository.AddAsync(testStream).ConfigureAwait(false);
-            await _unitOfWork.CommitAsync().ConfigureAwait(false);
+            _repository.Add(testAggregate);
+            await _session.CommitAsync();
 
-            var testStream2 = await _repository.GetByIdAsync<StubAggregate>(testStream.AggregateId).ConfigureAwait(false);
+            var testAggregate2 = await _repository.GetByIdAsync<StubAggregate>(testAggregate.AggregateId);
             
-            testStream.Version.Should().Be(testStream2.Version);
+            testAggregate.Version.Should().Be(testAggregate2.Version);
+        }
+
+        [Trait(_categoryName, _categoryValue)]
+        [Fact]
+        public async Task Aggregate_stream_is_loaded_into_subAggregate()
+        {
+            var testAggregate = StubAggregate.Create("Walter White");
+            testAggregate.ChangeName("Heinsenberg");
+
+            _repository.Add(testAggregate);
+            await _session.CommitAsync();
+
+            var testSubAggregate = await _repository.GetByIdAsync<StubSubAggregate>(testAggregate.AggregateId);
+
+            testSubAggregate.Version.Should().Be(testAggregate.Version);
+            testSubAggregate.Name.Should().Be(testAggregate.Name);
+        }
+
+        [Trait(_categoryName, _categoryValue)]
+        [Fact]
+        public async Task SubAggregate_updates_are_reflected_in_aggregate()
+        {
+            var testAggregate = StubAggregate.Create("Walter White");
+            testAggregate.ChangeName("Heinsenberg");
+
+            _repository.Add(testAggregate);
+            await _session.CommitAsync();
+
+            var testSubAggregate = await _repository.GetByIdAsync<StubSubAggregate>(testAggregate.AggregateId);
+            testSubAggregate.ChangeName("Schrodinger");
+
+            _repository.Add(testSubAggregate);
+            await _session.CommitAsync();
+
+            testAggregate = await _repository.GetByIdAsync<StubAggregate>(testAggregate.AggregateId);
+
+            testAggregate.Name.Should().Be("Schrodinger");
         }
     }
 }

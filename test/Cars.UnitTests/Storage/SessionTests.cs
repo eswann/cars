@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Cars.Core;
 using Cars.Events;
 using Cars.EventSource;
 using Cars.EventSource.Exceptions;
 using Cars.EventSource.SerializedEvents;
-using Cars.EventSource.Snapshots;
 using Cars.EventSource.Storage;
 using Cars.MessageBus;
 using Cars.Testing.Shared;
@@ -25,12 +23,11 @@ namespace Cars.UnitTests.Storage
         private const string _categoryName = "Unit";
         private const string _categoryValue = "Session";
 
-        private readonly Func<IEventStore, IEventPublisher, ISnapshotStrategy, Session> _sessionFactory = (eventStore, eventPublisher, snapshotStrategy) =>
+        private readonly Func<IEventStore, IEventPublisher, Session> _sessionFactory = (eventStore, eventPublisher) =>
         {
             var eventSerializer = CreateEventSerializer();
-            var snapshotSerializer = CreateSnapshotSerializer();
-
-            var session = new Session(new TestLoggerFactory(), eventStore, eventPublisher, eventSerializer, snapshotSerializer, null, null, snapshotStrategy);
+   
+            var session = new Session(new TestLoggerFactory(), eventStore, eventPublisher, eventSerializer);
 
             return session;
         };
@@ -52,11 +49,10 @@ namespace Cars.UnitTests.Storage
             var eventPublisher = Mock.Of<IEventPublisher>();
             var eventStore = Mock.Of<IEventStore>();
             var eventSerializer = Mock.Of<IEventSerializer>();
-            var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(null, eventStore, eventPublisher, eventSerializer, snapshotSerializer, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(null, eventStore, eventPublisher, eventSerializer, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -66,12 +62,11 @@ namespace Cars.UnitTests.Storage
         public void Cannot_pass_null_instance_of_EventStore()
         {
             var eventSerializer = Mock.Of<IEventSerializer>();
-            var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
             var eventPublisher = Mock.Of<IEventPublisher>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(new TestLoggerFactory(), null, eventPublisher, eventSerializer, snapshotSerializer, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(new TestLoggerFactory(), null, eventPublisher, eventSerializer, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -82,68 +77,118 @@ namespace Cars.UnitTests.Storage
         {
             var eventStore = Mock.Of<IEventStore>();
             var eventSerializer = Mock.Of<IEventSerializer>();
-            var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(new TestLoggerFactory(), eventStore, null, eventSerializer, snapshotSerializer, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(new TestLoggerFactory(), eventStore, null, eventSerializer, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
 
         [Trait(_categoryName, _categoryValue)]
         [Fact]
-        public async Task Should_throws_exception_When_stream_version_is_wrong()
+        public async Task Should_throw_exception_when_different_representations_of_same_stream_have_changes()
         {
             var eventStore = new InMemoryEventStore();
 
             // create first session instance
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, null);
+            var session = _sessionFactory(eventStore, _eventPublisherMock.Object);
 
-            var stubStream1 = StubAggregate.Create("Walter White");
+            var stubAggregate1 = StubAggregate.Create("Walter White");
 
-            await session.AddAsync(stubStream1).ConfigureAwait(false);
+            session.Add(stubAggregate1);
 
-            await session.SaveChangesAsync().ConfigureAwait(false);
+            await session.CommitAsync();
 
-            stubStream1.ChangeName("Going to Version 2. Expected Version 1.");
+            stubAggregate1 = await session.GetByIdAsync<StubAggregate>(stubAggregate1.AggregateId);
+            var stubAggregate2 = await session.GetByIdAsync<StubSubAggregate>(stubAggregate1.AggregateId);
 
-            // create second session instance to getting clear tracking
-            session = _sessionFactory(eventStore, _eventPublisherMock.Object, null);
+            stubAggregate1.ChangeName("Heisenberg");
+            stubAggregate2.ChangeName("Oppenheimer");
 
-            var stubStream2 = await session.GetByIdAsync<StubAggregate>(stubStream1.AggregateId).ConfigureAwait(false);
-
-            stubStream2.ChangeName("Going to Version 2");
-
-            await session.AddAsync(stubStream2).ConfigureAwait(false);
-            await session.SaveChangesAsync().ConfigureAwait(false);
-
-            Func<Task> wrongVersion = async () => await session.AddAsync(stubStream1);
-
-            wrongVersion.ShouldThrowExactly<ExpectedVersionException<StubAggregate>>().And.Aggregate.Should().Be(stubStream1);
+            await Assert.ThrowsAsync<AggregateConcurrencyException>(() => session.CommitAsync());
         }
 
         [Trait(_categoryName, _categoryValue)]
         [Fact]
-        public async Task Should_retrieve_the_stream_from_tracking()
+        public async Task Should_not_throw_exception_when_different_representations_of_same_stream_do_not_have_changes()
         {
             var eventStore = new InMemoryEventStore();
 
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, null);
+            // create first session instance
+            var session = _sessionFactory(eventStore, _eventPublisherMock.Object);
 
-            var stubStream1 = StubAggregate.Create("Walter White");
+            var stubAggregate1 = StubAggregate.Create("Walter White");
 
-            await session.AddAsync(stubStream1).ConfigureAwait(false);
+            session.Add(stubAggregate1);
 
-            await session.SaveChangesAsync().ConfigureAwait(false);
+            await session.CommitAsync();
 
-            stubStream1.ChangeName("Changes");
+            stubAggregate1 = await session.GetByIdAsync<StubAggregate>(stubAggregate1.AggregateId);
+            await session.GetByIdAsync<StubSubAggregate>(stubAggregate1.AggregateId);
 
-            var stubStream2 = await session.GetByIdAsync<StubAggregate>(stubStream1.AggregateId).ConfigureAwait(false);
+            stubAggregate1.ChangeName("Heisenberg");
+            await session.CommitAsync();
+        }
 
-            stubStream2.ChangeName("More changes");
+        [Trait(_categoryName, _categoryValue)]
+        [Fact]
+        public async Task Should_not_retrieve_the_aggregate_from_tracking_after_commit()
+        {
+            var eventStore = new InMemoryEventStore();
 
-            stubStream1.Should().BeSameAs(stubStream2);
+            var session = _sessionFactory(eventStore, _eventPublisherMock.Object);
+
+            var stubAggregate1 = StubAggregate.Create("Walter White");
+
+            session.Add(stubAggregate1);
+
+            await session.CommitAsync();
+
+            var stubAggregate2 = await session.GetByIdAsync<StubAggregate>(stubAggregate1.AggregateId);
+
+            stubAggregate1.Should().NotBeSameAs(stubAggregate2);
+        }
+
+        [Trait(_categoryName, _categoryValue)]
+        [Fact]
+        public async Task Should_retrieve_the_aggregate_from_tracking_for_subAggregate()
+        {
+            var eventStore = new InMemoryEventStore();
+
+            var session = _sessionFactory(eventStore, _eventPublisherMock.Object);
+
+            var stubAggregate1 = StubSubAggregate.Create("Walter White");
+
+            session.Add(stubAggregate1);
+
+            await session.CommitAsync();
+
+            stubAggregate1.ChangeName("Changes");
+
+            var stubAggregate2 = await session.GetByIdAsync<StubSubAggregate>(stubAggregate1.AggregateId);
+
+
+            stubAggregate1.Should().NotBeSameAs(stubAggregate2);
+        }
+
+        [Trait(_categoryName, _categoryValue)]
+        [Fact]
+        public async Task SubAggregate_should_write_to_root_aggregate()
+        {
+            var eventStore = new InMemoryEventStore();
+
+            var session = _sessionFactory(eventStore, _eventPublisherMock.Object);
+
+            var subAggregate = StubSubAggregate.Create("Walter White");
+
+            session.Add(subAggregate);
+
+            await session.CommitAsync();
+
+            var rootAggregate = await session.GetByIdAsync<StubAggregate>(subAggregate.AggregateId);
+
+            rootAggregate.Name.Should().Be(subAggregate.Name);
         }
 
         [Trait(_categoryName, _categoryValue)]
@@ -158,185 +203,56 @@ namespace Cars.UnitTests.Storage
 
             _eventPublisherMock.Setup(e => e.CommitAsync()).Returns(Task.CompletedTask);
 
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, null);
+            var session = _sessionFactory(eventStore, _eventPublisherMock.Object);
 
-            var stubStream1 = StubAggregate.Create("Walter White");
-            var stubStream2 = StubAggregate.Create("Heinsenberg");
+            var stubAggregate1 = StubAggregate.Create("Walter White");
+            var stubAggregate2 = StubAggregate.Create("Heinsenberg");
 
-            stubStream1.ChangeName("Saul Goodman");
+            stubAggregate1.ChangeName("Saul Goodman");
 
-            stubStream2.Relationship(stubStream1.AggregateId);
+            stubAggregate2.Relationship(stubAggregate1.AggregateId);
 
-            stubStream1.ChangeName("Jesse Pinkman");
+            stubAggregate1.ChangeName("Jesse Pinkman");
 
-            await session.AddAsync(stubStream1).ConfigureAwait(false);
-            await session.AddAsync(stubStream2).ConfigureAwait(false);
+            session.Add(stubAggregate1);
+            session.Add(stubAggregate2);
 
-            await session.SaveChangesAsync().ConfigureAwait(false);
+            await session.CommitAsync();
 
-            events[0].Should().BeOfType<StubStreamCreatedEvent>().Which.AggregateId.Should().Be(stubStream1.AggregateId);
-            events[0].Should().BeOfType<StubStreamCreatedEvent>().Which.Name.Should().Be("Walter White");
+            events[0].Should().BeOfType<StubAggregateCreatedEvent>().Which.AggregateId.Should().Be(stubAggregate1.AggregateId);
+            events[0].Should().BeOfType<StubAggregateCreatedEvent>().Which.Name.Should().Be("Walter White");
 
-            events[1].Should().BeOfType<StubStreamCreatedEvent>().Which.AggregateId.Should().Be(stubStream2.AggregateId);
-            events[1].Should().BeOfType<StubStreamCreatedEvent>().Which.Name.Should().Be("Heinsenberg");
+            events[1].Should().BeOfType<StubAggregateCreatedEvent>().Which.AggregateId.Should().Be(stubAggregate2.AggregateId);
+            events[1].Should().BeOfType<StubAggregateCreatedEvent>().Which.Name.Should().Be("Heinsenberg");
 
-            events[2].Should().BeOfType<NameChangedEvent>().Which.AggregateId.Should().Be(stubStream1.AggregateId);
+            events[2].Should().BeOfType<NameChangedEvent>().Which.AggregateId.Should().Be(stubAggregate1.AggregateId);
             events[2].Should().BeOfType<NameChangedEvent>().Which.Name.Should().Be("Saul Goodman");
 
-            events[3].Should().BeOfType<StubStreamRelatedEvent>().Which.AggregateId.Should().Be(stubStream2.AggregateId);
-            events[3].Should().BeOfType<StubStreamRelatedEvent>().Which.StubAggregateId.Should().Be(stubStream1.AggregateId);
+            events[3].Should().BeOfType<StubAggregateRelatedEvent>().Which.AggregateId.Should().Be(stubAggregate2.AggregateId);
+            events[3].Should().BeOfType<StubAggregateRelatedEvent>().Which.StubAggregateId.Should().Be(stubAggregate1.AggregateId);
 
-            events[4].Should().BeOfType<NameChangedEvent>().Which.AggregateId.Should().Be(stubStream1.AggregateId);
+            events[4].Should().BeOfType<NameChangedEvent>().Which.AggregateId.Should().Be(stubAggregate1.AggregateId);
             events[4].Should().BeOfType<NameChangedEvent>().Which.Name.Should().Be("Jesse Pinkman");
         }
 
         [Trait(_categoryName, _categoryValue)]
         [Fact]
-        public async Task When_call_SaveChanges_Should_store_the_snapshot()
+        public Task Should_throw_exception_When_aggregate_was_not_found()
         {
-            // Arrange
+            var eventStore = new InMemoryEventStore();
 
-            var snapshotStrategy = CreateSnapshotStrategy();
-
-            var eventStore = new StubEventStore();
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
-
-            var stubStream = StubSnapshotAggregate.Create("Snap");
-
-            stubStream.AddEntity("Child 1");
-            stubStream.AddEntity("Child 2");
-
-            await session.AddAsync(stubStream).ConfigureAwait(false);
-
-            // Act
-
-            await session.SaveChangesAsync().ConfigureAwait(false);
-
-            // Assert
-
-            eventStore.SaveSnapshotMethodCalled.Should().BeTrue();
-
-            var commitedSnapshot = eventStore.Snapshots.First(e => e.AggregateId == stubStream.AggregateId);
-
-            commitedSnapshot.Should().NotBeNull();
-
-            var metadata = (IMetadata)_textSerializer.Deserialize<EventSource.Metadata>(commitedSnapshot.SerializedMetadata);
-
-            var snapshotClrType = metadata.GetValue(MetadataKeys.SnapshotClrType, value => value.ToString());
-
-            Type.GetType(snapshotClrType).Name.Should().Be(typeof(StubSnapshotStreamSnapshot).Name);
-
-            var snapshot = _textSerializer.Deserialize<StubSnapshotStreamSnapshot>(commitedSnapshot.SerializedData);
-
-            snapshot.Name.Should().Be(stubStream.Name);
-            snapshot.SimpleEntities.Count.Should().Be(stubStream.Entities.Count);
-        }
-
-        [Trait(_categoryName, _categoryValue)]
-        [Fact]
-        public async Task Should_restore_stream_using_snapshot()
-        {
-            var snapshotStrategy = CreateSnapshotStrategy();
-
-            var eventStore = new StubEventStore();
-
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
-
-            var stubStream = StubSnapshotAggregate.Create("Snap");
-
-            stubStream.AddEntity("Child 1");
-            stubStream.AddEntity("Child 2");
-
-            await session.AddAsync(stubStream).ConfigureAwait(false);
-            await session.SaveChangesAsync().ConfigureAwait(false);
-
-            session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
-
-            var stream = await session.GetByIdAsync<StubSnapshotAggregate>(stubStream.AggregateId).ConfigureAwait(false);
-
-            eventStore.GetSnapshotMethodCalled.Should().BeTrue();
-
-            stream.Version.Should().Be(3);
-            stream.AggregateId.Should().Be(stubStream.AggregateId);
-        }
-
-        [Trait(_categoryName, _categoryValue)]
-        [Fact]
-        public async Task When_not_exists_snapshot_yet_Then_stream_should_be_constructed_using_your_events()
-        {
-            var snapshotStrategy = CreateSnapshotStrategy(false);
-
-            var eventStore = new StubEventStore();
-
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
-
-            var stubStream = StubSnapshotAggregate.Create("Snap");
-
-            stubStream.AddEntity("Child 1");
-            stubStream.AddEntity("Child 2");
-
-            await session.AddAsync(stubStream).ConfigureAwait(false);
-            await session.SaveChangesAsync().ConfigureAwait(false);
-
-            session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
-
-            var stream = await session.GetByIdAsync<StubSnapshotAggregate>(stubStream.AggregateId).ConfigureAwait(false);
-
-            stream.Name.Should().Be(stubStream.Name);
-            stream.Entities.Count.Should().Be(stubStream.Entities.Count);
-        }
-
-        [Trait(_categoryName, _categoryValue)]
-        [Fact]
-        public async Task Getting_snapshot_and_forward_events()
-        {
-            var snapshotStrategy = CreateSnapshotStrategy();
-
-            var eventStore = new StubEventStore();
-
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
-
-            var stubStream = StubSnapshotAggregate.Create("Snap");
-
-            await session.AddAsync(stubStream).ConfigureAwait(false);
-            await session.SaveChangesAsync().ConfigureAwait(false); // Version 1
-
-            stubStream.ChangeName("Renamed");
-            stubStream.ChangeName("Renamed again");
-
-            // dont make snapshot
-            snapshotStrategy = CreateSnapshotStrategy(false);
-
-            session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
-
-            await session.AddAsync(stubStream).ConfigureAwait(false);
-            await session.SaveChangesAsync().ConfigureAwait(false); // Version 3
-
-            var stubStreamFromSnapshot = await session.GetByIdAsync<StubSnapshotAggregate>(stubStream.AggregateId).ConfigureAwait(false);
-
-            stubStreamFromSnapshot.Version.Should().Be(3);
-        }
-
-        [Trait(_categoryName, _categoryValue)]
-        [Fact]
-        public Task Should_throws_exception_When_stream_was_not_found()
-        {
-            var snapshotStrategy = CreateSnapshotStrategy();
-
-            var eventStore = new StubEventStore();
-
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
+            var session = _sessionFactory(eventStore, _eventPublisherMock.Object);
 
             var newId = Guid.NewGuid();
 
             Func<Task> act = async () =>
             {
-                await session.GetByIdAsync<StubAggregate>(newId).ConfigureAwait(false);
+                await session.GetByIdAsync<StubAggregate>(newId);
             };
 
-            var assertion = act.ShouldThrowExactly<StreamNotFoundException>();
+            var assertion = act.ShouldThrowExactly<AggregateNotFoundException>();
 
-            assertion.Which.StreamName.Should().Be(typeof(StubAggregate).Name);
+            assertion.Which.AggregateName.Should().Be(typeof(StubAggregate).Name);
             assertion.Which.AggregateId.Should().Be(newId);
 
             return Task.CompletedTask;
@@ -346,22 +262,20 @@ namespace Cars.UnitTests.Storage
         [Fact]
         public async Task Should_internal_rollback_When_exception_was_throw_on_saving()
         {
-            var snapshotStrategy = CreateSnapshotStrategy(false);
-
             var eventStoreMock = new Mock<IEventStore>();
             eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<ISerializedEvent>>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 
-            var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy);
+            var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object);
 
-            var stubStream = StubAggregate.Create("Guilty");
+            var stubAggregate = StubAggregate.Create("Guilty");
 
-            await session.AddAsync(stubStream).ConfigureAwait(false);
+            session.Add(stubAggregate);
 
             try
             {
-                await session.SaveChangesAsync().ConfigureAwait(false);
+                await session.CommitAsync();
             }
             catch (Exception)
             {
@@ -372,52 +286,12 @@ namespace Cars.UnitTests.Storage
 
         [Trait(_categoryName, _categoryValue)]
         [Fact]
-        public async Task Should_manual_rollback_When_exception_was_throw_on_saving()
-        {
-            var snapshotStrategy = CreateSnapshotStrategy(false);
-
-            var eventStoreMock = new Mock<IEventStore>();
-            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<ISerializedEvent>>()))
-                .Callback(DoThrowExcetion)
-                .Returns(Task.CompletedTask);
-
-            eventStoreMock.Setup(e => e.BeginTransaction());
-            eventStoreMock.Setup(e => e.Rollback());
-
-            var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy);
-
-            var stubStream = StubAggregate.Create("Guilty");
-
-            session.BeginTransaction();
-
-            eventStoreMock.Verify(e => e.BeginTransaction(), Times.Once);
-
-            await session.AddAsync(stubStream).ConfigureAwait(false);
-
-            try
-            {
-                await session.SaveChangesAsync().ConfigureAwait(false);
-            }
-
-            catch (Exception)
-            {
-                session.Rollback();
-            }
-
-            eventStoreMock.Verify(e => e.Rollback(), Times.Once);
-            _eventPublisherMock.Verify(e => e.Rollback(), Times.Once);
-        }
-
-        [Trait(_categoryName, _categoryValue)]
-        [Fact]
         public void Cannot_BeginTransaction_twice()
         {
-            var snapshotStrategy = CreateSnapshotStrategy(false);
-
             var eventStoreMock = new Mock<IEventStore>();
             eventStoreMock.SetupAllProperties();
 
-            var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy);
+            var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object);
 
             session.BeginTransaction();
 
@@ -430,8 +304,6 @@ namespace Cars.UnitTests.Storage
         [Fact]
         public async Task When_occur_error_on_publishing_Then_rollback_should_be_called()
         {
-            var snapshotStrategy = CreateSnapshotStrategy(false);
-
             _eventPublisherMock.Setup(e => e.PublishAsync(It.IsAny<IDomainEvent>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
@@ -443,13 +315,13 @@ namespace Cars.UnitTests.Storage
             var eventStoreMock = new Mock<IEventStore>();
             eventStoreMock.SetupAllProperties();
 
-            var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy);
+            var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object);
 
-            await session.AddAsync(StubAggregate.Create("Test"));
+            session.Add(StubAggregate.Create("Test"));
 
             try
             {
-                await session.SaveChangesAsync();
+                await session.CommitAsync();
             }
             catch (Exception)
             {
@@ -462,21 +334,19 @@ namespace Cars.UnitTests.Storage
         [Fact]
         public async Task When_occur_error_on_Save_in_EventStore_Then_rollback_should_be_called()
         {
-            var snapshotStrategy = CreateSnapshotStrategy(false);
-
             var eventStoreMock = new Mock<IEventStore>();
             eventStoreMock.SetupAllProperties();
             eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<ISerializedEvent>>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 
-            var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy);
+            var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object);
 
-            await session.AddAsync(StubAggregate.Create("Test")).ConfigureAwait(false);
+            session.Add(StubAggregate.Create("Test"));
 
             try
             {
-                await session.SaveChangesAsync().ConfigureAwait(false);
+                await session.CommitAsync();
             }
             catch (Exception)
             {
@@ -484,24 +354,10 @@ namespace Cars.UnitTests.Storage
                 _eventPublisherMock.Verify(e => e.Rollback(), Times.Once);
             }
         }
-
-        private static ISnapshotStrategy CreateSnapshotStrategy(bool makeSnapshot = true)
-        {
-            var snapshotStrategyMock = new Mock<ISnapshotStrategy>();
-            snapshotStrategyMock.Setup(e => e.CheckSnapshotSupport(It.IsAny<Type>())).Returns(true);
-            snapshotStrategyMock.Setup(e => e.ShouldMakeSnapshot(It.IsAny<IAggregate>())).Returns(makeSnapshot);
-
-            return snapshotStrategyMock.Object;
-        }
         
         private static IEventSerializer CreateEventSerializer()
         {
             return new EventSerializer(new JsonTextSerializer());
-        }
-
-        private static ISnapshotSerializer CreateSnapshotSerializer()
-        {
-            return new SnapshotSerializer(new JsonTextSerializer());
         }
 
         private static void DoThrowExcetion()

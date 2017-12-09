@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2016 Nelson Corrêa V. Júnior
+// Copyright (c) 2016 Nelson Corrêa V. Júnior, Eric Swann
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,22 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Cars.EventSource.Snapshots
-{
-    public class IntervalSnapshotStrategy : DefaultSnapshotStrategy
-    {
-        public int SnapshotInterval { get; }
-        
-        public IntervalSnapshotStrategy(int snapshotInterval = 100)
-        {
-            SnapshotInterval = snapshotInterval;
-        }
-        
-        public override bool ShouldMakeSnapshot(IAggregate aggregate)
-        {
-            if (!CheckSnapshotSupport(aggregate.GetType())) return false;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-            return (aggregate.UncommittedVersion % SnapshotInterval == 0);
+namespace Cars.EventSource.Exceptions
+{
+    public class AggregateConcurrencyException : Exception
+    {
+        public IList<IGrouping<Guid, IAggregate>> Aggregates { get; }
+
+        public AggregateConcurrencyException(IList<IGrouping<Guid, IAggregate>> aggregates, string message, Exception innerException = null) : base(message, innerException)
+        {
+            Aggregates = aggregates;
         }
     }
 }

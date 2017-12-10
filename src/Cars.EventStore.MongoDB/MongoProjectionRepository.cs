@@ -13,28 +13,22 @@ namespace Cars.EventStore.MongoDB
             _mongoDatabase = mongoClient.GetDatabase(mongoEventStoreSettings.Database);
         }
 
-        public Task InsertAsync<TProjection>(TProjection projection) where TProjection : IProjection
+        public async Task InsertAsync<TProjection>(TProjection projection) where TProjection : IProjection
         {
             var collection = GetCollection<TProjection>();
-            collection.InsertOneAsync(projection);
-
-            return Task.CompletedTask;
+            await collection.InsertOneAsync(projection);
         }
 
-        public Task UpdateAsync<TProjection>(TProjection projection) where TProjection: IProjection
+        public async Task UpdateAsync<TProjection>(TProjection projection) where TProjection: IProjection
         {
             var collection = GetCollection<TProjection>();
-            collection.ReplaceOneAsync(x => x.ProjectionId == projection.ProjectionId, projection);
-
-            return Task.CompletedTask;
+            await collection.ReplaceOneAsync(x => x.ProjectionId == projection.ProjectionId, projection);
         }
 
-        public Task UpsertAsync<TProjection>(TProjection projection) where TProjection : IProjection
+        public async Task UpsertAsync<TProjection>(TProjection projection) where TProjection : IProjection
         {
             var collection = GetCollection<TProjection>();
-            collection.ReplaceOneAsync(x => x.ProjectionId == projection.ProjectionId, projection, new UpdateOptions{IsUpsert = true});
-
-            return Task.CompletedTask;
+            await collection.ReplaceOneAsync(x => x.ProjectionId == projection.ProjectionId, projection, new UpdateOptions{IsUpsert = true});
         }
 
         public async Task<TProjection> RetrieveAsync<TProjection>(object projectionId) where TProjection : IProjection
@@ -45,8 +39,7 @@ namespace Cars.EventStore.MongoDB
 
         private IMongoCollection<TProjection> GetCollection<TProjection>() where TProjection : IProjection
         {
-            var collection = _mongoDatabase.GetCollection<TProjection>(typeof(TProjection).Name)
-                .WithWriteConcern(WriteConcern.Acknowledged);
+            var collection = _mongoDatabase.GetCollection<TProjection>(typeof(TProjection).Name);
             return collection;
         }
     }

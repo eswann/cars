@@ -36,6 +36,8 @@ namespace Cars.MongoDB.IntegrationTests
             var firstName = "FirstName" + projectionId;
             await projectionRepo.InsertAsync(new TestProjection{ProjectionId = projectionId, FirstName = firstName});
 
+            await Task.Delay(10);
+
             var projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
 
             projectionResult.ProjectionId.Should().Be(projectionId);
@@ -51,6 +53,8 @@ namespace Cars.MongoDB.IntegrationTests
             var projectionId = Guid.NewGuid().ToString();
             var firstName = "FirstName" + projectionId;
             await projectionRepo.InsertAsync(new TestProjection { ProjectionId = projectionId, FirstName = firstName });
+
+            await Task.Delay(10);
 
             var projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
             projectionResult.LastName = "UpdatedLastName";
@@ -90,6 +94,8 @@ namespace Cars.MongoDB.IntegrationTests
             var projectionId = Guid.NewGuid().ToString();
             var firstName = "FirstName" + projectionId;
             await projectionRepo.InsertAsync(new TestProjection { ProjectionId = projectionId, FirstName = firstName });
+
+            await Task.Delay(10);
 
             var projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
             projectionResult.LastName = "UpdatedLastName";

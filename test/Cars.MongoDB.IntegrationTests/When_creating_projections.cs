@@ -69,6 +69,8 @@ namespace Cars.MongoDB.IntegrationTests
             var firstName = "FirstName" + projectionId;
             await projectionRepo.UpsertAsync(new TestProjection { ProjectionId = projectionId, FirstName = firstName });
 
+            await Task.Delay(200);
+
             var projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
 
             projectionResult.ProjectionId.Should().Be(projectionId);
@@ -89,6 +91,7 @@ namespace Cars.MongoDB.IntegrationTests
             projectionResult.LastName = "UpdatedLastName";
 
             await projectionRepo.UpsertAsync(projectionResult);
+            await Task.Delay(200);
 
             projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
             projectionResult.LastName.Should().Be("UpdatedLastName");

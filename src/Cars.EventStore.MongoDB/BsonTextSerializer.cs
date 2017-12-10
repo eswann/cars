@@ -33,7 +33,12 @@ namespace Cars.EventStore.MongoDB
         {
             var doc = BsonDocument.Parse(textSerialized);
 
-            var obj = BsonSerializer.Deserialize<T>(doc.GetValue("_v").AsBsonDocument);
+            if (doc.TryGetValue("_v", out var subDocument))
+            {
+                doc = subDocument.AsBsonDocument;
+            }
+
+            var obj = BsonSerializer.Deserialize<T>(doc);
 
             return obj;
         }

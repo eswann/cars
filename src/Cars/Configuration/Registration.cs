@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 
 using Cars.Commands;
 using Cars.Events;
-using Cars.EventSource;
 using Cars.EventSource.SerializedEvents;
 using Cars.EventSource.Storage;
 using Cars.MessageBus;

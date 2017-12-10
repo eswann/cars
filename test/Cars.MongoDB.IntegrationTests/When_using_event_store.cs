@@ -3,10 +3,6 @@ using System.Threading.Tasks;
 using Cars.EventStore.MongoDB;
 using Cars.Testing.Shared.EventStore;
 using FluentAssertions;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Conventions;
-using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Xunit;
 
@@ -14,26 +10,12 @@ namespace Cars.MongoDB.IntegrationTests
 {
     public class When_using_event_store : IDisposable
     {
-        public const string CategoryName = "Integration";
-        public const string CategoryValue = "MongoDB";
-        public const string DatabaseName = "EventStore";
+        private const string _categoryName = "Integration";
+        private const string _categoryValue = "MongoDB";
+        private const string _databaseName = "EventStore";
 
-	    private readonly IMongoEventStoreSettings _defaultSettings = new MongoEventStoreSettings();
-
+        private readonly IMongoEventStoreSettings _defaultSettings = new MongoEventStoreSettings();
         private readonly MongoClient _mongoClient;
-
-        static When_using_event_store()
-        {
-            var pack = new ConventionPack
-            {
-                new CamelCaseElementNameConvention(),
-                new IgnoreExtraElementsConvention(true)
-            };
-
-            ConventionRegistry.Register("camelCase", pack, t => true);
-            BsonSerializer.RegisterSerializer(typeof(DateTime), DateTimeSerializer.LocalInstance);
-            BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
-        }
 
         public When_using_event_store()
         {
@@ -41,25 +23,25 @@ namespace Cars.MongoDB.IntegrationTests
 
             _mongoClient = new MongoClient($"mongodb://{Test_Settings.MongoHost}");
 
-            _mongoClient.DropDatabase(DatabaseName);
+            _mongoClient.DropDatabase(_databaseName);
         }
 
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public void Should_create_database()
         {
             using (var eventStore = new MongoEventStore(_mongoClient, _defaultSettings))
             {
-                var database = eventStore.Client.GetDatabase(DatabaseName);
+                var database = eventStore.Client.GetDatabase(_databaseName);
 
                 database.Should().NotBeNull();
 
-                eventStore.Settings.Database.Should().Be(DatabaseName);
+                eventStore.Settings.Database.Should().Be(_databaseName);
             }
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task Events_are_stored()
         {
@@ -71,7 +53,7 @@ namespace Cars.MongoDB.IntegrationTests
             }
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task SubAggregate_events_are_stored_with_primary_aggregate()
         {
@@ -83,7 +65,7 @@ namespace Cars.MongoDB.IntegrationTests
             }
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task When_any_exception_is_thrown()
         {
@@ -97,7 +79,7 @@ namespace Cars.MongoDB.IntegrationTests
 
         public void Dispose()
         {
-            _mongoClient.DropDatabase(DatabaseName);
+            _mongoClient.DropDatabase(_databaseName);
         }
     }
 }

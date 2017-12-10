@@ -22,8 +22,6 @@ namespace Cars.MongoDB.IntegrationTests
             if (string.IsNullOrWhiteSpace(Test_Settings.MongoHost)) throw new NullReferenceException("The variable 'MONGODB_HOST' was not configured.");
 
             _mongoClient = new MongoClient($"mongodb://{Test_Settings.MongoHost}");
-
-            _mongoClient.DropDatabase(_defaultSettings.ProjectionsCollectionName);
         }
 
         [Trait(_categoryName, _categoryValue)]

@@ -23,7 +23,7 @@ namespace Cars.MongoDB.IntegrationTests
 
             _mongoClient = new MongoClient($"mongodb://{Test_Settings.MongoHost}");
 
-            _mongoClient.DropDatabase(_defaultSettings.EventsCollectionName);
+            _mongoClient.DropDatabase(_defaultSettings.ProjectionsCollectionName);
         }
 
         [Trait(_categoryName, _categoryValue)]
@@ -36,7 +36,7 @@ namespace Cars.MongoDB.IntegrationTests
             var firstName = "FirstName" + projectionId;
             await projectionRepo.InsertAsync(new TestProjection{ProjectionId = projectionId, FirstName = firstName});
 
-            await Task.Delay(10);
+            await Task.Delay(50);
 
             var projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
 
@@ -54,14 +54,14 @@ namespace Cars.MongoDB.IntegrationTests
             var firstName = "FirstName" + projectionId;
             await projectionRepo.InsertAsync(new TestProjection { ProjectionId = projectionId, FirstName = firstName });
 
-            await Task.Delay(10);
+            await Task.Delay(50);
 
             var projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
             projectionResult.LastName = "UpdatedLastName";
 
             await projectionRepo.UpdateAsync(projectionResult);
 
-            await Task.Delay(10);
+            await Task.Delay(50);
 
             projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
             projectionResult.LastName.Should().Be("UpdatedLastName");
@@ -77,7 +77,7 @@ namespace Cars.MongoDB.IntegrationTests
             var firstName = "FirstName" + projectionId;
             await projectionRepo.UpsertAsync(new TestProjection { ProjectionId = projectionId, FirstName = firstName });
 
-            await Task.Delay(10);
+            await Task.Delay(50);
 
             var projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
 
@@ -95,14 +95,14 @@ namespace Cars.MongoDB.IntegrationTests
             var firstName = "FirstName" + projectionId;
             await projectionRepo.InsertAsync(new TestProjection { ProjectionId = projectionId, FirstName = firstName });
 
-            await Task.Delay(10);
+            await Task.Delay(50);
 
             var projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
             projectionResult.LastName = "UpdatedLastName";
 
             await projectionRepo.UpsertAsync(projectionResult);
 
-            await Task.Delay(10);
+            await Task.Delay(50);
 
             projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
             projectionResult.LastName.Should().Be("UpdatedLastName");

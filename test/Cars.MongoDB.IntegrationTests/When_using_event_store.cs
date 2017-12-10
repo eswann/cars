@@ -12,9 +12,9 @@ namespace Cars.MongoDB.IntegrationTests
     {
         private const string _categoryName = "Integration";
         private const string _categoryValue = "MongoDB";
-        private const string _databaseName = "EventStore";
+        private const string _databaseName = "EventStoreProjectionTests";
 
-        private readonly IMongoEventStoreSettings _defaultSettings = new MongoEventStoreSettings();
+        private readonly IMongoEventStoreSettings _defaultSettings = new MongoEventStoreSettings { Database = _databaseName };
         private readonly MongoClient _mongoClient;
 
         public When_using_event_store()

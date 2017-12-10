@@ -12,15 +12,14 @@ namespace Cars.MongoDB.IntegrationTests
 
         public const string CategoryName = "Integration";
         public const string CategoryValue = "MongoDB";
-        public const string DatabaseName = "EventStore";
+        public const string DatabaseName = "EventStoreCreateTests";
 
-	    private readonly IMongoEventStoreSettings _defaultSettings = new MongoEventStoreSettings();
+        private readonly IMongoEventStoreSettings _defaultSettings = new MongoEventStoreSettings {Database = DatabaseName};
 
         private readonly MongoClient _mongoClient;
 
         public When_creating_event_store()
         {
-
             if (string.IsNullOrWhiteSpace(Test_Settings.MongoHost)) throw new NullReferenceException("The variable 'MONGODB_HOST' was not configured.");
 
             _mongoClient = new MongoClient($"mongodb://{Test_Settings.MongoHost}");
@@ -42,11 +41,10 @@ namespace Cars.MongoDB.IntegrationTests
         [Fact]
         public void Should_use_default_settings()
         {
-
             using (var eventStore = new MongoEventStore(_mongoClient, new MongoEventStoreSettings()))
             {
                 eventStore.Settings.EventsCollectionName.Should().Be(_defaultSettings.EventsCollectionName);
-	            eventStore.Settings.Database.Should().Be(_defaultSettings.Database);
+	            eventStore.Settings.Database.Should().Be("EventStore");
             }
         }
 

@@ -6,11 +6,11 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace Cars.MongoDB.IntegrationTests
 {
-    public static class Test_Settings
+    public static class TestSettings
     {
-	    public const string MongoHost = "localhost:27017";
+        public const string MongoHost = "localhost:27017";
 
-        static Test_Settings()
+        static TestSettings()
         {
             var pack = new ConventionPack
             {
@@ -19,7 +19,10 @@ namespace Cars.MongoDB.IntegrationTests
             };
 
             ConventionRegistry.Register("camelCase", pack, t => true);
-            BsonSerializer.RegisterSerializer(typeof(DateTime), DateTimeSerializer.LocalInstance);
+            if (BsonSerializer.LookupSerializer<DateTime>() == null)
+            {
+                BsonSerializer.RegisterSerializer(DateTimeSerializer.UtcInstance);
+            }
             BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
         }
     }

@@ -19,9 +19,9 @@ namespace Cars.MongoDB.IntegrationTests
 
         public When_using_event_store()
         {
-            if (string.IsNullOrWhiteSpace(Test_Settings.MongoHost)) throw new NullReferenceException("The variable 'MONGODB_HOST' was not configured.");
+            if (string.IsNullOrWhiteSpace(TestSettings.MongoHost)) throw new NullReferenceException("The variable 'MONGODB_HOST' was not configured.");
 
-            _mongoClient = new MongoClient($"mongodb://{Test_Settings.MongoHost}");
+            _mongoClient = new MongoClient($"mongodb://{TestSettings.MongoHost}");
 
             _mongoClient.DropDatabase(_databaseName);
         }

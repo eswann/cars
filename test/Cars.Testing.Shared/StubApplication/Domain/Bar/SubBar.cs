@@ -37,13 +37,13 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Bar
             SubscribeTo<BarCreated>(e =>
             {
                 AggregateId = e.AggregateId;
-                UpdatedAt = DateTime.Now;
+                UpdatedAt = DateTime.UtcNow;
             });
 
             SubscribeTo<SpokeSomething>(e =>
             {
                 LastText = e.Text;
-                UpdatedAt = DateTime.Now;
+                UpdatedAt = DateTime.UtcNow;
 
                 _messages.Add(e.Text);
             });

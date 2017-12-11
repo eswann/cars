@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Cars.Events;
+using Cars.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Cars.MessageBus
@@ -20,6 +21,11 @@ namespace Cars.MessageBus
 		        var handlers = scope.ServiceProvider.GetServices<IEventHandler<TEvent>>();
 		        foreach (var handler in handlers)
 		        {
+		            // ReSharper disable once SuspiciousTypeConversion.Global
+		            if (handler is IEventController controller && controller.IsOffline)
+		            {
+		                continue;
+		            }
 			        await handler.ExecuteAsync(@event).ConfigureAwait(false);
 		        }
 	        }

@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Cars.Events;
+using Cars.Handlers;
 using Moq;
 
 namespace Cars.Testing.Shared.MessageBus

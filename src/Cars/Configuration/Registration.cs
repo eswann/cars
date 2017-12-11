@@ -9,6 +9,7 @@ using Cars.Commands;
 using Cars.Events;
 using Cars.EventSource.SerializedEvents;
 using Cars.EventSource.Storage;
+using Cars.Handlers;
 using Cars.MessageBus;
 using Cars.MessageBus.InProcess;
 

@@ -2,6 +2,7 @@
 using Cars.Configuration;
 using Cars.Core;
 using Cars.EventSource.Storage;
+using Cars.EventStore.MongoDB.Projections;
 using Cars.Projections;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;

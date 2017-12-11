@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
-using Cars.Projections;
-using MongoDB.Bson.Serialization.Attributes;
+using Cars.EventStore.MongoDB.Projections;
 
 namespace Cars.Demo.Query.Services.RemovedProducts
 {
-    public class RemovedProductsProjection : IProjection
+    public class RemovedProductsProjection : MongoProjectionBase
     {
-        [BsonId]
-        public string ProjectionId => Constants.ProjectionId;
+        public override string ProjectionId { get; protected set; } = Constants.ProjectionId;
 
         public IList<RemovedProductTotal> Products = new List<RemovedProductTotal>();
 

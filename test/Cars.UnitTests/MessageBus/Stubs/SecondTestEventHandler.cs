@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cars.Events;
+using Cars.Handlers;
 
 namespace Cars.UnitTests.MessageBus.Stubs
 {

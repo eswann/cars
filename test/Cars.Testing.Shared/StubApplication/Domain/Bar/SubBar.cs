@@ -6,18 +6,13 @@ namespace Cars.Testing.Shared.StubApplication.Domain.Bar
 {
     public class SubBar : Aggregate
     {
-        private List<string> _messages = new List<string>();
+        private readonly List<string> _messages = new List<string>();
 
         public string LastText { get; private set; }
         public DateTime UpdatedAt { get; private set; }
 
-        public IReadOnlyList<string> Messages
-        {
-            get => _messages.AsReadOnly();
+        public IReadOnlyList<string> Messages => _messages;
 
-	        private set => _messages = new List<string>(value);
-        }
-        
         public SubBar()
         {
         }

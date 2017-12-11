@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Cars.Events;
+using Cars.Handlers;
 using Cars.Testing.Shared.MessageBus;
 using FluentAssertions;
 using Xunit;

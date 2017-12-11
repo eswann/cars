@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
+using Cars.Events;
 using Cars.Projections;
 using MongoDB.Driver;
 
-namespace Cars.EventStore.MongoDB
+namespace Cars.EventStore.MongoDB.Projections
 {
     public class MongoProjectionRepository : IProjectionRepository
     {
@@ -13,22 +14,11 @@ namespace Cars.EventStore.MongoDB
             _mongoDatabase = mongoClient.GetDatabase(mongoEventStoreSettings.Database);
         }
 
-        public async Task InsertAsync<TProjection>(TProjection projection) where TProjection : IProjection
+        public async Task UpsertAsync<TProjection>(TProjection projection, IDomainEvent lastEvent) where TProjection : IProjection
         {
+            ((ProjectionMetadata) projection.Metadata).Timestamp = lastEvent.Metadata.Timestamp;
             var collection = GetCollection<TProjection>();
-            await collection.InsertOneAsync(projection);
-        }
-
-        public async Task UpdateAsync<TProjection>(TProjection projection) where TProjection: IProjection
-        {
-            var collection = GetCollection<TProjection>();
-            await collection.ReplaceOneAsync(x => x.ProjectionId == projection.ProjectionId, projection);
-        }
-
-        public async Task UpsertAsync<TProjection>(TProjection projection) where TProjection : IProjection
-        {
-            var collection = GetCollection<TProjection>();
-            await collection.ReplaceOneAsync(x => x.ProjectionId == projection.ProjectionId, projection, new UpdateOptions{IsUpsert = true});
+            await collection.ReplaceOneAsync(x => x.ProjectionId == projection.ProjectionId, projection, new UpdateOptions { IsUpsert = true });
         }
 
         public async Task<TProjection> RetrieveAsync<TProjection>(object projectionId) where TProjection : IProjection

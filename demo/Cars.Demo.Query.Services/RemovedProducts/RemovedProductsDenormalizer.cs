@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Cars.Demo.Events;
-using Cars.Events;
+using Cars.Handlers;
 using Cars.Projections;
 
 namespace Cars.Demo.Query.Services.RemovedProducts
@@ -29,7 +29,7 @@ namespace Cars.Demo.Query.Services.RemovedProducts
             {
                 product.Count++;
             }
-            await _projectionRepository.UpsertAsync(removedProductsProjection);
+            await _projectionRepository.UpsertAsync(removedProductsProjection, evt);
         }
     }
 }

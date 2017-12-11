@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Cars.Events;
 using Cars.EventStore.MongoDB;
-using Cars.Projections;
+using Cars.EventStore.MongoDB.Projections;
 using FluentAssertions;
-using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using Xunit;
 
@@ -32,7 +32,7 @@ namespace Cars.MongoDB.IntegrationTests
 
             var projectionId = Guid.NewGuid().ToString();
             var firstName = "FirstName" + projectionId;
-            await projectionRepo.InsertAsync(new TestProjection{ProjectionId = projectionId, FirstName = firstName});
+            await projectionRepo.UpsertAsync(new TestProjection(projectionId) { FirstName = firstName }, new TestEvent());
 
             var projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
 
@@ -40,42 +40,6 @@ namespace Cars.MongoDB.IntegrationTests
             projectionResult.FirstName.Should().Be(firstName);
         }
 
-        [Trait(_categoryName, _categoryValue)]
-        [Fact]
-        public async Task Projection_can_be_updated()
-        {
-            var projectionRepo = new MongoProjectionRepository(_mongoClient, _defaultSettings);
-
-            var projectionId = Guid.NewGuid().ToString();
-            var firstName = "FirstName" + projectionId;
-            await projectionRepo.InsertAsync(new TestProjection { ProjectionId = projectionId, FirstName = firstName });
-
-            var projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
-            projectionResult.LastName = "UpdatedLastName";
-
-            await projectionRepo.UpdateAsync(projectionResult);
-
-            projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
-            projectionResult.LastName.Should().Be("UpdatedLastName");
-        }
-
-        [Trait(_categoryName, _categoryValue)]
-        [Fact]
-        public async Task New_projection_can_be_upserted()
-        {
-            var projectionRepo = new MongoProjectionRepository(_mongoClient, _defaultSettings);
-
-            var projectionId = Guid.NewGuid().ToString();
-            var firstName = "FirstName" + projectionId;
-            await projectionRepo.UpsertAsync(new TestProjection { ProjectionId = projectionId, FirstName = firstName });
-
-            await Task.Delay(200);
-
-            var projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
-
-            projectionResult.ProjectionId.Should().Be(projectionId);
-            projectionResult.FirstName.Should().Be(firstName);
-        }
 
         [Trait(_categoryName, _categoryValue)]
         [Fact]
@@ -85,27 +49,36 @@ namespace Cars.MongoDB.IntegrationTests
 
             var projectionId = Guid.NewGuid().ToString();
             var firstName = "FirstName" + projectionId;
-            await projectionRepo.InsertAsync(new TestProjection { ProjectionId = projectionId, FirstName = firstName });
+            await projectionRepo.UpsertAsync(new TestProjection(projectionId) { FirstName = firstName }, new TestEvent());
 
             var projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
             projectionResult.LastName = "UpdatedLastName";
 
-            await projectionRepo.UpsertAsync(projectionResult);
+            await projectionRepo.UpsertAsync(projectionResult, new TestEvent());
             await Task.Delay(200);
 
             projectionResult = await projectionRepo.RetrieveAsync<TestProjection>(projectionId);
             projectionResult.LastName.Should().Be("UpdatedLastName");
         }
 
-        class TestProjection : IProjection
+        public class TestProjection : MongoProjectionBase
         {
-            [BsonId]
-            public string ProjectionId { get; set; }
+            public TestProjection() { }
+
+            public TestProjection(string projectionId)
+            {
+                ProjectionId = projectionId;
+            }
 
             public string FirstName { get; set; } = "FirstName";
 
             public string LastName { get; set; } = "LastName";
 
+        }
+
+        public class TestEvent : DomainEvent
+        {
+            public override DomainEventMetadata Metadata => new DomainEventMetadata(DateTime.MinValue, 1);
         }
     }
 }

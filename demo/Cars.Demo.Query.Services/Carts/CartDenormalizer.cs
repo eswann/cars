@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Cars.Demo.Events;
-using Cars.Events;
+using Cars.Handlers;
 using Cars.Projections;
 using Mapster;
 
@@ -28,7 +28,7 @@ namespace Cars.Demo.Query.Services.Carts
                 UserId = evt.UserId
             };
 
-            await _projectionRepository.InsertAsync(cartProjection);
+            await _projectionRepository.UpsertAsync(cartProjection, evt);
         }
 
         public async Task ExecuteAsync(CartItemAdded evt)
@@ -36,7 +36,7 @@ namespace Cars.Demo.Query.Services.Carts
             var cartProjection = await _projectionRepository.RetrieveAsync<CartProjection>(evt.AggregateId.ToString());
             cartProjection.Products.Add(evt.Adapt<CartProjection.CartProduct>());
             cartProjection.CartTotal = CalculateCartTotal(cartProjection);
-            await _projectionRepository.UpdateAsync(cartProjection);
+            await _projectionRepository.UpsertAsync(cartProjection, evt);
         }
 
         public async Task ExecuteAsync(CartItemQuantityUpdated evt)
@@ -45,7 +45,7 @@ namespace Cars.Demo.Query.Services.Carts
             var cartItem = cartProjection.Products.First(x => x.Sku == evt.Sku);
             cartItem.Quantity = evt.Quantity;
             cartProjection.CartTotal = CalculateCartTotal(cartProjection);
-            await _projectionRepository.UpdateAsync(cartProjection);
+            await _projectionRepository.UpsertAsync(cartProjection, evt);
         }
 
         public async Task ExecuteAsync(CartItemRemoved evt)
@@ -54,7 +54,7 @@ namespace Cars.Demo.Query.Services.Carts
             var cartItem = cartProjection.Products.First(x => x.Sku == evt.Sku);
             cartProjection.Products.Remove(cartItem);
             cartProjection.CartTotal = CalculateCartTotal(cartProjection);
-            await _projectionRepository.UpdateAsync(cartProjection);
+            await _projectionRepository.UpsertAsync(cartProjection, evt);
         }
 
         private decimal CalculateCartTotal(CartProjection projection)

@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Cars.Projections;
-using MongoDB.Bson.Serialization.Attributes;
+using Cars.EventStore.MongoDB.Projections;
 
 namespace Cars.Demo.Query.Services.Carts
 {
-    public class CartProjection : IProjection
+    public class CartProjection : MongoProjectionBase
     {
-        [BsonId]
-        public string ProjectionId => CartId.ToString();
+        public override string ProjectionId => CartId.ToString();
 
         public Guid CartId { get; set; }
 

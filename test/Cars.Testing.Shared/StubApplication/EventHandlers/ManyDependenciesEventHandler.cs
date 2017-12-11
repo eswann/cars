@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Cars.Events;
 using Cars.EventSource.Storage;
+using Cars.Handlers;
 using Cars.Testing.Shared.StubApplication.Domain;
 using Cars.Testing.Shared.StubApplication.Domain.Bar;
 

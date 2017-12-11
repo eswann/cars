@@ -10,6 +10,7 @@ namespace Cars.MongoDB.IntegrationTests
     {
         public const string MongoHost = "localhost:27017";
 
+
         static TestSettings()
         {
             var pack = new ConventionPack
@@ -21,7 +22,7 @@ namespace Cars.MongoDB.IntegrationTests
             ConventionRegistry.Register("camelCase", pack, t => true);
             if (BsonSerializer.LookupSerializer<DateTime>() == null)
             {
-                BsonSerializer.RegisterSerializer(DateTimeSerializer.UtcInstance);
+                BsonSerializer.RegisterSerializer(DateTimeSerializer.LocalInstance);
             }
             BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
         }

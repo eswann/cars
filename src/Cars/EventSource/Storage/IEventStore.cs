@@ -29,14 +29,16 @@ namespace Cars.EventSource.Storage
         /// <summary>
         /// Retrieve all events based on <param name="aggregateId"></param>.
         /// </summary>
-        /// <param name="aggregateId"></param>
-        /// <returns></returns>
-        Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid aggregateId);
+        Task<IList<ICommitedEvent>> GetEventsByAggregateId(Guid aggregateId);
+
+        /// <summary>
+        /// Retrieves events by type from the specified timestamp
+        /// </summary>
+        Task<IList<ICommitedEvent>> GetEventsByTypeAsync(IList<Type> eventTypes, DateTime fromTimestamp);
 
         /// <summary>
         /// Save the events in Event Store.
         /// </summary>
-        /// <param name="collection"></param>
         Task SaveAsync(IEnumerable<ISerializedEvent> collection);
     }
 }

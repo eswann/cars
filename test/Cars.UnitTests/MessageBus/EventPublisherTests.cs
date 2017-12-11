@@ -14,10 +14,10 @@ namespace Cars.UnitTests.MessageBus
 {
     public class EventPublisherTests
     {
-        private const string CategoryName = "Unit";
-        private const string CategoryValue = "Event publisher";
+        private const string _categoryName = "Unit";
+        private const string _categoryValue = "Event publisher";
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public void Instance_of_EventRouter_cannot_be_null()
         {
@@ -26,7 +26,7 @@ namespace Cars.UnitTests.MessageBus
             act.ShouldThrowExactly<ArgumentNullException>();
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task When_a_single_event_is_published_to_the_bus_containing_a_single_EventHandler()
         {
@@ -43,13 +43,13 @@ namespace Cars.UnitTests.MessageBus
 
             EventPublisher eventPublisher = new EventPublisher(eventRouter);
             
-            await eventPublisher.PublishAsync<IDomainEvent>(new[] { testEvent }).ConfigureAwait(false);
+            await eventPublisher.EnqueueAsync<IDomainEvent>(new[] { testEvent }).ConfigureAwait(false);
             await eventPublisher.CommitAsync().ConfigureAwait(false);
 
             handler.Ids.First().Should().Be(testEvent.AggregateId);
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task When_a_single_event_is_published_to_the_bus_containing_multiple_EventHandlers()
         {
@@ -68,14 +68,14 @@ namespace Cars.UnitTests.MessageBus
 
             var testEvent = new TestEvent(Guid.NewGuid());
             
-            await eventPublisher.PublishAsync<IDomainEvent>(testEvent).ConfigureAwait(false);
+            await eventPublisher.EnqueueAsync<IDomainEvent>(testEvent).ConfigureAwait(false);
             await eventPublisher.CommitAsync().ConfigureAwait(false);
 
             handler1.Ids.First().Should().Be(testEvent.AggregateId);
             handler2.Ids.First().Should().Be(testEvent.AggregateId);
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        [Trait(_categoryName, _categoryValue)]
         [Fact]
         public async Task Events_should_be_published_on_correct_order()
         {
@@ -96,7 +96,7 @@ namespace Cars.UnitTests.MessageBus
             var orderTestEvent2 = new OrderedTestEvent(Guid.NewGuid(), 2);
             var orderTestEvent3 = new OrderedTestEvent(Guid.NewGuid(), 3);
 
-            await eventPublisher.PublishAsync<IDomainEvent>(new[]
+            await eventPublisher.EnqueueAsync<IDomainEvent>(new[]
             {
                 orderTestEvent,
                 orderTestEvent2,

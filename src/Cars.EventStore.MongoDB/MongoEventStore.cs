@@ -55,7 +55,7 @@ namespace Cars.EventStore.MongoDB
             Cleanup();
         }
 
-        public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid aggregateId)
+        public async Task<IList<ICommitedEvent>> GetEventsByAggregateId(Guid aggregateId)
         {
             var db = Client.GetDatabase(Settings.Database);
             var collection = db.GetCollection<Event>(Settings.EventsCollectionName);
@@ -65,11 +65,35 @@ namespace Cars.EventStore.MongoDB
 
             var filter = filterBuilder.Empty 
                 & filterBuilder.Eq(x => x.AggregateId, aggregateId)
-                & filterBuilder.Or(filterBuilder.Exists(x => x.Metadata[MetadataKeys.EventIgnore], exists: false), filterBuilder.Eq(x => x.Metadata[MetadataKeys.EventIgnore], false));
+                & filterBuilder.Or(filterBuilder.Exists(x => x.Metadata[MetadataKeys.EventIgnore], false), 
+                    filterBuilder.Eq(x => x.Metadata[MetadataKeys.EventIgnore], false));
 
             var events = await collection
                 .Find(filter)
                 .Sort(sort.Ascending(x => x.Metadata[MetadataKeys.EventVersion]))
+                .ToListAsync();
+
+            return events.Select(Deserialize).ToList();
+        }
+
+        public async Task<IList<ICommitedEvent>> GetEventsByTypeAsync(IList<Type> eventTypes, DateTime fromTimestamp)
+        {
+            var db = Client.GetDatabase(Settings.Database);
+            var collection = db.GetCollection<Event>(Settings.EventsCollectionName);
+
+            var sort = Builders<Event>.Sort;
+            var filterBuilder = Builders<Event>.Filter;
+
+            var eventTypeFilter = eventTypes.Select(x => x.FullName).ToList();
+
+            var filter = filterBuilder.Empty
+                         & filterBuilder.In(x => x.EventType, eventTypeFilter)
+                         & filterBuilder.Or(filterBuilder.Exists(x => x.Metadata[MetadataKeys.EventIgnore], false), 
+                            filterBuilder.Eq(x => x.Metadata[MetadataKeys.EventIgnore], false));
+
+            var events = await collection
+                .Find(filter)
+                .Sort(sort.Ascending(x => x.EventData[EventDataKeys.Metadata][EventDataKeys.Timestamp]))
                 .ToListAsync();
 
             return events.Select(Deserialize).ToList();

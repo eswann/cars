@@ -38,23 +38,18 @@ namespace Cars.MessageBus.InProcess
 
         private readonly Queue<object> _queue = new Queue<object>();
 
-        public async Task PublishAsync<TEvent>(TEvent message) where TEvent : IDomainEvent
+        public Task EnqueueAsync<TEvent>(TEvent message) where TEvent : IDomainEvent
         {
-            await Enqueue(message);
+            _queue.Enqueue(message);
+            return Task.CompletedTask;
         }
 
-        public async Task PublishAsync<TEvent>(IEnumerable<TEvent> messages) where TEvent : IDomainEvent
+        public Task EnqueueAsync<TEvent>(IEnumerable<TEvent> messages) where TEvent : IDomainEvent
         {
             foreach (var message in messages)
             {
-                await Enqueue(message);
+                EnqueueAsync(message);
             }
-        }
-
-        private Task Enqueue(object message)
-        {
-            _queue.Enqueue(message);
-
             return Task.CompletedTask;
         }
 

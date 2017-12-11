@@ -39,4 +39,10 @@ namespace Cars.EventSource
 
         public const string CorrelationId = "correlationId";
     }
+
+    public struct EventDataKeys
+    {
+        public const string Metadata = "metadata";
+        public const string Timestamp = "timestamp";
+    }
 }

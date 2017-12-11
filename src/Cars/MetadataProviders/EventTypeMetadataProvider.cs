@@ -12,7 +12,7 @@ namespace Cars.MetadataProviders
         {
             if (!@event.TryGetEventNameAttribute(out var eventName))
             {
-                eventName = @event.GetType().Name;
+                eventName = @event.GetType().FullName;
             }
 
             yield return new KeyValuePair<string, object>(MetadataKeys.EventClrType, @event.GetType().AssemblyQualifiedName);

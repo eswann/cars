@@ -32,7 +32,7 @@ namespace Cars.UnitTests.Storage
             
 
             _mockEventPublisher = new Mock<IEventPublisher>();
-            _mockEventPublisher.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Returns(Task.CompletedTask);
+            _mockEventPublisher.Setup(e => e.EnqueueAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Returns(Task.CompletedTask);
             
             var loggerFactory = new LoggerFactory();
             var session = new Session(loggerFactory, _inMemoryDomainEventStore, _mockEventPublisher.Object, eventSerializer);
@@ -60,7 +60,7 @@ namespace Cars.UnitTests.Storage
 
             await _session.CommitAsync();
 
-            var events = await _inMemoryDomainEventStore.GetAllEventsAsync(testAggregate.AggregateId);
+            var events = await _inMemoryDomainEventStore.GetEventsByAggregateId(testAggregate.AggregateId);
             
             events.Count().Should().Be(2);
         }
@@ -75,7 +75,7 @@ namespace Cars.UnitTests.Storage
             _repository.Add(testAggregate);
             await _session.CommitAsync();
 
-            _mockEventPublisher.Verify(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>()));
+            _mockEventPublisher.Verify(e => e.EnqueueAsync(It.IsAny<IEnumerable<IDomainEvent>>()));
         }
 
         [Trait(_categoryName, _categoryValue)]

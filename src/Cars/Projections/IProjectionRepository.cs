@@ -8,5 +8,7 @@ namespace Cars.Projections
         Task UpsertAsync<TProjection>(TProjection projection, IDomainEvent lastEvent) where TProjection : IProjection;
 
         Task<TProjection> RetrieveAsync<TProjection>(object projectionId) where TProjection : IProjection;
+
+        Task DropProjectionAsync<TProjection>() where TProjection : IProjection;
     }
 }

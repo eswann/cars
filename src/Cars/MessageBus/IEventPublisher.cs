@@ -9,12 +9,12 @@ namespace Cars.MessageBus
         /// <summary>
         /// Publishes the event.
         /// </summary>
-        Task PublishAsync<TEvent>(TEvent message) where TEvent : IDomainEvent;
+        Task EnqueueAsync<TEvent>(TEvent message) where TEvent : IDomainEvent;
 
         /// <summary>
         /// Publishes the event.
         /// </summary>
-        Task PublishAsync<TEvent>(IEnumerable<TEvent> messages) where TEvent : IDomainEvent;
+        Task EnqueueAsync<TEvent>(IEnumerable<TEvent> messages) where TEvent : IDomainEvent;
 
         /// <summary>
         /// Confirm publications.

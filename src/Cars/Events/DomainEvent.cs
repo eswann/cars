@@ -9,17 +9,9 @@ namespace Cars.Events
     /// </summary>
     public abstract class DomainEvent : IDomainEvent
     {
-        /// <summary>
-        /// Aggregate Unique identifier.
-        /// </summary>
-        public Guid AggregateId { get; protected set; }
-
-        public virtual DomainEventMetadata Metadata { get; internal set; }
-        
-        /// <summary>
-        /// Empty constructor is needed for serialization
-        /// </summary>
-        protected DomainEvent() { }
+        protected DomainEvent()
+        {
+        }
 
         /// <summary>
         /// Construct the domain event.
@@ -29,5 +21,13 @@ namespace Cars.Events
         {
             AggregateId = aggregateId;
         }
+
+        /// <summary>
+        /// Aggregate Unique identifier.
+        /// </summary>
+        public Guid AggregateId { get; protected set; }
+
+        public virtual DomainEventMetadata Metadata { get; internal set; }
+       
     }
 }

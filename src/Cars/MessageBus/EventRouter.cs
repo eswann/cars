@@ -22,7 +22,7 @@ namespace Cars.MessageBus
 		        foreach (var handler in handlers)
 		        {
 		            // ReSharper disable once SuspiciousTypeConversion.Global
-		            if (handler is IEventController controller && controller.IsOffline)
+		            if (handler is IEventHandlerController controller && controller.IsOffline)
 		            {
 		                continue;
 		            }

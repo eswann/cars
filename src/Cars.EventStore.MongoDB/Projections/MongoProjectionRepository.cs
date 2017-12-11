@@ -27,6 +27,11 @@ namespace Cars.EventStore.MongoDB.Projections
             return (await collection.FindAsync(x => x.ProjectionId == projectionId.ToString())).FirstOrDefault();
         }
 
+        public async Task DropProjectionAsync<TProjection>() where TProjection : IProjection
+        {
+            await _mongoDatabase.DropCollectionAsync(typeof(TProjection).Name);
+        }
+
         private IMongoCollection<TProjection> GetCollection<TProjection>() where TProjection : IProjection
         {
             var collection = _mongoDatabase.GetCollection<TProjection>(typeof(TProjection).Name);

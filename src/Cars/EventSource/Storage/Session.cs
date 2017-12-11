@@ -69,7 +69,7 @@ namespace Cars.EventSource.Storage
 
             aggregate = new TAggregate();
 
-            var events = await _eventStore.GetAllEventsAsync(id).ConfigureAwait(false);
+            var events = await _eventStore.GetEventsByAggregateId(id).ConfigureAwait(false);
             LoadStream(aggregate, events);
             
             if (aggregate.AggregateId.Equals(Guid.Empty))
@@ -178,7 +178,7 @@ namespace Cars.EventSource.Storage
                 }
                 _logger.LogInformation($"Publishing events. [Qty: {uncommitedEvents.Count}]");
 
-                await _eventPublisher.PublishAsync(uncommitedEvents.Select(e => e.OriginalEvent)).ConfigureAwait(false);
+                await _eventPublisher.EnqueueAsync(uncommitedEvents.Select(e => e.OriginalEvent)).ConfigureAwait(false);
                 _logger.LogDebug("Published events.");
 
                 _aggregateTracker.Clear();
@@ -186,6 +186,8 @@ namespace Cars.EventSource.Storage
                 _logger.LogDebug($"Calling method: {_eventStore.GetType().Name}.{nameof(CommitAsync)}.");
                 await _eventStore.CommitAsync().ConfigureAwait(false);
                 _transactionStarted = false;
+
+                await _eventPublisher.CommitAsync().ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -210,13 +212,12 @@ namespace Cars.EventSource.Storage
             _aggregateTracker.Add(aggregate);
         }
 
-        private void LoadStream(Aggregate aggregate, IEnumerable<ICommitedEvent> commitedEvents)
+        private void LoadStream(Aggregate aggregate, IList<ICommitedEvent> commitedEvents)
         {
-            var flatten = commitedEvents as ICommitedEvent[] ?? commitedEvents.ToArray();
 
-            if (flatten.Any())
+            if (commitedEvents.Count > 0)
             {
-                var events = flatten.Select(_eventSerializer.Deserialize);
+                var events = commitedEvents.Select(_eventSerializer.Deserialize);
 
                 if (_eventUpdateManager != null)
                 {
@@ -226,7 +227,7 @@ namespace Cars.EventSource.Storage
                 }
 
                 aggregate.LoadFromHistory(new CommitedDomainEventCollection(events));
-                aggregate.SetVersion(flatten.Select(e => e.Version).Max());
+                aggregate.SetVersion(commitedEvents.Select(e => e.Version).Max());
             }
         }
 

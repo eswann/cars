@@ -199,7 +199,7 @@ namespace Cars.UnitTests.Storage
 
             var eventStore = new InMemoryEventStore();
 
-            _eventPublisherMock.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Callback<IEnumerable<IDomainEvent>>(evts => events.AddRange(evts)).Returns(Task.CompletedTask);
+            _eventPublisherMock.Setup(e => e.EnqueueAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Callback<IEnumerable<IDomainEvent>>(evts => events.AddRange(evts)).Returns(Task.CompletedTask);
 
             _eventPublisherMock.Setup(e => e.CommitAsync()).Returns(Task.CompletedTask);
 
@@ -304,11 +304,11 @@ namespace Cars.UnitTests.Storage
         [Fact]
         public async Task When_occur_error_on_publishing_Then_rollback_should_be_called()
         {
-            _eventPublisherMock.Setup(e => e.PublishAsync(It.IsAny<IDomainEvent>()))
+            _eventPublisherMock.Setup(e => e.EnqueueAsync(It.IsAny<IDomainEvent>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 
-            _eventPublisherMock.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>()))
+            _eventPublisherMock.Setup(e => e.EnqueueAsync(It.IsAny<IEnumerable<IDomainEvent>>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 

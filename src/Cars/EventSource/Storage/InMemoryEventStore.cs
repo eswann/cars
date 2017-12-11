@@ -55,14 +55,20 @@ namespace Cars.EventSource.Storage
             InTransaction = false;
         }
 
-        public virtual Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid aggregateId)
+        public virtual Task<IList<ICommitedEvent>> GetEventsByAggregateId(Guid aggregateId)
         {
             var events = Events
             .Where(e => e.AggregateId == aggregateId)
             .OrderBy(e => e.Version)
             .ToList();
 
-            return Task.FromResult<IEnumerable<ICommitedEvent>>(events);
+            return Task.FromResult<IList<ICommitedEvent>>(events);
+        }
+
+        public Task<IList<ICommitedEvent>> GetEventsByTypeAsync(IList<Type> eventTypes, DateTime fromTimestamp)
+        {
+            //Not going to implement this until needed
+            throw new NotImplementedException();
         }
 
         public virtual Task SaveAsync(IEnumerable<ISerializedEvent> collection)

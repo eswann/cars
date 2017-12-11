@@ -19,16 +19,21 @@ namespace Cars.Testing.Shared.EventStore
             _eventStore = new EventStoreWrapper(eventStore);
         }
 
-        public async Task<Bar> EventTestsAsync()
+        public async Task<Bar> CreateAndStoreBar()
         {
-            var bar = GenerateBar();
-
             var session = CreateSession();
-
+            var bar = GenerateBar();
             session.Add(bar);
             await session.CommitAsync();
 
-            session = CreateSession();
+            return bar;
+        }
+
+        public async Task<Bar> EventTestsAsync()
+        {
+            var bar = await CreateAndStoreBar();
+
+            var session = CreateSession();
 
             var bar2 = await session.GetByIdAsync<Bar>(bar.AggregateId);
 
@@ -36,7 +41,7 @@ namespace Cars.Testing.Shared.EventStore
                 | EventStoreMethods.BeginTransaction
                 | EventStoreMethods.SaveAsync
                 | EventStoreMethods.CommitAsync
-                | EventStoreMethods.GetAllEventsAsync);
+                | EventStoreMethods.GetEventsByAggregateId);
 
             bar.AggregateId.Should().Be(bar2.AggregateId);
 

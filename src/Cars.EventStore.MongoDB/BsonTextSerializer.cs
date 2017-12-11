@@ -13,7 +13,7 @@ namespace Cars.EventStore.MongoDB
             var bsonDoc = BsonDocumentWrapper.Create(@object);
 
             var ser = bsonDoc.ToJson(new JsonWriterSettings
-            {
+            { 
                 OutputMode = JsonOutputMode.Strict
             });
 

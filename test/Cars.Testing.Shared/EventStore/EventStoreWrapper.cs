@@ -48,11 +48,20 @@ namespace Cars.Testing.Shared.EventStore
             CalledMethods |= EventStoreMethods.Rollback;
         }
 
-        public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid aggregateId)
+        public async Task<IList<ICommitedEvent>> GetEventsByAggregateId(Guid aggregateId)
         {
-            var result = await _eventStore.GetAllEventsAsync(aggregateId).ConfigureAwait(false);
+            var result = await _eventStore.GetEventsByAggregateId(aggregateId).ConfigureAwait(false);
 
-            CalledMethods |= EventStoreMethods.GetAllEventsAsync;
+            CalledMethods |= EventStoreMethods.GetEventsByAggregateId;
+
+            return result;
+        }
+
+        public async Task<IList<ICommitedEvent>> GetEventsByTypeAsync(IList<Type> eventTypes, DateTime fromTimestamp)
+        {
+            var result = await _eventStore.GetEventsByTypeAsync(eventTypes, fromTimestamp).ConfigureAwait(false);
+
+            CalledMethods |= EventStoreMethods.GetEventsByTypeAsync;
 
             return result;
         }

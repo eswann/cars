@@ -1,5 +1,5 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/58fdyc6de81r7t3r/branch/master?svg=true)](https://ci.appveyor.com/project/eswann/cars/branch/master)
-[![Coverage Status](https://coveralls.io/repos/github/eswann/cars/badge.svg?branch=master)](https://coveralls.io/github/eswann/cars?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/eswann/cars/badge.svg?branch=master)](https://coveralls.io/github/eswann/cars?branch=master&version=2)
 
 ![Cars image](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSI680XhLv9L5_noib5ax3YrQ57Vf5dpYWXPw8ulO1dL1kRHpJJ)
 
